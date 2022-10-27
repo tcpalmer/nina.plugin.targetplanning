@@ -18,23 +18,103 @@
         <StackPanel DataContext="{Binding}" Orientation="Vertical">
             <StackPanel Orientation="Horizontal">
                 <TextBlock
-                    Width="110"
+                    Width="120"
+                    Margin="0,0,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center">
                     <TextBlock.Text>Start Date</TextBlock.Text>
                     <TextBlock.ToolTip>Set the planning start date</TextBlock.ToolTip>
                 </TextBlock>
-                <DatePicker SelectedDate="{Binding StartDate}" />
-            </StackPanel>
-            <StackPanel Margin="0,0,0,5" Orientation="Horizontal">
+                <DatePicker Margin="40,0,0,0" SelectedDate="{Binding StartDate}" />
                 <TextBlock
-                    Width="110"
+                    Width="40"
+                    Margin="30,0,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center">
-                    <TextBlock.Text>End Date</TextBlock.Text>
-                    <TextBlock.ToolTip>Set the planning end date</TextBlock.ToolTip>
+                    <TextBlock.Text>Days</TextBlock.Text>
+                    <TextBlock.ToolTip>Set the number of days in the plan</TextBlock.ToolTip>
                 </TextBlock>
-                <DatePicker SelectedDate="{Binding EndDate}" />
+                <TextBox
+                    MinWidth="40"
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    Text="{Binding PlanDays}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Width="130"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+                    <TextBlock.Text>Minimum Imaging Time</TextBlock.Text>
+                    <TextBlock.ToolTip>Set the minimum imaging time</TextBlock.ToolTip>
+                </TextBlock>
+                <ComboBox
+                    Margin="30,0,0,0"
+                    DisplayMemberPath="Value"
+                    ItemsSource="{Binding MinimumTimeChoices}"
+                    SelectedValue="{Binding MinimumTime}"
+                    SelectedValuePath="Key" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Width="120"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+                    <TextBlock.Text>Minimum Altitude</TextBlock.Text>
+                    <TextBlock.ToolTip>Set the minimum target altitude</TextBlock.ToolTip>
+                </TextBlock>
+                <ComboBox
+                    Margin="40,0,0,0"
+                    DisplayMemberPath="Value"
+                    ItemsSource="{Binding MinimumAltitudeChoices}"
+                    SelectedValue="{Binding MinimumAltitude}"
+                    SelectedValuePath="Key" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Width="120"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+                    <TextBlock.Text>Minimum Moon Sep</TextBlock.Text>
+                    <TextBlock.ToolTip>Set the minimum moon separation angle</TextBlock.ToolTip>
+                </TextBlock>
+                <ComboBox
+                    Margin="40,0,0,0"
+                    DisplayMemberPath="Value"
+                    ItemStringFormat="0°"
+                    ItemsSource="{Binding MoonSeparationChoices}"
+                    SelectedValue="{Binding MinimumMoonSeparation}"
+                    SelectedValuePath="Key" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Width="120"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+                    <TextBlock.Text>Maximum Moon Illum</TextBlock.Text>
+                    <TextBlock.ToolTip>Set the maximum moon illumination (0-1)</TextBlock.ToolTip>
+                </TextBlock>
+                <ComboBox
+                    Margin="40,0,0,0"
+                    DisplayMemberPath="Value"
+                    ItemsSource="{Binding MaximumMoonIlluminationChoices}"
+                    SelectedValue="{Binding MaximumMoonIllumination}"
+                    SelectedValuePath="Key" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Width="120"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+                    <TextBlock.Text>Meridian Time Span</TextBlock.Text>
+                    <TextBlock.ToolTip>Set imaging time on either side of the meridian</TextBlock.ToolTip>
+                </TextBlock>
+                <ComboBox
+                    Margin="40,0,0,0"
+                    DisplayMemberPath="Value"
+                    ItemsSource="{Binding MeridianTimeSpanChoices}"
+                    SelectedValue="{Binding MeridianTimeSpan}"
+                    SelectedValuePath="Key" />
             </StackPanel>
             <StackPanel>
                 <ninactrl:CancellableButton
