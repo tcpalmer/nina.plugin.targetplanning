@@ -6,6 +6,7 @@ using NINA.Plugin;
 using NINA.Plugin.Interfaces;
 using NINA.Profile;
 using NINA.Profile.Interfaces;
+using NINA.WPF.Base.Interfaces.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,7 +32,7 @@ namespace TargetPlanning.NINAPlugin {
         private AsyncObservableCollection<KeyValuePair<int, string>> _meridianTimeSpanChoices;
 
         [ImportingConstructor]
-        public TargetPlanningPlugin(IProfileService profileService) {
+        public TargetPlanningPlugin(IProfileService profileService, IDeepSkyObjectSearchVM deepSkyObjectSearchVM) {
             if (Properties.Settings.Default.UpdateSettings) {
                 Properties.Settings.Default.Upgrade();
                 Properties.Settings.Default.UpdateSettings = false;
@@ -41,6 +42,11 @@ namespace TargetPlanning.NINAPlugin {
             this.pluginSettings = new PluginOptionsAccessor(profileService, Guid.Parse(this.Identifier));
             this.profileService = profileService;
             profileService.ProfileChanged += ProfileService_ProfileChanged;
+
+            var defaultCoordinates = new Coordinates(0, 0, Epoch.J2000, Coordinates.RAType.Degrees);
+            DSO = new DeepSkyObject(string.Empty, defaultCoordinates, profileService.ActiveProfile.ApplicationSettings.SkyAtlasImageRepository, profileService.ActiveProfile.AstrometrySettings.Horizon);
+            DeepSkyObjectSearchVM = deepSkyObjectSearchVM;
+            DeepSkyObjectSearchVM.PropertyChanged += DeepSkyObjectSearchVM_PropertyChanged;
 
             SearchCommand = new AsyncCommand<bool>(() => Search());
             CancelSearchCommand = new RelayCommand(CancelSearch);
@@ -109,6 +115,32 @@ namespace TargetPlanning.NINAPlugin {
             RaisePropertyChanged(nameof(MaximumMoonIllumination));
             RaisePropertyChanged(nameof(MeridianTimeSpan));
         }
+
+        private DeepSkyObject _dSO;
+
+        public DeepSkyObject DSO {
+            get {
+                return _dSO;
+            }
+            set {
+                _dSO = value;
+                // TODO: possibly have to do this when/if we pop a Nighttime chart:
+                //_dSO?.SetDateAndPosition(NighttimeCalculator.GetReferenceDate(DateTime.Now), profileService.ActiveProfile.AstrometrySettings.Latitude, profileService.ActiveProfile.AstrometrySettings.Longitude);
+                RaisePropertyChanged();
+            }
+        }
+
+        private void DeepSkyObjectSearchVM_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(DeepSkyObjectSearchVM.Coordinates) && DeepSkyObjectSearchVM.Coordinates != null) {
+                DSO = new DeepSkyObject(DeepSkyObjectSearchVM.TargetName, DeepSkyObjectSearchVM.Coordinates, profileService.ActiveProfile.ApplicationSettings.SkyAtlasImageRepository, profileService.ActiveProfile.AstrometrySettings.Horizon);
+                RaiseCoordinatesChanged();
+            }
+            else if (e.PropertyName == nameof(DeepSkyObjectSearchVM.TargetName) && DSO != null) {
+                DSO.Name = DeepSkyObjectSearchVM.TargetName;
+            }
+        }
+
+        public IDeepSkyObjectSearchVM DeepSkyObjectSearchVM { get; private set; }
 
         public DateTime StartDate {
             get => pluginSettings.GetValueDateTime(nameof(StartDate), DateTime.Now);
@@ -226,6 +258,7 @@ namespace TargetPlanning.NINAPlugin {
             _searchTokenSource?.Dispose();
             _searchTokenSource = new CancellationTokenSource();
             Logger.Debug($"STARTING SEARCH: {StartDate}");
+            Logger.Debug($"TARGET: {DSO.Name} RA: {DSO.Coordinates.RA} Dec: {DSO.Coordinates.Dec}");
             return Task.Run(async () => {
                 try {
                     SearchResult = null;
@@ -259,39 +292,139 @@ namespace TargetPlanning.NINAPlugin {
             }
         }
 
-        public IEnumerable<DeepSkyObject> DSOResult { get; set; }
-
         // TODO: how to get profile lat/long:
         // var longitude = profileService.ActiveProfile.AstrometrySettings.Longitude;
         // latitude = profileService.ActiveProfile.AstrometrySettings.Latitude;
         // altitude too?
 
-        // Test load DSO
-        private async Task<bool> testLoadDSO() {
-            var db = new DatabaseInteraction();
-            var searchParams = new DatabaseInteraction.DeepSkyObjectSearchParams();
-
-            searchParams.ObjectName = "sh2 240";
-            searchParams.SearchOrder.Direction = "ASC";
-
-            DSOResult = await db.GetDeepSkyObjects(
-                profileService.ActiveProfile.ApplicationSettings.SkyAtlasImageRepository,
-                profileService.ActiveProfile.AstrometrySettings.Horizon,
-                searchParams,
-                _searchTokenSource.Token);
-
-            Logger.Debug("DSO results:");
-            foreach (DeepSkyObject obj in DSOResult) {
-                Logger.Debug($"{obj.Name} {obj.Coordinates.ToString()}");
-            }
-
-            return true;
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void RaisePropertyChanged([CallerMemberName] string propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public int RAHours {
+            get {
+                return (int)Math.Truncate(DSO.Coordinates.RA);
+            }
+            set {
+                if (value >= 0) {
+                    DSO.Coordinates.RA = DSO.Coordinates.RA - RAHours + value;
+                    RaiseCoordinatesChanged();
+                }
+            }
+        }
+
+        public int RAMinutes {
+            get {
+                var minutes = (Math.Abs(DSO.Coordinates.RA * 60.0d) % 60);
+                var seconds = (int)Math.Round((Math.Abs(DSO.Coordinates.RA * 60.0d * 60.0d) % 60));
+                if (seconds > 59) {
+                    minutes += 1;
+                }
+
+                return (int)Math.Floor(minutes);
+            }
+            set {
+                if (value >= 0) {
+                    DSO.Coordinates.RA = DSO.Coordinates.RA - RAMinutes / 60.0d + value / 60.0d;
+                    RaiseCoordinatesChanged();
+                }
+            }
+        }
+
+        public int RASeconds {
+            get {
+                var seconds = (int)Math.Round((Math.Abs(DSO.Coordinates.RA * 60.0d * 60.0d) % 60));
+                if (seconds > 59) {
+                    seconds = 0;
+                }
+                return seconds;
+            }
+            set {
+                if (value >= 0) {
+                    DSO.Coordinates.RA = DSO.Coordinates.RA - RASeconds / (60.0d * 60.0d) + value / (60.0d * 60.0d);
+                    RaiseCoordinatesChanged();
+                }
+            }
+        }
+
+        private bool negativeDec;
+
+        public bool NegativeDec {
+            get => negativeDec;
+            set {
+                negativeDec = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public int DecDegrees {
+            get {
+                return (int)Math.Truncate(DSO.Coordinates.Dec);
+            }
+            set {
+                if (NegativeDec) {
+                    DSO.Coordinates.Dec = value - DecMinutes / 60.0d - DecSeconds / (60.0d * 60.0d);
+                }
+                else {
+                    DSO.Coordinates.Dec = value + DecMinutes / 60.0d + DecSeconds / (60.0d * 60.0d);
+                }
+                RaiseCoordinatesChanged();
+            }
+        }
+
+        public int DecMinutes {
+            get {
+                var minutes = (Math.Abs(DSO.Coordinates.Dec * 60.0d) % 60);
+                var seconds = (int)Math.Round((Math.Abs(DSO.Coordinates.Dec * 60.0d * 60.0d) % 60));
+                if (seconds > 59) {
+                    minutes += 1;
+                }
+
+                return (int)Math.Floor(minutes);
+            }
+            set {
+                if (NegativeDec) {
+                    DSO.Coordinates.Dec = DSO.Coordinates.Dec + DecMinutes / 60.0d - value / 60.0d;
+                }
+                else {
+                    DSO.Coordinates.Dec = DSO.Coordinates.Dec - DecMinutes / 60.0d + value / 60.0d;
+                }
+
+                RaiseCoordinatesChanged();
+            }
+        }
+
+        public int DecSeconds {
+            get {
+                var seconds = (int)Math.Round((Math.Abs(DSO.Coordinates.Dec * 60.0d * 60.0d) % 60));
+                if (seconds > 59) {
+                    seconds = 0;
+                }
+                return seconds;
+            }
+            set {
+                if (NegativeDec) {
+                    DSO.Coordinates.Dec = DSO.Coordinates.Dec + DecSeconds / (60.0d * 60.0d) - value / (60.0d * 60.0d);
+                }
+                else {
+                    DSO.Coordinates.Dec = DSO.Coordinates.Dec - DecSeconds / (60.0d * 60.0d) + value / (60.0d * 60.0d);
+                }
+
+                RaiseCoordinatesChanged();
+            }
+        }
+
+        private void RaiseCoordinatesChanged() {
+            RaisePropertyChanged(nameof(RAHours));
+            RaisePropertyChanged(nameof(RAMinutes));
+            RaisePropertyChanged(nameof(RASeconds));
+            RaisePropertyChanged(nameof(DecDegrees));
+            RaisePropertyChanged(nameof(DecMinutes));
+            RaisePropertyChanged(nameof(DecSeconds));
+            NegativeDec = DSO?.Coordinates?.Dec < 0;
+            //NighttimeData = nighttimeCalculator.Calculate();
         }
     }
 
