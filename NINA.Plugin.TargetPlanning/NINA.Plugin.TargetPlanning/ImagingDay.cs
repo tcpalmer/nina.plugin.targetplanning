@@ -18,8 +18,6 @@ namespace TargetPlanning.NINAPlugin {
             this.EndDate = endDate;
             this.StartDateStr = startDate.ToShortDateString();
             this.EndDateStr = endDate.ToShortDateString();
-            Logger.Debug($"SD: {StartDateStr}");
-            Logger.Debug($"ED: {EndDateStr}");
         }
 
     }
