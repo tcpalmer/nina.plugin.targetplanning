@@ -15,6 +15,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using TargetPlanning.NINAPlugin.Astrometry;
 
 namespace TargetPlanning.NINAPlugin {
 
@@ -95,14 +96,6 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         public override Task Teardown() {
-            Logger.Debug($"StartDate:      {StartDate}");
-            Logger.Debug($"PlanDays:       {PlanDays}");
-            Logger.Debug($"MinTime:        {MinimumTime}");
-            Logger.Debug($"MinAlt:         {MinimumAltitude}");
-            Logger.Debug($"Min Moon Sep:   {MinimumMoonSeparation}");
-            Logger.Debug($"Max Moon Illum: {MaximumMoonIllumination}");
-            Logger.Debug($"Mer Span:       {MeridianTimeSpan}");
-
             return base.Teardown();
         }
 
@@ -257,28 +250,37 @@ namespace TargetPlanning.NINAPlugin {
         private Task<bool> Search() {
             _searchTokenSource?.Dispose();
             _searchTokenSource = new CancellationTokenSource();
-            Logger.Debug($"STARTING SEARCH: {StartDate}");
-            Logger.Debug($"TARGET: {DSO.Name} RA: {DSO.Coordinates.RA} Dec: {DSO.Coordinates.Dec}");
-            return Task.Run(async () => {
+
+            PlanParameters planParams = new PlanParameters();
+            planParams.Target = DSO;
+            planParams.ObserverInfo = getObserverInfo(profileService.ActiveProfile.AstrometrySettings);
+            planParams.StartDate = StartDate;
+            planParams.PlanDays = PlanDays;
+            planParams.MinimumAltitude = MinimumAltitude;
+            planParams.MinimumTime = MinimumTime;
+            planParams.MinimumMoonSeparation = MinimumMoonSeparation;
+            planParams.MaximumMoonIllumination = MaximumMoonIllumination;
+            planParams.MeridianTimeSpan = MeridianTimeSpan;
+
+            return Task.Run(() => {
                 try {
                     SearchResult = null;
-
-                    int days = PlanDays;
-                    List<ImagingDay> items = new List<ImagingDay>(days);
-                    DateTime start = StartDate;
-                    for (int i = 0; i < days; i++) {
-                        items.Add(new ImagingDay(start.AddDays(i), start.AddDays(i + 1)));
-                    }
-
-                    SearchResult = new PagedList<ImagingDay>(60, items);
+                    IEnumerable <ImagingDay> results = new PlanGenerator(planParams).Generate();
+                    SearchResult = new PagedList<ImagingDay>(60, results);
                 }
                 catch (OperationCanceledException) {
                 }
 
-                Logger.Debug("SEARCH DONE");
-                //await testLoadDSO();
                 return true;
             });
+        }
+
+        private ObserverInfo getObserverInfo(IAstrometrySettings astrometrySettings) {
+            ObserverInfo oi = new ObserverInfo();
+            oi.Latitude = astrometrySettings.Latitude;
+            oi.Longitude = astrometrySettings.Longitude;
+            oi.Elevation = astrometrySettings.Elevation;
+            return oi;
         }
 
         public PagedList<ImagingDay> SearchResult {
@@ -291,11 +293,6 @@ namespace TargetPlanning.NINAPlugin {
                 RaisePropertyChanged();
             }
         }
-
-        // TODO: how to get profile lat/long:
-        // var longitude = profileService.ActiveProfile.AstrometrySettings.Longitude;
-        // latitude = profileService.ActiveProfile.AstrometrySettings.Latitude;
-        // altitude too?
 
         public event PropertyChangedEventHandler PropertyChanged;
 
