@@ -264,11 +264,13 @@
   <ItemGroup>
     <Compile Include="Astrometry\Altitudes.cs" />
     <Compile Include="Astrometry\AstrometryUtils.cs" />
+    <Compile Include="Astrometry\CircumstanceSolver.cs" />
     <Compile Include="Astrometry\DSORefiner.cs" />
     <Compile Include="Astrometry\HorizontalCoordinate.cs" />
     <Compile Include="Astrometry\IAltitudeRefiner.cs" />
     <Compile Include="Astrometry\PlanGenerator.cs" />
     <Compile Include="Astrometry\ImagingDay.cs" />
+    <Compile Include="Astrometry\Solver.cs" />
     <Compile Include="Astrometry\TargetImagingCircumstances.cs" />
     <Compile Include="TargetPlanning.cs" />
     <Compile Include="Options.xaml.cs">

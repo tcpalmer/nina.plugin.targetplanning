@@ -1,18 +1,16 @@
-﻿using CsvHelper;
-using NINA.Astrometry;
+﻿using NINA.Astrometry;
 using NINA.Astrometry.Interfaces;
-using NINA.Profile.Interfaces;
-using NmeaParser.Messages;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static EDSDKLib.EDSDK;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
     public class TargetImagingCircumstances {
+
+        public readonly static int STATUS_POTENTIALLY_VISIBLE = 1;
+
+        public readonly static int STATUS_NEVER_VISIBLE = 2;
+
+        public readonly static int STATUS_NEVER_ABOVE_MINIMUM_ALTITUDE = 3;
 
         private ObserverInfo location;
         private IDeepSkyObject target;
@@ -40,18 +38,22 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         }
 
         public int analyze() {
-            /*
+
             // If the target never rises at this location, stop
-            if (!Utils.risesAtLocation(target, location)) {
+            if (!AstrometryUtils.RisesAtLocation(location, target.Coordinates)) {
                 return STATUS_NEVER_VISIBLE;
             }
 
-            ImagingDay imagingDay = new ImagingDay(startTime, endTime, target, location, Quality.QUALITY_HIGH);
+            ImagingDay imagingDay = new ImagingDay(startTime, endTime, location, target.Coordinates);
 
             // If the target never rises above the minimum altitude in this time span, stop
-            if (!imagingDay.isEverAboveMinimumAltitude(minimumAltitude)) {
+            if (!imagingDay.IsEverAboveMinimumAltitude(minimumAltitude)) {
                 return STATUS_NEVER_ABOVE_MINIMUM_ALTITUDE;
             }
+
+            /*
+
+
 
             // TODO: once we add transit-based imaging determination, we'll need to get the actual transit,
             //   even if not inside the time span.  We can just calculate altitude going in the direction of

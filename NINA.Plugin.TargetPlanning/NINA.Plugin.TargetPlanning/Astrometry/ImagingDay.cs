@@ -1,6 +1,8 @@
 ﻿using NINA.Astrometry;
 using NINA.Astrometry.Interfaces;
 using System;
+using System.Collections.Generic;
+using TargetPlanning.NINAPlugin.Astrometry;
 
 namespace TargetPlanning.NINAPlugin {
     public class ImagingDay {
@@ -9,11 +11,15 @@ namespace TargetPlanning.NINAPlugin {
 
         public DateTime EndDate { get; private set; }
 
-        public IDeepSkyObject Target { get; private set; }
+        public Coordinates Target { get; private set; }
 
         public ObserverInfo Location { get; private set; }
 
-        public ImagingDay(DateTime startDate, DateTime endDate, ObserverInfo location, IDeepSkyObject target) {
+        public Altitudes SamplePositions { get; private set; }
+
+        private DSORefiner refiner;
+
+        public ImagingDay(DateTime startDate, DateTime endDate, ObserverInfo location, Coordinates target) {
 
             Validate.Assert.notNull(location, "location cannot be null");
             Validate.Assert.notNull(target, "target cannot be null");
@@ -22,94 +28,83 @@ namespace TargetPlanning.NINAPlugin {
             this.EndDate = endDate;
             this.Target = target;
             this.Location = location;
+
+            refiner = new DSORefiner(Location, Target);
+            SamplePositions = getInitialSamplePositions();
         }
 
-        /*
-    public boolean isEverAboveMinimumAltitude(double minimumAltitude) {
+        public bool IsEverAboveMinimumAltitude(double minimumAltitude) {
+            foreach (AltitudeAtTime aat in SamplePositions.AltitudeList) {
+                if (aat.Altitude > minimumAltitude) {
+                    return true;
+                }
+            }
 
-        for (AltitudeAtTime aat : samplePositions.getAltitudes()) {
-            if (aat.getAltitude() > minimumAltitude) {
-                return true;
+            return false;
+        }
+
+        public DateTime GetRiseAboveMinimumTime(double minimumAltitude) {
+            Validate.Assert.isTrue(minimumAltitude >= 0, "minimumAltitude must be >= 0");
+
+            Altitudes startStep = new RiseAboveMinimumFunction(minimumAltitude).determineStep(SamplePositions);
+            if (startStep == null) {
+                return DateTime.MinValue;
+            }
+
+            AltitudeAtTime riseAboveMinimum = new CircumstanceSolver(refiner, 1).FindRiseAboveMinimum(startStep,
+                                                                                                      minimumAltitude);
+            return riseAboveMinimum != null ? riseAboveMinimum.AtTime : DateTime.MinValue;
+        }
+
+        public DateTime getTransitTime() {
+
+            try {
+                // Objects that never rise at location won't have a proper transit
+                AltitudeAtTime transit = new CircumstanceSolver(refiner, 1).FindTransit(getInitialTransitSpan());
+                return transit != null ? transit.AtTime : DateTime.MinValue;
+            }
+            catch (Exception e) {
+                return DateTime.MinValue;
             }
         }
 
-        return false;
-    }
+        public DateTime getSetBelowMinimumTime(double minimumAltitude) {
+            Validate.Assert.isTrue(minimumAltitude >= 0, "minimumAltitude must be >= 0");
 
-    public ZonedDateTime getRiseAboveMinimumTime(double minimumAltitude) {
-        Validate.isTrue(minimumAltitude >= 0, "minimumAltitude must be >= 0");
+            Altitudes startStep = new SetBelowMinimumFunction(minimumAltitude).determineStep(SamplePositions);
+            if (startStep == null) {
+                return DateTime.MinValue;
+            }
 
-        Altitudes startStep = new Solver.RiseAboveMinimumFunction(minimumAltitude).determineStep(samplePositions);
-        if (startStep == null) {
-            return null;
+            AltitudeAtTime setBelowMinimum = new CircumstanceSolver(refiner, 1).FindSetBelowMinimum(startStep,
+                                                                                                    minimumAltitude);
+            return setBelowMinimum != null ? setBelowMinimum.AtTime : DateTime.MinValue;
         }
 
-        AltitudeAtTime riseAboveMinimum = new CircumstanceSolver(refiner, 1).findRiseAboveMinimum(startStep,
-                                                                                                  minimumAltitude);
-        return riseAboveMinimum != null ? riseAboveMinimum.getAtTime() : null;
-    }
+        private Altitudes getInitialSamplePositions() {
+            List<AltitudeAtTime> alts = new List<AltitudeAtTime>(2);
 
-    public ZonedDateTime getTransitTime() {
+            HorizontalCoordinate hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, StartDate);
+            alts.Add(new AltitudeAtTime(hz.Altitude, StartDate));
 
-        // TODO: once we add transit-based imaging determination, we'll need to get the actual transit,
-        //   even if not inside the time span.  We can just calculate altitude going in the direction of
-        //   increasing altitude until it decreases.
-        //   This should be a separate method to call only if needed.
+            hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, EndDate);
+            alts.Add(new AltitudeAtTime(hz.Altitude, EndDate));
 
-        try {
-            // Objects that never rise at location won't have a proper transit
-            AltitudeAtTime transit = new CircumstanceSolver(refiner, 1).findTransit(getInitialTransitSpan());
-            return transit != null ? transit.getAtTime() : null;
-        } catch (Exception e) {
-            return null;
+            // Sample every 5 minutes
+            int numPoints = (int)(EndDate.Subtract(StartDate).TotalMinutes / 5);
+            return refiner.Refine(new Altitudes(alts), numPoints);
+        }
+
+        private Altitudes getInitialTransitSpan() {
+            List<AltitudeAtTime> alts = new List<AltitudeAtTime>(3);
+            int size = SamplePositions.AltitudeList.Count;
+
+            alts.Add(SamplePositions.AltitudeList[0]);
+            alts.Add(SamplePositions.AltitudeList[size / 2]);
+            alts.Add(SamplePositions.AltitudeList[size - 1]);
+
+            return new Altitudes(alts);
         }
     }
 
-    public ZonedDateTime getSetBelowMinimumTime(double minimumAltitude) {
-        Validate.isTrue(minimumAltitude >= 0, "minimumAltitude must be >= 0");
-
-        Altitudes startStep = new Solver.SetBelowMinimumFunction(minimumAltitude).determineStep(samplePositions);
-        if (startStep == null) {
-            return null;
-        }
-
-        AltitudeAtTime setBelowMinimum = new CircumstanceSolver(refiner, 1).findSetBelowMinimum(startStep,
-                                                                                                minimumAltitude);
-
-        return setBelowMinimum != null ? setBelowMinimum.getAtTime() : null;
-    }
-
-    public Altitudes getSamplePositions() {
-        return samplePositions;
-    }
-
-    private Altitudes getInitialSamplePositions() {
-        List<AltitudeAtTime> alts = new ArrayList<>(2);
-
-        HorizontalCoordinate hz = Astrometry.computeLocalPosition(location, startDateTime, target, quality);
-        alts.add(new AltitudeAtTime(hz.getAltitude()
-                                            .getAngle(), startDateTime));
-
-        hz = Astrometry.computeLocalPosition(location, endDateTime, target, quality);
-        alts.add(new AltitudeAtTime(hz.getAltitude()
-                                            .getAngle(), endDateTime));
-
-        // Sample every 5 minutes
-        int numPoints = (int) ChronoUnit.MINUTES.between(startDateTime, endDateTime) / 5;
-
-        return refiner.refine(new Altitudes(alts), numPoints);
-    }
-
-    private Altitudes getInitialTransitSpan() {
-        List<AltitudeAtTime> alts = new ArrayList<>(3);
-        alts.add(samplePositions.getAltitudes()
-                         .get(0));
-        alts.add(samplePositions.getAltitudes()
-                         .get(samplePositions.getSize() / 2));
-        alts.add(samplePositions.getAltitudes()
-                         .get(samplePositions.getSize() - 1));
-        return new Altitudes(alts);
-    }
-         */
-    }
 }

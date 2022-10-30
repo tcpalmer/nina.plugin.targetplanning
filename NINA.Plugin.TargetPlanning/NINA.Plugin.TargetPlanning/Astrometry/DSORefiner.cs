@@ -1,11 +1,7 @@
-﻿using Accord.Math.Random;
-using NINA.Astrometry.Interfaces;
+﻿using NINA.Astrometry.Interfaces;
 using NINA.Astrometry;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
@@ -17,9 +13,9 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
     public class DSORefiner : IAltitudeRefiner {
 
         private ObserverInfo location;
-        private IDeepSkyObject target;
+        private Coordinates target;
 
-        public DSORefiner(ObserverInfo location, IDeepSkyObject target) {
+        public DSORefiner(ObserverInfo location, Coordinates target) {
             Validate.Assert.notNull(location, "location cannot be null");
             Validate.Assert.notNull(target, "target cannot be null");
 
@@ -27,7 +23,13 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             this.target = target;
         }
 
-        Altitudes IAltitudeRefiner.refine(Altitudes altitudes, int numPoints) {
+        /// <summary>
+        /// Add additional calculated points between the two elements in the altitudes list.
+        /// </summary>
+        /// <param name="altitudes"></param>
+        /// <param name="numPoints"></param>
+        /// <returns></returns>
+        public Altitudes Refine(Altitudes altitudes, int numPoints) {
 
             Validate.Assert.notNull(altitudes, "altitudes cannot be null");
             Validate.Assert.isTrue(altitudes.AltitudeList.Count == 2, "altitudes must have exactly two elements");
@@ -36,106 +38,62 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             AltitudeAtTime start = altitudes.AltitudeList[0];
             AltitudeAtTime end = altitudes.AltitudeList[1];
 
-            List<AltitudeAtTime> newAltitudes = new List<AltitudeAtTime>(numPoints+2);
+            List<AltitudeAtTime> newAltitudes = new List<AltitudeAtTime>(numPoints + 2);
             newAltitudes.Add(start);
 
-            TimeSpan span = start.AtTime.Subtract(end.AtTime);
-            int timeDiffSpanMS = span.Milliseconds;
-            int timeIncrement = timeDiffSpanMS / (numPoints + 1);
+            TimeSpan span = end.AtTime.Subtract(start.AtTime);
+            long timeDiffSpanMS = (long)span.TotalMilliseconds;
+            long timeIncrement = timeDiffSpanMS / (numPoints + 1);
 
             DateTime atTime = start.AtTime;
             for (int i = 0; i < numPoints; i++) {
                 atTime = atTime.AddMilliseconds(timeIncrement);
+                HorizontalCoordinate hc = AstrometryUtils.GetHorizontalCoordinates(location, target, atTime);
+                newAltitudes.Add(new AltitudeAtTime(hc.Altitude, atTime));
             }
 
-            /*
-
-        ZonedDateTime atTime = start.getAtTime();
-        for (int i = 0; i < numPoints; i++) {
-            atTime = atTime.plus(timeIncrement, ChronoUnit.MILLIS);
-            HorizontalCoordinate hz = Astrometry.computeLocalPosition(location, atTime, target, quality);
-            newAltitudes.add(new AltitudeAtTime(hz.getAltitude()
-                                                        .getAngle(), atTime));
+            newAltitudes.Add(end);
+            return new Altitudes(newAltitudes);
         }
 
-        newAltitudes.add(end);
-        return new Altitudes(newAltitudes);
-             */
+        /// <summary>
+        /// Generate altitude values for the target at location on date from midnight to midnight for every hour.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public Altitudes GetHourlyAltitudesForDay(DateTime date) {
+            List<AltitudeAtTime> alts = new List<AltitudeAtTime>(24);
+            DateTime dateTime = date.Date;
 
-            return null;
+            for (int i = 0; i < 24; i++) {
+                HorizontalCoordinate hc = AstrometryUtils.GetHorizontalCoordinates(location, target, dateTime);
+                alts.Add(new AltitudeAtTime(hc.Altitude, dateTime));
+                dateTime = dateTime.AddHours(1);
+            }
+
+            return new Altitudes(alts);
         }
 
-        Altitudes IAltitudeRefiner.getHourlyAltitudesForDay(DateTime date) {
-            throw new NotImplementedException();
+        /// <summary>
+        /// Return true if the target object ever rises at the location.  An object never rises at a location if it is
+        /// circumpolar around the pole in the opposite hemisphere from location.
+        /// </summary>
+        /// <returns></returns>
+        public bool RisesAtLocation() {
+            return AstrometryUtils.RisesAtLocation(location, target);
         }
 
-        bool IAltitudeRefiner.risesAtLocation() {
-            throw new NotImplementedException();
-        }
-
-        bool IAltitudeRefiner.circumpolarAtLocation() {
-            throw new NotImplementedException();
+        /// <summary>
+        /// Return true if the target object is circumpolar at the location.
+        /// </summary>
+        /// <returns></returns>
+        public bool CircumpolarAtLocation() {
+            return AstrometryUtils.CircumpolarAtLocation(location, target);
         }
 
         private double getAltitude(DateTime atTime) {
-
-
-            return 0;
+            throw new NotImplementedException();
         }
     }
 
-    /*
-    @Override
-    public Altitudes refine(Altitudes altitudes, int numPoints) {
-
-        AltitudeAtTime start = altitudes.getAltitudes()
-                .get(0);
-        AltitudeAtTime end = altitudes.getAltitudes()
-                .get(1);
-
-        List<AltitudeAtTime> newAltitudes = new ArrayList<>(numPoints + 2);
-        newAltitudes.add(start);
-
-        long timeDiffSpanMS = ChronoUnit.MILLIS.between(start.getAtTime(), end.getAtTime());
-        long timeIncrement = timeDiffSpanMS / (numPoints + 1);
-
-        ZonedDateTime atTime = start.getAtTime();
-        for (int i = 0; i < numPoints; i++) {
-            atTime = atTime.plus(timeIncrement, ChronoUnit.MILLIS);
-            HorizontalCoordinate hz = Astrometry.computeLocalPosition(location, atTime, target, quality);
-            newAltitudes.add(new AltitudeAtTime(hz.getAltitude()
-                                                        .getAngle(), atTime));
-        }
-
-        newAltitudes.add(end);
-        return new Altitudes(newAltitudes);
-    }
-
-    @Override
-    public Altitudes getHourlyAltitudesForDay(ZonedDateTime date) {
-        Validate.notNull(date, "date cannot be null");
-
-        List<AltitudeAtTime> alts = new ArrayList<>(24);
-        ZonedDateTime dateTime = date.truncatedTo(ChronoUnit.DAYS);
-
-        for (int i = 0; i < 24; i++) {
-            HorizontalCoordinate hz = Astrometry.computeLocalPosition(location, dateTime, target, quality);
-            alts.add(new AltitudeAtTime(hz.getAltitude()
-                                                .getAngle(), dateTime));
-            dateTime = dateTime.plusHours(1);
-        }
-
-        return new Altitudes(alts);
-    }
-
-    @Override
-    public boolean risesAtLocation() {
-        return Utils.risesAtLocation(target, location);
-    }
-
-    @Override
-    public boolean circumpolarAtLocation() {
-        return Utils.circumpolarAtLocation(target, location);
-    }
-     */
 }

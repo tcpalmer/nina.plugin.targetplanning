@@ -1,15 +1,8 @@
 ﻿using NINA.Astrometry;
 using NINA.Astrometry.RiseAndSet;
 using NINA.Core.Utility;
-using NINA.Profile;
-using NINA.Profile.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
@@ -28,7 +21,6 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             DeepSkyObject target = PlanParameters.Target;
             ObserverInfo location = PlanParameters.ObserverInfo;
 
-
             List<ImagingDay> result = new List<ImagingDay>();
             List<RiseAndSetEvent> twilightTimes = getTwiLightTimesList(PlanParameters.StartDate, PlanParameters.PlanDays, PlanParameters.ObserverInfo);
 
@@ -39,15 +31,6 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                 // Get the presumptive start and end times for this 'imaging day'
                 DateTime startTime = (DateTime) day1.Set;
                 DateTime endTime = (DateTime) day2.Rise;
-
-
-                target.SetDateAndPosition(startTime, location.Latitude, location.Longitude);
-                //target.SetCustomHorizon();
-                target.Refresh();
-                // TODO: can get: target.Altitudes but looks geared towards nighttime plot
-
-                // TODO: looks like DeepSkyObject has goodies I'll need e.g. UpdateHorizonAndTransit()
-                // But looks like most is to be able to generate the nighttime plot ...
 
                 // TODO: Moon: AstroUtil.GetMoonPositionAngle()
                 // TODO: Moon: AstroUtil.CalculateMoonIllumination()
@@ -121,7 +104,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             imagingDayList.add(getPlan(analyzer, transitTime, moonIllumination, moonSeparation));
                  */
 
-                result.Add(new ImagingDay(startTime, endTime, PlanParameters.ObserverInfo, PlanParameters.Target));
+                result.Add(new ImagingDay(startTime, endTime, PlanParameters.ObserverInfo, PlanParameters.Target.Coordinates));
             }
 
             Logger.Debug("Target Planning Complete");
