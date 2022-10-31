@@ -1,4 +1,5 @@
-﻿using NINA.Astrometry;
+﻿using Accord.Math.Environments;
+using NINA.Astrometry;
 using NINA.Astrometry.RiseAndSet;
 using NINA.Core.Utility;
 using System;
@@ -13,107 +14,96 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             this.PlanParameters = planParameters;
         }
 
-        public IEnumerable<ImagingDay> Generate() {
+        public IEnumerable<ImagingDayPlan> Generate() {
             Logger.Debug($"Starting Target Planning for: {PlanParameters.StartDate}, {PlanParameters.PlanDays} days");
             Logger.Debug($"  Target: {PlanParameters.Target.Name} RA: {PlanParameters.Target.Coordinates.RA} Dec: {PlanParameters.Target.Coordinates.Dec}");
             Logger.Trace($"  Location Lat: {PlanParameters.ObserverInfo.Latitude} Long: {PlanParameters.ObserverInfo.Longitude}, Ele: {PlanParameters.ObserverInfo.Elevation}");
 
+            List<ImagingDayPlan> imagingDayList = new List<ImagingDayPlan>();
+
             DeepSkyObject target = PlanParameters.Target;
             ObserverInfo location = PlanParameters.ObserverInfo;
 
-            List<ImagingDay> result = new List<ImagingDay>();
             List<RiseAndSetEvent> twilightTimes = getTwiLightTimesList(PlanParameters.StartDate, PlanParameters.PlanDays, PlanParameters.ObserverInfo);
 
-            for (int i = 0; i < twilightTimes.Count-1; i++) {
+            for (int i = 0; i < twilightTimes.Count - 1; i++) {
                 RiseAndSetEvent day1 = twilightTimes[i];
-                RiseAndSetEvent day2 = twilightTimes[i+1];
+                RiseAndSetEvent day2 = twilightTimes[i + 1];
 
                 // Get the presumptive start and end times for this 'imaging day'
-                DateTime startTime = (DateTime) day1.Set;
-                DateTime endTime = (DateTime) day2.Rise;
+                DateTime startTime = (DateTime)day1.Set;
+                DateTime endTime = (DateTime)day2.Rise;
 
-                // TODO: Moon: AstroUtil.GetMoonPositionAngle()
-                // TODO: Moon: AstroUtil.CalculateMoonIllumination()
+                TargetImagingCircumstances circumstances = new TargetImagingCircumstances(location,
+                                                                                          target.Coordinates,
+                                                                                          startTime, endTime,
+                                                                                          PlanParameters.MinimumAltitude);
+                int status = circumstances.Analyze();
 
-                /* TODO: ...
-            TargetImagingCircumstances circumstances = new TargetImagingCircumstances(environment.getLocation(),
-                                                                                      environment.getTarget(),
-                                                                                      startTime, endTime,
-                                                                                      environment.getMinimumAltitude());
-            int status = circumstances.analyze();
+                // Check if the target is visible at all
+                if (status != TargetImagingCircumstances.STATUS_POTENTIALLY_VISIBLE) {
+                    ImagingDayPlan plan = new ImagingDayPlan(startTime, endTime, startTime.AddMinutes(1), ImagingLimit.NotVisible,
+                                                             ImagingLimit.NotVisible, 0, 0);
+                    imagingDayList.Add(plan);
+                    continue;
+                }
 
-            // Check if the target is visible at all
-            if (status != TargetImagingCircumstances.STATUS_POTENTIALLY_VISIBLE) {
-                ImagingDayPlan plan = new ImagingDayPlan(null, null, null, ImagingDayPlan.ImagingLimit.NOT_VISIBLE,
-                                                         ImagingDayPlan.ImagingLimit.NOT_VISIBLE, 0, 0);
-                plan.setStartDay(startTime);
-                plan.setEndDay(endTime);
+                DateTime startImagingTime = circumstances.RiseAboveMinimumTime;
+                DateTime endImagingTime = circumstances.SetBelowMinimumTime;
+                ImagingCriteriaAnalyzer analyzer = new ImagingCriteriaAnalyzer(startImagingTime, endImagingTime);
 
-                imagingDayList.add(plan);
-                continue;
-            }
+                // Adjust for twilight
+                analyzer.AdjustForTwilight(startTime, endTime);
 
-            ZonedDateTime startImagingTime = circumstances.getRiseAboveMinimumTime();
-            ZonedDateTime endImagingTime = circumstances.getSetBelowMinimumTime();
-            ImagingCriteriaAnalyzer analyzer = new ImagingCriteriaAnalyzer(startImagingTime, endImagingTime);
+                // Adjust for meridian proximity criteria
+                DateTime transitTime = circumstances.TransitTime;
+                analyzer.AdjustForMeridianProximity(transitTime, PlanParameters.MeridianTimeSpan);
 
-            // Adjust for twilight
-            analyzer.adjustForTwilight(startTime, endTime);
+                // Calculate moon metrics here so available if rejected early
+                DateTime midPointTime = GetMidpointTime(analyzer.StartImagingTime, analyzer.EndImagingTime);
+                double moonIllumination = AstrometryUtils.GetMoonIllumination(midPointTime);
+                double moonSeparation = AstrometryUtils.GetMoonSeparationAngle(location, midPointTime, target.Coordinates);
 
-            // Adjust for meridian proximity criteria
-            ZonedDateTime transitTime = circumstances.getTransitTime();
-            analyzer.adjustForMeridianProximity(transitTime, environment.getMeridianProximityTime());
+                // Stop if already rejected
+                if (analyzer.SessionIsRejected()) {
+                    imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation));
+                    continue;
+                }
 
-            // Calculate moon metrics here so available if rejected early
-            ZonedDateTime midPointTime = getMidpointTime(analyzer.getStartImagingTime(), analyzer.getEndImagingTime());
-            double moonIllumination = Astrometry.getMoonIllumination(midPointTime);
-            double moonSeparation = Math.toDegrees(
-                    Astrometry.getMoonSeparationAngle(environment.getLocation(), midPointTime,
-                                                      environment.getTarget()));
+                // Accept/reject for moon illumination criteria
+                analyzer.AdjustForMoonIllumination(moonIllumination, PlanParameters.MaximumMoonIllumination);
 
-            // Stop if already rejected
-            if (analyzer.sessionIsRejected()) {
-                imagingDayList.add(getPlan(analyzer, transitTime, moonIllumination, moonSeparation));
-                continue;
-            }
+                // Stop if already rejected
+                if (analyzer.SessionIsRejected()) {
+                    imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation));
+                    continue;
+                }
 
-            // Accept/reject for moon illumination criteria
-            analyzer.adjustForMoonIllumination(moonIllumination, environment.getMaximumMoonIllumination());
+                // Accept/reject for moon separation criteria
+                analyzer.AdjustForMoonSeparation(moonSeparation, PlanParameters.MinimumMoonSeparation);
 
-            // Stop if already rejected
-            if (analyzer.sessionIsRejected()) {
-                imagingDayList.add(getPlan(analyzer, transitTime, moonIllumination, moonSeparation));
-                continue;
-            }
+                // Stop if already rejected
+                if (analyzer.SessionIsRejected()) {
+                    imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation));
+                    continue;
+                }
 
-            // Accept/reject for moon separation criteria
-            analyzer.adjustForMoonSeparation(moonSeparation, environment.getMinimumMoonSeparation());
+                // Adjust for local horizon clip
+                // TODO: horizon
 
-            // Stop if already rejected
-            if (analyzer.sessionIsRejected()) {
-                imagingDayList.add(getPlan(analyzer, transitTime, moonIllumination, moonSeparation));
-                continue;
-            }
+                // Finally, accept/reject for minimum imaging time criteria
+                analyzer.AdjustForMinimumImagingTime(PlanParameters.MinimumImagingTime);
 
-            // Adjust for local horizon clip
-            // TODO: horizon
-
-            // Finally, accept/reject for minimum imaging time criteria
-            analyzer.adjustForMinimumImagingTime(environment.getMinimumImagingTime());
-
-            imagingDayList.add(getPlan(analyzer, transitTime, moonIllumination, moonSeparation));
-                 */
-
-                result.Add(new ImagingDay(startTime, endTime, PlanParameters.ObserverInfo, PlanParameters.Target.Coordinates));
+                imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation));
             }
 
             Logger.Debug("Target Planning Complete");
-            return result;
+            return imagingDayList;
         }
 
         private List<RiseAndSetEvent> getTwiLightTimesList(DateTime StartDate, int PlanDays, ObserverInfo location) {
 
-            List<RiseAndSetEvent> list = new List<RiseAndSetEvent>(PlanDays+1);
+            List<RiseAndSetEvent> list = new List<RiseAndSetEvent>(PlanDays + 1);
             DateTime date = StartDate;
 
             for (int i = 0; i <= PlanDays; i++) {
@@ -123,6 +113,18 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             return list;
         }
+
+        private ImagingDayPlan GetPlan(ImagingCriteriaAnalyzer analyzer, DateTime transitTime, double moonIllumination,
+                                       double moonSeparation) {
+            return new ImagingDayPlan(analyzer.StartImagingTime, analyzer.EndImagingTime, transitTime,
+                                      analyzer.StartLimitingFactor, analyzer.EndLimitingFactor, moonIllumination,
+                                      moonSeparation);
+        }
+
+        public static DateTime GetMidpointTime(DateTime startImagingTime, DateTime endImagingTime) {
+            long span = (long)endImagingTime.Subtract(startImagingTime).TotalSeconds;
+            return startImagingTime.AddSeconds(span / 2);
+        }
     }
 
     public class PlanParameters {
@@ -131,7 +133,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         public DateTime StartDate { get; set; }
         public int PlanDays { get; set; }
         public double MinimumAltitude { get; set; }
-        public int MinimumTime { get; set; }
+        public int MinimumImagingTime { get; set; }
         public double MinimumMoonSeparation { get; set; }
         public double MaximumMoonIllumination { get; set; }
         public int MeridianTimeSpan { get; set; }

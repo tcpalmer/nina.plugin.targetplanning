@@ -12,17 +12,17 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
         public readonly static int STATUS_NEVER_ABOVE_MINIMUM_ALTITUDE = 3;
 
-        private ObserverInfo location;
-        private IDeepSkyObject target;
-        private DateTime startTime;
-        private DateTime endTime;
-        private double minimumAltitude;
+        private readonly ObserverInfo location;
+        private readonly Coordinates target;
+        private readonly DateTime startTime;
+        private readonly DateTime endTime;
+        private readonly double minimumAltitude;
 
         public DateTime RiseAboveMinimumTime { get; private set; }
         public DateTime TransitTime { get; private set; }
         public DateTime SetBelowMinimumTime { get; private set; }
 
-        public TargetImagingCircumstances(ObserverInfo location, IDeepSkyObject target, DateTime startTime, DateTime endTime, double minimumAltitude) {
+        public TargetImagingCircumstances(ObserverInfo location, Coordinates target, DateTime startTime, DateTime endTime, double minimumAltitude) {
 
             Validate.Assert.notNull(location, "location cannot be null");
             Validate.Assert.notNull(target, "target cannot be null");
@@ -37,37 +37,26 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             this.minimumAltitude = minimumAltitude;
         }
 
-        public int analyze() {
+        public int Analyze() {
 
             // If the target never rises at this location, stop
-            if (!AstrometryUtils.RisesAtLocation(location, target.Coordinates)) {
+            if (!AstrometryUtils.RisesAtLocation(location, target)) {
                 return STATUS_NEVER_VISIBLE;
             }
 
-            ImagingDay imagingDay = new ImagingDay(startTime, endTime, location, target.Coordinates);
+            ImagingDay imagingDay = new ImagingDay(startTime, endTime, location, target);
 
             // If the target never rises above the minimum altitude in this time span, stop
             if (!imagingDay.IsEverAboveMinimumAltitude(minimumAltitude)) {
                 return STATUS_NEVER_ABOVE_MINIMUM_ALTITUDE;
             }
 
-            /*
-
-
-
-            // TODO: once we add transit-based imaging determination, we'll need to get the actual transit,
-            //   even if not inside the time span.  We can just calculate altitude going in the direction of
-            //   increasing altitude until it decreases.
-            //   This should be a separate method to call only if needed.
-
             // Determine the applicable circumstances
-            riseAboveMinimumTime = imagingDay.getRiseAboveMinimumTime(minimumAltitude);
-            transitTime = imagingDay.getTransitTime();
-            setBelowMinimumTime = imagingDay.getSetBelowMinimumTime(minimumAltitude);
+            RiseAboveMinimumTime = imagingDay.GetRiseAboveMinimumTime(minimumAltitude);
+            TransitTime = imagingDay.GetTransitTime();
+            SetBelowMinimumTime = imagingDay.GetSetBelowMinimumTime(minimumAltitude);
 
             return STATUS_POTENTIALLY_VISIBLE;
-             */
-            return 0;
         }
     }
 

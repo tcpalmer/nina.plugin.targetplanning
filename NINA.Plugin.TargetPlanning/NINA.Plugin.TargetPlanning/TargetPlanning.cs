@@ -24,7 +24,7 @@ namespace TargetPlanning.NINAPlugin {
         private IPluginOptionsAccessor pluginSettings;
         private IProfileService profileService;
 
-        private PagedList<ImagingDay> _searchResult;
+        private PagedList<ImagingDayPlan> _searchResult;
 
         private AsyncObservableCollection<KeyValuePair<double, string>> _minimumAltitudeChoices;
         private AsyncObservableCollection<KeyValuePair<int, string>> _minimumTimeChoices;
@@ -257,7 +257,7 @@ namespace TargetPlanning.NINAPlugin {
             planParams.StartDate = StartDate;
             planParams.PlanDays = PlanDays;
             planParams.MinimumAltitude = MinimumAltitude;
-            planParams.MinimumTime = MinimumTime;
+            planParams.MinimumImagingTime = MinimumTime;
             planParams.MinimumMoonSeparation = MinimumMoonSeparation;
             planParams.MaximumMoonIllumination = MaximumMoonIllumination;
             planParams.MeridianTimeSpan = MeridianTimeSpan;
@@ -265,8 +265,8 @@ namespace TargetPlanning.NINAPlugin {
             return Task.Run(() => {
                 try {
                     SearchResult = null;
-                    IEnumerable <ImagingDay> results = new PlanGenerator(planParams).Generate();
-                    SearchResult = new PagedList<ImagingDay>(60, results);
+                    IEnumerable <ImagingDayPlan> results = new PlanGenerator(planParams).Generate();
+                    SearchResult = new PagedList<ImagingDayPlan>(60, results);
                 }
                 catch (OperationCanceledException) {
                 }
@@ -283,7 +283,7 @@ namespace TargetPlanning.NINAPlugin {
             return oi;
         }
 
-        public PagedList<ImagingDay> SearchResult {
+        public PagedList<ImagingDayPlan> SearchResult {
             get {
                 return _searchResult;
             }

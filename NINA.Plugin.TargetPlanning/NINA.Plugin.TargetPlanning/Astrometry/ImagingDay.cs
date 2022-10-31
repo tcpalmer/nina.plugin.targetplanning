@@ -17,7 +17,7 @@ namespace TargetPlanning.NINAPlugin {
 
         public Altitudes SamplePositions { get; private set; }
 
-        private DSORefiner refiner;
+        private readonly DSORefiner refiner;
 
         public ImagingDay(DateTime startDate, DateTime endDate, ObserverInfo location, Coordinates target) {
 
@@ -30,7 +30,7 @@ namespace TargetPlanning.NINAPlugin {
             this.Location = location;
 
             refiner = new DSORefiner(Location, Target);
-            SamplePositions = getInitialSamplePositions();
+            SamplePositions = GetInitialSamplePositions();
         }
 
         public bool IsEverAboveMinimumAltitude(double minimumAltitude) {
@@ -56,19 +56,19 @@ namespace TargetPlanning.NINAPlugin {
             return riseAboveMinimum != null ? riseAboveMinimum.AtTime : DateTime.MinValue;
         }
 
-        public DateTime getTransitTime() {
+        public DateTime GetTransitTime() {
 
             try {
                 // Objects that never rise at location won't have a proper transit
-                AltitudeAtTime transit = new CircumstanceSolver(refiner, 1).FindTransit(getInitialTransitSpan());
+                AltitudeAtTime transit = new CircumstanceSolver(refiner, 1).FindTransit(GetInitialTransitSpan());
                 return transit != null ? transit.AtTime : DateTime.MinValue;
             }
-            catch (Exception e) {
+            catch (Exception) {
                 return DateTime.MinValue;
             }
         }
 
-        public DateTime getSetBelowMinimumTime(double minimumAltitude) {
+        public DateTime GetSetBelowMinimumTime(double minimumAltitude) {
             Validate.Assert.isTrue(minimumAltitude >= 0, "minimumAltitude must be >= 0");
 
             Altitudes startStep = new SetBelowMinimumFunction(minimumAltitude).determineStep(SamplePositions);
@@ -81,7 +81,7 @@ namespace TargetPlanning.NINAPlugin {
             return setBelowMinimum != null ? setBelowMinimum.AtTime : DateTime.MinValue;
         }
 
-        private Altitudes getInitialSamplePositions() {
+        private Altitudes GetInitialSamplePositions() {
             List<AltitudeAtTime> alts = new List<AltitudeAtTime>(2);
 
             HorizontalCoordinate hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, StartDate);
@@ -95,7 +95,7 @@ namespace TargetPlanning.NINAPlugin {
             return refiner.Refine(new Altitudes(alts), numPoints);
         }
 
-        private Altitudes getInitialTransitSpan() {
+        private Altitudes GetInitialTransitSpan() {
             List<AltitudeAtTime> alts = new List<AltitudeAtTime>(3);
             int size = SamplePositions.AltitudeList.Count;
 

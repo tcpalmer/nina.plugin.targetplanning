@@ -4,11 +4,7 @@ using NINA.Astrometry;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography;
-using System.Security.Policy;
 using TargetPlanning.NINAPlugin.Astrometry;
-using TargetPlanning.NINAPlugin.Test.Astrometry;
 
 namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
 
@@ -18,7 +14,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
         [TestCase(-10, -5, 60, double.MinValue)] // No rising
         [TestCase(1, 10, 60, double.MinValue)] // No rising
         [TestCase(-45, 45, 21600, 0.00307)]
-        public void testFindRising(double altStart, double altEnd, int secs, double expectedAlt) {
+        public void TestFindRising(double altStart, double altEnd, int secs, double expectedAlt) {
             DateTime start = DateTime.Now;
             List<AltitudeAtTime> alts = new List<AltitudeAtTime>();
 
@@ -35,7 +31,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
         }
 
         [Test]
-        public void testFindRiseAboveMinimum() {
+        public void TestFindRiseAboveMinimum() {
 
             CircumstanceSolver cs = new CircumstanceSolver(new TestAltitudeRefiner());
 
@@ -77,12 +73,11 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
         }
 
         [Test]
-        public void testFindTransit() {
+        public void TestFindTransit() {
 
             // Note that you can't test transit with the test refiner since it can't refine a wrapped interval properly
 
-            Coordinates betelgeuse = new Coordinates(AstroUtil.HMSToDegrees("5:55:11"), AstroUtil.DMSToDegrees("7:24:30"), Epoch.J2000, Coordinates.RAType.Degrees);
-            DSORefiner refiner = new DSORefiner(AstrometryUtilsTest.TEST_LOCATION_1, betelgeuse);
+            DSORefiner refiner = new DSORefiner(TestUtil.TEST_LOCATION_1, TestUtil.BETELGEUSE);
             DateTime day = new DateTime(2022, 10, 12).Date;
 
             Altitudes generated = refiner.GetHourlyAltitudesForDay(day);
@@ -99,7 +94,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
         }
 
         [Test]
-        public void testFindSetBelowMinimum() {
+        public void TestFindSetBelowMinimum() {
 
             CircumstanceSolver cs = new CircumstanceSolver(new TestAltitudeRefiner());
 
@@ -141,7 +136,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
         }
 
         [Test]
-        public void testFindSetting() {
+        public void TestFindSetting() {
             DateTime start = DateTime.Now;
             List<AltitudeAtTime> alts = new List<AltitudeAtTime>();
             CircumstanceSolver cs = new CircumstanceSolver(new TestAltitudeRefiner());
@@ -169,7 +164,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
         }
 
         [Test]
-        public void testGetStepInterval() {
+        public void TestGetStepInterval() {
             CircumstanceSolver cs = new CircumstanceSolver(new TestAltitudeRefiner(), 1);
 
             var ex = Assert.Throws<ArgumentException>(() => cs.GetStepInterval(null));
@@ -193,7 +188,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
         }
 
         [Test]
-        public void testBad() {
+        public void TestBad() {
 
             var ex = Assert.Throws<ArgumentException>(() => new CircumstanceSolver(null, 0));
             ex.Message.Should().Be("refiner cannot be null");
