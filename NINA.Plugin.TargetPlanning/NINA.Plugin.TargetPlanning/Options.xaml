@@ -19,7 +19,7 @@
         <ResourceDictionary Source="Resources/Converters.xaml" />
         <ResourceDictionary Source="Resources/SVGDictionary.xaml" />
     </ResourceDictionary.MergedDictionaries>
-    
+
     <DataTemplate x:Key="Target Planning_Options">
         <StackPanel DataContext="{Binding}"
                     Orientation="Vertical">
@@ -232,37 +232,61 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <DataGrid Height="400"
+                <DataGrid Height="300"
                           Margin="0,0,0,0"
                           AutoGenerateColumns="False"
                           HeadersVisibility="Column"
                           HorizontalScrollBarVisibility="Disabled"
                           ItemsSource="{Binding ItemPage, IsAsync=True}"
-                          RowHeight="22"
+                          RowHeight="28"
                           SelectedItem="{Binding SelectedItem}"
                           SelectionMode="Single">
+
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalAlignment"
+                                    Value="Left" />
+                            <Setter Property="BorderBrush"
+                                    Value="{StaticResource BorderBrush}" />
+                            <Setter Property="BorderThickness"
+                                    Value="0" />
+                            <Setter Property="MinHeight"
+                                    Value="25" />
+                            <Setter Property="Margin"
+                                    Value="5,3,5,3" />
+                            <Setter Property="FontWeight"
+                                    Value="Bold" />
+                            <Setter Property="FontSize"
+                                    Value="14" />
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
 
                     <DataGrid.CellStyle>
                         <Style TargetType="DataGridCell">
                             <Setter Property="BorderBrush"
                                     Value="{StaticResource BorderBrush}" />
                             <Setter Property="BorderThickness"
-                                    Value="1" />
+                                    Value="0" />
+                            <Setter Property="MinHeight"
+                                    Value="22" />
+                            <Setter Property="Margin"
+                                    Value="5,3,5,3" />
                         </Style>
                     </DataGrid.CellStyle>
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
                             <Setter Property="MinHeight"
-                                    Value="22" />
+                                    Value="28" />
                             <Setter Property="Background"
                                     Value="Transparent" />
-
+                            <Setter Property="VerticalAlignment"
+                                    Value="Center" />
                         </Style>
                     </DataGrid.RowStyle>
 
                     <DataGrid.Columns>
 
-                        <DataGridTemplateColumn Width="*"
+                        <DataGridTemplateColumn Width="50"
                                                 CanUserSort="False"
                                                 Header="Status">
                             <DataGridTemplateColumn.CellTemplate>
@@ -308,31 +332,8 @@
                                 <DataTemplate>
                                     <TextBlock Width="Auto"
                                                Margin="0,0,0,0"
+                                               Foreground="{Binding ImagingTimeColor}"
                                                Text="{Binding ImagingTime}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn Width="*"
-                                                CanUserSort="False"
-                                                Header="SLF">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Width="Auto"
-                                               Margin="0,0,0,0"
-                                               Text="{Binding StartLimitingFactor}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn Width="*"
-                                                CanUserSort="False"
-                                                Header="ELF">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Width="Auto"
-                                               Margin="0,0,0,0"
-                                               Text="{Binding EndLimitingFactor}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -344,6 +345,7 @@
                                 <DataTemplate>
                                     <TextBlock Width="Auto"
                                                Margin="0,0,0,0"
+                                               Foreground="{Binding MoonIlluminationColor}"
                                                Text="{Binding MoonIllumination}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -356,6 +358,7 @@
                                 <DataTemplate>
                                     <TextBlock Width="Auto"
                                                Margin="0,0,0,0"
+                                               Foreground="{Binding MoonSeparationColor}"
                                                Text="{Binding MoonSeparation}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -406,30 +409,6 @@
                                 Command="{Binding LastPageCommand}"
                                 Content="|&gt;" />
                     </StackPanel>
-                    <!--
-                    <Border
-                        Grid.Column="1"
-                        MinWidth="220"
-                        BorderBrush="{StaticResource BorderBrush}"
-                        BorderThickness="1,0,0,0">
-                        <StackPanel
-                            Margin="5,0,5,0"
-                            HorizontalAlignment="Center"
-                            Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Bottom" Text="{Binding PageStartIndex}" />
-                            <TextBlock
-                                Margin="5,0,5,0"
-                                VerticalAlignment="Center"
-                                Text="{ns:Loc LblTo}" />
-                            <TextBlock VerticalAlignment="Bottom" Text="{Binding PageEndIndex}" />
-                            <TextBlock
-                                Margin="5,0,5,0"
-                                VerticalAlignment="Center"
-                                Text="{ns:Loc LblOf}" />
-                            <TextBlock VerticalAlignment="Bottom" Text="{Binding Count}" />
-                        </StackPanel>
-                    </Border>
-                    -->
                 </Grid>
 
             </Grid>

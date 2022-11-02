@@ -11,7 +11,7 @@ namespace TargetPlanning.NINAPlugin.Converters {
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             bool status = (bool)value;
-            return status ? "DarkSeaGreen" : "IndianRed";
+            return status ? "Green" : "Red"; // DarkSeaGreen / IndianRed
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
