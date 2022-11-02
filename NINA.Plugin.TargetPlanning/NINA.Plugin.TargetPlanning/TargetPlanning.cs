@@ -15,6 +15,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using TargetPlanning.NINAPlugin.Astrometry;
 
 namespace TargetPlanning.NINAPlugin {
 
@@ -23,7 +24,7 @@ namespace TargetPlanning.NINAPlugin {
         private IPluginOptionsAccessor pluginSettings;
         private IProfileService profileService;
 
-        private PagedList<ImagingDay> _searchResult;
+        private PagedList<ImagingDayPlanViewAdapter> _searchResult;
 
         private AsyncObservableCollection<KeyValuePair<double, string>> _minimumAltitudeChoices;
         private AsyncObservableCollection<KeyValuePair<int, string>> _minimumTimeChoices;
@@ -56,18 +57,17 @@ namespace TargetPlanning.NINAPlugin {
 
         private void InitializeCriteria() {
 
-            MinimumTimeChoices = new AsyncObservableCollection<KeyValuePair<int, string>>();
-            MinimumTimeChoices.Add(new KeyValuePair<int, string>(0, Loc.Instance["LblAny"]));
-            for (int i = 30; i <= 240; i += 30) {
-                MinimumTimeChoices.Add(new KeyValuePair<int, string>(i, MtoHM(i)));
-            }
-
             MinimumAltitudeChoices = new AsyncObservableCollection<KeyValuePair<double, string>>();
-            MinimumAltitudeChoices.Add(new KeyValuePair<double, string>(0, Loc.Instance["LblAny"]));
-            for (int i = 10; i < 90; i += 10) {
+            for (int i = 0; i <= 60; i += 5) {
                 MinimumAltitudeChoices.Add(new KeyValuePair<double, string>(i, i + "°"));
             }
             // Sky Atlas adds 'Horizon' to altitude choices to trigger use of custom horizon
+
+            MinimumTimeChoices = new AsyncObservableCollection<KeyValuePair<int, string>>();
+            MinimumTimeChoices.Add(new KeyValuePair<int, string>(0, Loc.Instance["LblAny"]));
+            for (int i = 30; i <= 240; i += 30) {
+                MinimumTimeChoices.Add(new KeyValuePair<int, string>(i, Utils.MtoHM(i)));
+            }
 
             MoonSeparationChoices = new AsyncObservableCollection<KeyValuePair<double, string>>();
             MoonSeparationChoices.Add(new KeyValuePair<double, string>(0, Loc.Instance["LblAny"]));
@@ -84,25 +84,11 @@ namespace TargetPlanning.NINAPlugin {
             MeridianTimeSpanChoices = new AsyncObservableCollection<KeyValuePair<int, string>>();
             MeridianTimeSpanChoices.Add(new KeyValuePair<int, string>(0, Loc.Instance["LblAny"]));
             for (int i = 30; i <= 240; i += 30) {
-                MeridianTimeSpanChoices.Add(new KeyValuePair<int, string>(i, MtoHM(i)));
+                MeridianTimeSpanChoices.Add(new KeyValuePair<int, string>(i, Utils.MtoHM(i)));
             }
         }
 
-        private string MtoHM(int minutes) {
-            decimal hours = Math.Floor((decimal) minutes / 60);
-            int min = minutes % 60;
-            return $"{hours}h {min}m";
-        }
-
         public override Task Teardown() {
-            Logger.Debug($"StartDate:      {StartDate}");
-            Logger.Debug($"PlanDays:       {PlanDays}");
-            Logger.Debug($"MinTime:        {MinimumTime}");
-            Logger.Debug($"MinAlt:         {MinimumAltitude}");
-            Logger.Debug($"Min Moon Sep:   {MinimumMoonSeparation}");
-            Logger.Debug($"Max Moon Illum: {MaximumMoonIllumination}");
-            Logger.Debug($"Mer Span:       {MeridianTimeSpan}");
-
             return base.Teardown();
         }
 
@@ -257,31 +243,66 @@ namespace TargetPlanning.NINAPlugin {
         private Task<bool> Search() {
             _searchTokenSource?.Dispose();
             _searchTokenSource = new CancellationTokenSource();
-            Logger.Debug($"STARTING SEARCH: {StartDate}");
-            Logger.Debug($"TARGET: {DSO.Name} RA: {DSO.Coordinates.RA} Dec: {DSO.Coordinates.Dec}");
-            return Task.Run(async () => {
+
+            PlanParameters planParams = new PlanParameters();
+            planParams.Target = DSO;
+            planParams.ObserverInfo = getObserverInfo(profileService.ActiveProfile.AstrometrySettings);
+            planParams.StartDate = StartDate;
+            planParams.PlanDays = PlanDays;
+            planParams.MinimumAltitude = MinimumAltitude;
+            planParams.MinimumImagingTime = MinimumTime;
+            planParams.MinimumMoonSeparation = MinimumMoonSeparation;
+            planParams.MaximumMoonIllumination = MaximumMoonIllumination;
+            planParams.MeridianTimeSpan = MeridianTimeSpan;
+
+            Logger.Debug($"Starting Target Planning for: {planParams.StartDate}, {planParams.PlanDays} days");
+            Logger.Debug($"         Target: {planParams.Target.Name} RA: {planParams.Target.Coordinates.RA} Dec: {planParams.Target.Coordinates.Dec}");
+            Logger.Trace($"   Location Lat: {planParams.ObserverInfo.Latitude} Long: {planParams.ObserverInfo.Longitude}, Ele: {planParams.ObserverInfo.Elevation}\n");
+            Logger.Trace($"        Min alt: {planParams.MinimumAltitude}");
+            Logger.Trace($"       Min time: {planParams.MinimumImagingTime}");
+            Logger.Trace($" Max moon illum: {planParams.MaximumMoonIllumination}");
+            Logger.Trace($"   Min moon sep: {planParams.MinimumMoonSeparation}");
+            Logger.Trace($"  Meridian span: {planParams.MeridianTimeSpan}\n");
+
+            return Task.Run(() => {
                 try {
                     SearchResult = null;
-
-                    int days = PlanDays;
-                    List<ImagingDay> items = new List<ImagingDay>(days);
-                    DateTime start = StartDate;
-                    for (int i = 0; i < days; i++) {
-                        items.Add(new ImagingDay(start.AddDays(i), start.AddDays(i + 1)));
-                    }
-
-                    SearchResult = new PagedList<ImagingDay>(60, items);
+                    IEnumerable <ImagingDayPlanViewAdapter> results = new PlanGenerator(planParams).Generate();
+                    LogResults(results);
+                    SearchResult = new PagedList<ImagingDayPlanViewAdapter>(60, results);
                 }
                 catch (OperationCanceledException) {
                 }
 
-                Logger.Debug("SEARCH DONE");
-                //await testLoadDSO();
                 return true;
             });
         }
 
-        public PagedList<ImagingDay> SearchResult {
+        private void LogResults(IEnumerable<ImagingDayPlanViewAdapter> results) {
+            Logger.Trace("Search results:");
+            foreach (ImagingDayPlanViewAdapter plan in results) {
+                Logger.Trace($"      status: {plan.StatusMessage}");
+                Logger.Trace($"  start time: {plan.StartImagingTime}");
+                Logger.Trace($"    end time: {plan.EndImagingTime}");
+                Logger.Trace($"        time: {plan.ImagingTime}");
+
+                Logger.Trace($" start limit: {plan.StartLimitingFactor}");
+                Logger.Trace($"   end limit: {plan.EndLimitingFactor}");
+
+                Logger.Trace($"  moon illum: {plan.MoonIllumination}");
+                Logger.Trace($"    moon sep: {plan.MoonSeparation}\n");
+            }
+        }
+
+        private ObserverInfo getObserverInfo(IAstrometrySettings astrometrySettings) {
+            ObserverInfo oi = new ObserverInfo();
+            oi.Latitude = astrometrySettings.Latitude;
+            oi.Longitude = astrometrySettings.Longitude;
+            oi.Elevation = astrometrySettings.Elevation;
+            return oi;
+        }
+
+        public PagedList<ImagingDayPlanViewAdapter> SearchResult {
             get {
                 return _searchResult;
             }
@@ -291,11 +312,6 @@ namespace TargetPlanning.NINAPlugin {
                 RaisePropertyChanged();
             }
         }
-
-        // TODO: how to get profile lat/long:
-        // var longitude = profileService.ActiveProfile.AstrometrySettings.Longitude;
-        // latitude = profileService.ActiveProfile.AstrometrySettings.Latitude;
-        // altitude too?
 
         public event PropertyChangedEventHandler PropertyChanged;
 

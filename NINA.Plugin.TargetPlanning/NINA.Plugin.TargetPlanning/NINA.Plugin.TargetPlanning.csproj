@@ -235,6 +235,7 @@
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
@@ -261,10 +262,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImagingDay.cs" />
+    <Compile Include="Astrometry\Altitudes.cs" />
+    <Compile Include="Astrometry\AstrometryUtils.cs" />
+    <Compile Include="Astrometry\CircumstanceSolver.cs" />
+    <Compile Include="Astrometry\DSORefiner.cs" />
+    <Compile Include="Astrometry\HorizontalCoordinate.cs" />
+    <Compile Include="Astrometry\IAltitudeRefiner.cs" />
+    <Compile Include="Astrometry\ImagingCriteriaAnalyzer.cs" />
+    <Compile Include="Astrometry\ImagingDayPlan.cs" />
+    <Compile Include="Astrometry\PlanGenerator.cs" />
+    <Compile Include="Astrometry\ImagingDay.cs" />
+    <Compile Include="Astrometry\Solver.cs" />
+    <Compile Include="Astrometry\TargetImagingCircumstances.cs" />
+    <Compile Include="Converters\ImagingStatusConverter.cs" />
+    <Compile Include="Converters\ImagingStatusMarkColorConverter.cs" />
+    <Compile Include="ImagingDayPlanViewAdapter.cs" />
     <Compile Include="TargetPlanning.cs" />
     <Compile Include="Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\SVGDictionary.xaml.cs">
+      <DependentUpon>SVGDictionary.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -272,6 +290,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Utils.cs" />
+    <Compile Include="Validate\Validate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -285,6 +305,14 @@
     <Page Include="Options.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\SVGDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
