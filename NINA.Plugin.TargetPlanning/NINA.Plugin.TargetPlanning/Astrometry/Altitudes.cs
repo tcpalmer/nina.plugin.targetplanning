@@ -33,7 +33,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             for (int i = 0; i < AltitudeList.Count; i++) {
                 AltitudeAtTime altitude = AltitudeList[i];
                 sb.Append(String.Format("{0,2:F0} {1,9:F2} ", i, altitude.Altitude));
-                sb.Append(altitude.AtTime.ToString("MM:dd:yyyy HH:mm:ss"));
+                sb.Append(altitude.AtTime.ToString("MM/dd/yyyy HH:mm:ss"));
                 sb.Append("\n");
             }
 

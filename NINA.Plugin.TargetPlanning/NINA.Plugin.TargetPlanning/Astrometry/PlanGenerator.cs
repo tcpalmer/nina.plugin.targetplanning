@@ -14,12 +14,8 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             this.PlanParameters = planParameters;
         }
 
-        public IEnumerable<ImagingDayPlan> Generate() {
-            Logger.Debug($"Starting Target Planning for: {PlanParameters.StartDate}, {PlanParameters.PlanDays} days");
-            Logger.Debug($"  Target: {PlanParameters.Target.Name} RA: {PlanParameters.Target.Coordinates.RA} Dec: {PlanParameters.Target.Coordinates.Dec}");
-            Logger.Trace($"  Location Lat: {PlanParameters.ObserverInfo.Latitude} Long: {PlanParameters.ObserverInfo.Longitude}, Ele: {PlanParameters.ObserverInfo.Elevation}");
-
-            List<ImagingDayPlan> imagingDayList = new List<ImagingDayPlan>();
+        public IEnumerable<ImagingDayPlanViewAdapter> Generate() {
+            List<ImagingDayPlanViewAdapter> imagingDayList = new List<ImagingDayPlanViewAdapter>();
 
             DeepSkyObject target = PlanParameters.Target;
             ObserverInfo location = PlanParameters.ObserverInfo;
@@ -42,9 +38,8 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
                 // Check if the target is visible at all
                 if (status != TargetImagingCircumstances.STATUS_POTENTIALLY_VISIBLE) {
-                    ImagingDayPlan plan = new ImagingDayPlan(startTime, endTime, startTime.AddMinutes(1), ImagingLimit.NotVisible,
-                                                             ImagingLimit.NotVisible, 0, 0);
-                    imagingDayList.Add(plan);
+                    ImagingDayPlan p = new ImagingDayPlan(startTime, endTime, startTime.AddMinutes(1), ImagingLimit.NotVisible, ImagingLimit.NotVisible, 0, 0);
+                    imagingDayList.Add(new ImagingDayPlanViewAdapter(p));
                     continue;
                 }
 
@@ -57,7 +52,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
                 // Adjust for meridian proximity criteria
                 DateTime transitTime = circumstances.TransitTime;
-                analyzer.AdjustForMeridianProximity(transitTime, PlanParameters.MeridianTimeSpan);
+                // TODO: need to handle transitTime = DateTime.MinValue
+                if (PlanParameters.MeridianTimeSpan != 0) {
+                    analyzer.AdjustForMeridianProximity(transitTime, PlanParameters.MeridianTimeSpan);
+                }
 
                 // Calculate moon metrics here so available if rejected early
                 DateTime midPointTime = GetMidpointTime(analyzer.StartImagingTime, analyzer.EndImagingTime);
@@ -66,38 +64,44 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
                 // Stop if already rejected
                 if (analyzer.SessionIsRejected()) {
-                    imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation));
+                    imagingDayList.Add(new ImagingDayPlanViewAdapter(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation)));
                     continue;
                 }
 
                 // Accept/reject for moon illumination criteria
-                analyzer.AdjustForMoonIllumination(moonIllumination, PlanParameters.MaximumMoonIllumination);
+                if (PlanParameters.MaximumMoonIllumination != 0) {
+                    analyzer.AdjustForMoonIllumination(moonIllumination, PlanParameters.MaximumMoonIllumination);
 
-                // Stop if already rejected
-                if (analyzer.SessionIsRejected()) {
-                    imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation));
-                    continue;
+                    // Stop if already rejected
+                    if (analyzer.SessionIsRejected()) {
+                        imagingDayList.Add(new ImagingDayPlanViewAdapter(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation)));
+                        continue;
+                    }
                 }
 
                 // Accept/reject for moon separation criteria
-                analyzer.AdjustForMoonSeparation(moonSeparation, PlanParameters.MinimumMoonSeparation);
+                if (PlanParameters.MinimumMoonSeparation != 0) {
+                    analyzer.AdjustForMoonSeparation(moonSeparation, PlanParameters.MinimumMoonSeparation);
 
-                // Stop if already rejected
-                if (analyzer.SessionIsRejected()) {
-                    imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation));
-                    continue;
+                    // Stop if already rejected
+                    if (analyzer.SessionIsRejected()) {
+                        imagingDayList.Add(new ImagingDayPlanViewAdapter(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation)));
+                        continue;
+                    }
                 }
 
                 // Adjust for local horizon clip
                 // TODO: horizon
 
                 // Finally, accept/reject for minimum imaging time criteria
-                analyzer.AdjustForMinimumImagingTime(PlanParameters.MinimumImagingTime);
+                if (PlanParameters.MinimumImagingTime != 0) {
+                    analyzer.AdjustForMinimumImagingTime(PlanParameters.MinimumImagingTime);
+                }
 
-                imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation));
+                ImagingDayPlan plan = GetPlan(analyzer, transitTime, moonIllumination, moonSeparation);
+                imagingDayList.Add(new ImagingDayPlanViewAdapter(plan));
             }
 
-            Logger.Debug("Target Planning Complete");
             return imagingDayList;
         }
 

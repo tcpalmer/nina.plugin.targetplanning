@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.ConstrainedExecution;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
@@ -92,14 +93,14 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         public bool Session { get; private set; }
         public string Name { get; private set; }
 
-        public static ImagingLimit NotVisible { get { return new ImagingLimit(true, "no (not visible)"); } }
-        public static ImagingLimit MinimumTime { get { return new ImagingLimit(true, "no (not enough time)"); } }
-        public static ImagingLimit MoonIllumination { get { return new ImagingLimit(true, "no (moon illumination)"); } }
-        public static ImagingLimit MoonSeparation { get { return new ImagingLimit(true, "no (moon separation)"); } }
-        public static ImagingLimit Meridian { get { return new ImagingLimit(true, "no (meridian time span)"); } }
-        public static ImagingLimit MinimumAltitude { get { return new ImagingLimit(false, "minimum altitude"); } }
-        public static ImagingLimit MeridianClip { get { return new ImagingLimit(false, "meridian proximity"); } }
-        public static ImagingLimit Twilight { get { return new ImagingLimit(false, "dusk twilight"); } }
+        public static ImagingLimit NotVisible { get { return new ImagingLimit(true, "not visible"); } }
+        public static ImagingLimit MinimumTime { get { return new ImagingLimit(true, "not enough time"); } }
+        public static ImagingLimit MoonIllumination { get { return new ImagingLimit(true, "moon illum"); } }
+        public static ImagingLimit MoonSeparation { get { return new ImagingLimit(true, "moon sep"); } }
+        public static ImagingLimit Meridian { get { return new ImagingLimit(true, "meridian time span"); } }
+        public static ImagingLimit MinimumAltitude { get { return new ImagingLimit(false, "min altitude"); } }
+        public static ImagingLimit MeridianClip { get { return new ImagingLimit(false, "meridian"); } }
+        public static ImagingLimit Twilight { get { return new ImagingLimit(false, "twilight"); } }
         public static ImagingLimit LocalHorizon { get { return new ImagingLimit(false, "custom horizon"); } }
 
         public bool Equals(ImagingLimit other) {
