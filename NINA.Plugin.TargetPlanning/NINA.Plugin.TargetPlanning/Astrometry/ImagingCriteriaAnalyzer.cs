@@ -124,7 +124,6 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
 
             long span = (long)EndImagingTime.Subtract(StartImagingTime).TotalSeconds;
-            //long span = ChronoUnit.SECONDS.between(startImagingTime, endImagingTime);
             if (span < (minimumImagingTime * 60)) {
                 StartLimitingFactor = ImagingLimit.MinimumTime;
                 EndLimitingFactor = ImagingLimit.MinimumTime;
