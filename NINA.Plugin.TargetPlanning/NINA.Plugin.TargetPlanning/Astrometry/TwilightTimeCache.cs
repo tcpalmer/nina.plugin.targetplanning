@@ -1,6 +1,7 @@
 ﻿using NINA.Astrometry;
 using NINA.Astrometry.RiseAndSet;
 using System;
+using System.Globalization;
 using System.Runtime.Caching;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
@@ -18,7 +19,8 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                 //Logger.Trace($"twilight time cache miss: {key}");
                 riseAndSetEvent = AstroUtil.GetNauticalNightTimes(dateTime, latitude, longitude);
                 _cache.Add(key, riseAndSetEvent, DateTime.Now.Add(ITEM_TIMEOUT));
-            } else {
+            }
+            else {
                 //Logger.Trace($"twilight time cache hit: {key}");
             }
 
@@ -26,7 +28,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         }
 
         private static string GetCacheKey(DateTime dateTime, double latitude, double longitude) {
-            return $"{dateTime.Ticks}-{latitude}-{longitude}";
+            return $"{dateTime:yyyy-MM-dd-HH-mm-ss}_{latitude.ToString("0.000000", CultureInfo.InvariantCulture)}_{longitude.ToString("0.000000", CultureInfo.InvariantCulture)}";
         }
     }
 

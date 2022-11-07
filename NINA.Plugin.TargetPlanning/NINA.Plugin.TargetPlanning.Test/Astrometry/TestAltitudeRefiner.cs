@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using TargetPlanning.NINAPlugin.Astrometry;
 using TargetPlanning.NINAPlugin.Validate;
 
@@ -44,7 +43,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             for (int i = 0; i < numPoints; i++) {
                 altitude += altIncrement;
                 atTime = atTime.AddMilliseconds(timeIncrement);
-                newAltitudes.Add(new AltitudeAtTime(altitude, atTime));
+                newAltitudes.Add(new AltitudeAtTime(altitude, 180, atTime));
             }
 
             newAltitudes.Add(end);
@@ -63,7 +62,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             DateTime dateTime = date.Date;
 
             for (int i = 0; i < 24; i++) {
-                alts.Add(new AltitudeAtTime(altitude, dateTime));
+                alts.Add(new AltitudeAtTime(altitude, 180, dateTime));
                 altitude += getAltitudeDelta(i);
                 dateTime = dateTime.AddHours(1);
             }

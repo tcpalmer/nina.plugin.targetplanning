@@ -16,7 +16,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             this.AltitudeList = altitudes;
             this.StartTime = altitudes[0].AtTime;
-            this.EndTime = altitudes[altitudes.Count-1].AtTime;
+            this.EndTime = altitudes[altitudes.Count - 1].AtTime;
 
             Validate.Assert.isTrue(StartTime < EndTime, "startTime must be before endTime");
 
@@ -32,31 +32,33 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             for (int i = 0; i < AltitudeList.Count; i++) {
                 AltitudeAtTime altitude = AltitudeList[i];
-                sb.Append(String.Format("{0,2:F0} {1,9:F2} ", i, altitude.Altitude));
+                sb.Append(String.Format("{0,2:F0} {1,9:F2} {2,9:F2} ", i, altitude.Altitude, altitude.Azimuth));
                 sb.Append(altitude.AtTime.ToString("MM/dd/yyyy HH:mm:ss"));
                 sb.Append("\n");
             }
 
             return sb.ToString();
         }
-
     }
 
     public class AltitudeAtTime {
 
         public double Altitude { get; private set; }
+        public double Azimuth { get; private set; }
         public DateTime AtTime { get; private set; }
 
-        public AltitudeAtTime(double altitude, DateTime atTime) {
+        public AltitudeAtTime(double altitude, double azimuth, DateTime atTime) {
             Validate.Assert.isTrue(altitude <= 90 && altitude >= -90, "altitude must be <= 90 and >= -90");
+            Validate.Assert.isTrue(azimuth >= 0 && azimuth <= 360, "azimuth must be >= 0 and <= 360");
 
             this.Altitude = altitude;
+            this.Azimuth = azimuth;
             this.AtTime = atTime;
         }
 
         public override string ToString() {
-            return "AltitudeAtTime{" + "altitude=" + Altitude + ", atTime=" + AtTime + '}';
+            return "AltitudeAtTime{" + "altitude=" + Altitude + ", azimuth=" + Azimuth + ", atTime=" + AtTime + '}';
         }
     }
 
- }
+}

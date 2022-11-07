@@ -1,4 +1,4 @@
-﻿
+﻿using NINA.Profile.Interfaces;
 using System;
 using TargetPlanning.NINAPlugin.Astrometry;
 
@@ -29,13 +29,15 @@ namespace TargetPlanning.NINAPlugin {
 
         private ImagingDayPlan plan;
         private PlanParameters planParameters;
+        private IProfileService profile;
 
-        public ImagingDayPlanViewAdapter(ImagingDayPlan plan, PlanParameters planParameters) {
+        public ImagingDayPlanViewAdapter(ImagingDayPlan plan, PlanParameters planParameters, IProfileService profile) {
             Validate.Assert.notNull(plan, "plan cannot be null");
             Validate.Assert.notNull(planParameters, "planParameters cannot be null");
 
             this.plan = plan;
             this.planParameters = planParameters;
+            this.profile = profile;
         }
 
         private bool GetStatus() {

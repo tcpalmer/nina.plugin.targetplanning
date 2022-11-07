@@ -1,15 +1,9 @@
 ﻿using FluentAssertions;
-using Moq;
 using NINA.Astrometry;
-using NINA.Astrometry.Interfaces;
 using NINA.Plugin.TargetPlanning.Test.Astrometry;
 using NUnit.Framework;
 using System;
-using System.Security.Cryptography;
-using System.Security.Policy;
 using TargetPlanning.NINAPlugin.Astrometry;
-using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
-using static NINA.Image.FileFormat.XISF.XISFImageProperty.Observation;
 
 namespace TargetPlanning.NINAPlugin.Test.Astrometry {
 
@@ -40,7 +34,7 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
         }
 
         [Test]
-        [TestCase(9, 0, 7, 37.118)]
+        [TestCase(9, 0, 7, 37.1192)]
         [TestCase(12, 0, 4, 20.155)]
         [TestCase(16, 0, 7, 55.375)]
         public void TestGetMoonSeparationAngle(int day, int hour, int min, double expected) {

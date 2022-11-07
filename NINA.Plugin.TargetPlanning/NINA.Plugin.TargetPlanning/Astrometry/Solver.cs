@@ -81,7 +81,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                 AltitudeAtTime aatLast = list[list.Count - 1];
 
                 DateTime time = aatFirst.AtTime.AddMilliseconds(-1 * Solver.GetDeltaTimeMS(altitudes));
-                step.Add(new AltitudeAtTime(aatLast.Altitude, time));
+                step.Add(new AltitudeAtTime(aatLast.Altitude, aatLast.Azimuth, time));
                 step.Add(aatFirst);
                 return new Altitudes(step);
             }
@@ -93,10 +93,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
     public class RiseAboveMinimumFunction : StepFunction {
 
-        private readonly double minimumAltitude;
+        private readonly HorizonDefinition horizonDefinition;
 
-        public RiseAboveMinimumFunction(double minimumAltitude) {
-            this.minimumAltitude = minimumAltitude;
+        public RiseAboveMinimumFunction(HorizonDefinition horizonDefinition) {
+            this.horizonDefinition = horizonDefinition;
         }
 
         public Altitudes determineStep(Altitudes altitudes) {
@@ -106,12 +106,15 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             List<AltitudeAtTime> list = altitudes.AltitudeList;
 
             // If the first sample is above, there can't be a minimum crossing
-            if (list[0].Altitude > minimumAltitude) {
+            double targetAltitude = horizonDefinition.GetTargetAltitude(list[0]);
+            if (list[0].Altitude > targetAltitude) {
                 return null;
             }
 
             for (int i = 1; i < list.Count; i++) {
-                if (list[i].Altitude > minimumAltitude) {
+                targetAltitude = horizonDefinition.GetTargetAltitude(list[i]);
+
+                if (list[i].Altitude > targetAltitude) {
                     List<AltitudeAtTime> step = new List<AltitudeAtTime>(2);
                     step.Add(list[i - 1]);
                     step.Add(list[i]);
@@ -161,7 +164,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                 AltitudeAtTime first = list[altitudes.AltitudeList.Count - 1];
                 long diff = (long)list[1].AtTime.Subtract(list[0].AtTime).TotalMilliseconds;
                 DateTime revisedTime = list[0].AtTime.AddMilliseconds(-1 * diff);
-                AltitudeAtTime adjusted = new AltitudeAtTime(first.Altitude, revisedTime);
+                AltitudeAtTime adjusted = new AltitudeAtTime(first.Altitude, first.Azimuth, revisedTime);
 
                 step.Add(adjusted);
                 step.Add(list[1]);
@@ -176,7 +179,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                 AltitudeAtTime first = list[0];
                 long diff = (long)list[1].AtTime.Subtract(list[0].AtTime).TotalMilliseconds;
                 DateTime revisedTime = list[maxIndex].AtTime.AddMilliseconds(diff);
-                AltitudeAtTime adjusted = new AltitudeAtTime(first.Altitude, revisedTime);
+                AltitudeAtTime adjusted = new AltitudeAtTime(first.Altitude, first.Azimuth, revisedTime);
 
                 step.Add(list[altitudes.AltitudeList.Count - 2]);
                 step.Add(adjusted);
@@ -193,10 +196,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
     class SetBelowMinimumFunction : StepFunction {
 
-        private readonly double minimumAltitude;
+        private readonly HorizonDefinition horizonDefinition;
 
-        public SetBelowMinimumFunction(double minimumAltitude) {
-            this.minimumAltitude = minimumAltitude;
+        public SetBelowMinimumFunction(HorizonDefinition horizonDefinition) {
+            this.horizonDefinition = horizonDefinition;
         }
 
         public Altitudes determineStep(Altitudes altitudes) {
@@ -206,13 +209,16 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             List<AltitudeAtTime> list = altitudes.AltitudeList;
 
             // If the last sample is above, there can't be a minimum crossing
-            if (list[altitudes.AltitudeList.Count - 1].Altitude > minimumAltitude) {
+            double targetAltitude = horizonDefinition.GetTargetAltitude(list[altitudes.AltitudeList.Count - 1]);
+            if (list[altitudes.AltitudeList.Count - 1].Altitude > targetAltitude) {
                 return null;
             }
 
             // Walk the list backwards looking for the minimum crossing
             for (int i = altitudes.AltitudeList.Count - 1; i > 0; i--) {
-                if (list[i - 1].Altitude > minimumAltitude) {
+                targetAltitude = horizonDefinition.GetTargetAltitude(list[i - 1]);
+
+                if (list[i - 1].Altitude > targetAltitude) {
                     List<AltitudeAtTime> step = new List<AltitudeAtTime>(2);
                     step.Add(list[i - 1]);
                     step.Add(list[i]);
@@ -268,7 +274,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                 AltitudeAtTime aatLast = list[list.Count - 1];
                 DateTime time = aatFirst.AtTime.AddMilliseconds(-1 * Solver.GetDeltaTimeMS(altitudes));
 
-                step.Add(new AltitudeAtTime(aatLast.Altitude, time));
+                step.Add(new AltitudeAtTime(aatLast.Altitude, aatLast.Azimuth, time));
                 step.Add(aatFirst);
                 return new Altitudes(step);
             }

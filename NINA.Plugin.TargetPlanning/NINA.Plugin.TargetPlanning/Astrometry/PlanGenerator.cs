@@ -1,11 +1,10 @@
-﻿using Accord.Math.Environments;
-using NINA.Astrometry;
+﻿using NINA.Astrometry;
 using NINA.Astrometry.RiseAndSet;
+using NINA.Core.Model;
 using NINA.Core.Utility;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
@@ -42,7 +41,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                     TargetImagingCircumstances circumstances = new TargetImagingCircumstances(location,
                                                                                               target.Coordinates,
                                                                                               startTime, endTime,
-                                                                                              PlanParameters.MinimumAltitude);
+                                                                                              PlanParameters.HorizonDefinition);
                     int status = circumstances.Analyze();
 
                     ImagingCriteriaAnalyzer analyzer;
@@ -113,9 +112,6 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                         }
                     }
 
-                    // Adjust for local horizon clip
-                    // TODO: horizon
-
                     // Finally, accept/reject for minimum imaging time criteria
                     if (PlanParameters.MinimumImagingTime != 0) {
                         analyzer.AdjustForMinimumImagingTime(PlanParameters.MinimumImagingTime);
@@ -164,11 +160,11 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
     }
 
     public class PlanParameters {
-        public DeepSkyObject Target { get; set; }
+        public DeepSkyObject Target;
         public ObserverInfo ObserverInfo { get; set; }
         public DateTime StartDate { get; set; }
         public int PlanDays { get; set; }
-        public double MinimumAltitude { get; set; }
+        public HorizonDefinition HorizonDefinition { get; set; }
         public int MinimumImagingTime { get; set; }
         public double MinimumMoonSeparation { get; set; }
         public double MaximumMoonIllumination { get; set; }
