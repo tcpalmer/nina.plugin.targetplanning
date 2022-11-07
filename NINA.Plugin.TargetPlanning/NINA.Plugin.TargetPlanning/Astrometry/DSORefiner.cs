@@ -49,7 +49,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             for (int i = 0; i < numPoints; i++) {
                 atTime = atTime.AddMilliseconds(timeIncrement);
                 HorizontalCoordinate hc = AstrometryUtils.GetHorizontalCoordinates(location, target, atTime);
-                newAltitudes.Add(new AltitudeAtTime(hc.Altitude, atTime));
+                newAltitudes.Add(new AltitudeAtTime(hc.Altitude, hc.Azimuth, atTime));
             }
 
             newAltitudes.Add(end);
@@ -67,7 +67,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             for (int i = 0; i < 24; i++) {
                 HorizontalCoordinate hc = AstrometryUtils.GetHorizontalCoordinates(location, target, dateTime);
-                alts.Add(new AltitudeAtTime(hc.Altitude, dateTime));
+                alts.Add(new AltitudeAtTime(hc.Altitude, hc.Azimuth, dateTime));
                 dateTime = dateTime.AddHours(1);
             }
 

@@ -1,15 +1,16 @@
-﻿<ResourceDictionary x:Class="TargetPlanning.NINAPlugin.Options"
-                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:alt="clr-namespace:NINA.WPF.Base.View;assembly=NINA.WPF.Base"
-                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                    xmlns:enum="clr-namespace:NINA.Core.Enum;assembly=NINA.Core"
-                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                    xmlns:ninactrl="clr-namespace:NINACustomControlLibrary;assembly=NINACustomControlLibrary"
-                    xmlns:ns="clr-namespace:NINA.Core.Locale;assembly=NINA.Core"
-                    xmlns:rules="clr-namespace:NINA.Core.Utility.ValidationRules;assembly=NINA.Core"
-                    xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core">
+﻿<ResourceDictionary
+    x:Class="TargetPlanning.NINAPlugin.Options"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:alt="clr-namespace:NINA.WPF.Base.View;assembly=NINA.WPF.Base"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:enum="clr-namespace:NINA.Core.Enum;assembly=NINA.Core"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ninactrl="clr-namespace:NINACustomControlLibrary;assembly=NINACustomControlLibrary"
+    xmlns:ns="clr-namespace:NINA.Core.Locale;assembly=NINA.Core"
+    xmlns:rules="clr-namespace:NINA.Core.Utility.ValidationRules;assembly=NINA.Core"
+    xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core">
 
     <!--  This data template will be displayed in N.I.N.A. on the options->plugin tab with the datacontext of the TestPlugin instance  -->
     <!--  In order for this datatemplate to be picked correctly, the key has to follow the naming convention of <IPlugin.Name>_Options -->
@@ -21,46 +22,45 @@
     </ResourceDictionary.MergedDictionaries>
 
     <DataTemplate x:Key="Target Planning_Options">
-        <StackPanel DataContext="{Binding}"
-                    Orientation="Vertical">
+        <StackPanel DataContext="{Binding}" Orientation="Vertical">
 
-            <UniformGrid Width="320"
-                         Margin="0,6,0,6"
-                         HorizontalAlignment="Left"
-                         VerticalAlignment="Center"
-                         Columns="2">
-                <TextBlock VerticalAlignment="Center"
-                           Text="Target" />
-                <ninactrl:AutoCompleteBox Margin="5,0,0,0"
-                                          VerticalAlignment="Center"
-                                          VerticalContentAlignment="Center"
-                                          Foreground="{StaticResource PrimaryBrush}"
-                                          HintText="{ns:Loc LblObjectNameHint}"
-                                          PopupBackground="{StaticResource TertiaryBackgroundBrush}"
-                                          SearchResult="{Binding DeepSkyObjectSearchVM.TargetSearchResult.Result}"
-                                          SelectedSearchResult="{Binding DeepSkyObjectSearchVM.SelectedTargetSearchResult, Mode=TwoWay}"
-                                          ShowPopup="{Binding DeepSkyObjectSearchVM.ShowPopup, Mode=TwoWay}"
-                                          Text="{Binding DeepSkyObjectSearchVM.TargetName, UpdateSourceTrigger=PropertyChanged}">
+            <UniformGrid
+                Width="320"
+                Margin="0,6,0,6"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Columns="2">
+                <TextBlock VerticalAlignment="Center" Text="Target" />
+                <ninactrl:AutoCompleteBox
+                    Margin="5,0,0,0"
+                    VerticalAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Foreground="{StaticResource PrimaryBrush}"
+                    HintText="{ns:Loc LblObjectNameHint}"
+                    PopupBackground="{StaticResource TertiaryBackgroundBrush}"
+                    SearchResult="{Binding DeepSkyObjectSearchVM.TargetSearchResult.Result}"
+                    SelectedSearchResult="{Binding DeepSkyObjectSearchVM.SelectedTargetSearchResult, Mode=TwoWay}"
+                    ShowPopup="{Binding DeepSkyObjectSearchVM.ShowPopup, Mode=TwoWay}"
+                    Text="{Binding DeepSkyObjectSearchVM.TargetName, UpdateSourceTrigger=PropertyChanged}">
                     <ninactrl:AutoCompleteBox.Background>
-                        <SolidColorBrush Opacity="0.05"
-                                         Color="{Binding Color, Source={StaticResource PrimaryBrush}}" />
+                        <SolidColorBrush Opacity="0.05" Color="{Binding Color, Source={StaticResource PrimaryBrush}}" />
                     </ninactrl:AutoCompleteBox.Background>
                 </ninactrl:AutoCompleteBox>
             </UniformGrid>
-            <UniformGrid Width="320"
-                         Margin="0,0,0,6"
-                         HorizontalAlignment="Left"
-                         VerticalAlignment="Center"
-                         Columns="2">
-                <TextBlock VerticalAlignment="Center"
-                           Text="{ns:Loc LblRA}" />
+            <UniformGrid
+                Width="320"
+                Margin="0,0,0,6"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Columns="2">
+                <TextBlock VerticalAlignment="Center" Text="{ns:Loc LblRA}" />
                 <StackPanel Orientation="Horizontal">
-                    <TextBox MinWidth="40"
-                             Margin="5,0,0,0"
-                             TextAlignment="Right">
+                    <TextBox
+                        MinWidth="40"
+                        Margin="5,0,0,0"
+                        TextAlignment="Right">
                         <TextBox.Text>
-                            <Binding Path="RAHours"
-                                     UpdateSourceTrigger="LostFocus">
+                            <Binding Path="RAHours" UpdateSourceTrigger="LostFocus">
                                 <Binding.ValidationRules>
                                     <rules:HoursRule />
                                 </Binding.ValidationRules>
@@ -68,12 +68,12 @@
                         </TextBox.Text>
                     </TextBox>
                     <TextBlock VerticalAlignment="Center">h</TextBlock>
-                    <TextBox MinWidth="40"
-                             Margin="5,0,0,0"
-                             TextAlignment="Right">
+                    <TextBox
+                        MinWidth="40"
+                        Margin="5,0,0,0"
+                        TextAlignment="Right">
                         <TextBox.Text>
-                            <Binding Path="RAMinutes"
-                                     UpdateSourceTrigger="LostFocus">
+                            <Binding Path="RAMinutes" UpdateSourceTrigger="LostFocus">
                                 <Binding.ValidationRules>
                                     <rules:MinutesRule />
                                 </Binding.ValidationRules>
@@ -81,12 +81,12 @@
                         </TextBox.Text>
                     </TextBox>
                     <TextBlock VerticalAlignment="Center">m</TextBlock>
-                    <TextBox MinWidth="40"
-                             Margin="5,0,0,0"
-                             TextAlignment="Right">
+                    <TextBox
+                        MinWidth="40"
+                        Margin="5,0,0,0"
+                        TextAlignment="Right">
                         <TextBox.Text>
-                            <Binding Path="RASeconds"
-                                     UpdateSourceTrigger="LostFocus">
+                            <Binding Path="RASeconds" UpdateSourceTrigger="LostFocus">
                                 <Binding.ValidationRules>
                                     <rules:SecondsRule />
                                 </Binding.ValidationRules>
@@ -96,20 +96,20 @@
                     <TextBlock VerticalAlignment="Center">s</TextBlock>
                 </StackPanel>
             </UniformGrid>
-            <UniformGrid Width="320"
-                         Margin="0,0,0,6"
-                         HorizontalAlignment="Left"
-                         VerticalAlignment="Center"
-                         Columns="2">
-                <TextBlock VerticalAlignment="Center"
-                           Text="{ns:Loc LblDec}" />
+            <UniformGrid
+                Width="320"
+                Margin="0,0,0,6"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Columns="2">
+                <TextBlock VerticalAlignment="Center" Text="{ns:Loc LblDec}" />
                 <StackPanel Orientation="Horizontal">
-                    <TextBox MinWidth="40"
-                             Margin="5,0,0,0"
-                             TextAlignment="Right">
+                    <TextBox
+                        MinWidth="40"
+                        Margin="5,0,0,0"
+                        TextAlignment="Right">
                         <TextBox.Text>
-                            <MultiBinding Converter="{StaticResource DecDegreeConverter}"
-                                          UpdateSourceTrigger="LostFocus">
+                            <MultiBinding Converter="{StaticResource DecDegreeConverter}" UpdateSourceTrigger="LostFocus">
                                 <Binding Path="NegativeDec" />
                                 <Binding Path="DecDegrees">
                                     <Binding.ValidationRules>
@@ -120,12 +120,12 @@
                         </TextBox.Text>
                     </TextBox>
                     <TextBlock VerticalAlignment="Center">d</TextBlock>
-                    <TextBox MinWidth="40"
-                             Margin="5,0,0,0"
-                             TextAlignment="Right">
+                    <TextBox
+                        MinWidth="40"
+                        Margin="5,0,0,0"
+                        TextAlignment="Right">
                         <TextBox.Text>
-                            <Binding Path="DecMinutes"
-                                     UpdateSourceTrigger="LostFocus">
+                            <Binding Path="DecMinutes" UpdateSourceTrigger="LostFocus">
                                 <Binding.ValidationRules>
                                     <rules:MinutesRule />
                                 </Binding.ValidationRules>
@@ -133,12 +133,12 @@
                         </TextBox.Text>
                     </TextBox>
                     <TextBlock VerticalAlignment="Center">m</TextBlock>
-                    <TextBox MinWidth="40"
-                             Margin="5,0,0,0"
-                             TextAlignment="Right">
+                    <TextBox
+                        MinWidth="40"
+                        Margin="5,0,0,0"
+                        TextAlignment="Right">
                         <TextBox.Text>
-                            <Binding Path="DecSeconds"
-                                     UpdateSourceTrigger="LostFocus">
+                            <Binding Path="DecSeconds" UpdateSourceTrigger="LostFocus">
                                 <Binding.ValidationRules>
                                     <rules:SecondsRule />
                                 </Binding.ValidationRules>
@@ -149,79 +149,94 @@
                 </StackPanel>
             </UniformGrid>
 
-            <UniformGrid Width="320"
-                         Margin="0,15,0,6"
-                         HorizontalAlignment="Left"
-                         VerticalAlignment="Center"
-                         Columns="2">
-                <TextBlock VerticalAlignment="Center"
-                           Text="Start Date"
-                           ToolTip="Set the start date of the plan" />
-                <DatePicker Margin="45,0,0,0"
-                            SelectedDate="{Binding StartDate}" />
-                <TextBlock VerticalAlignment="Center"
-                           Text="Days"
-                           ToolTip="Set the number of days in the plan" />
-                <TextBox Margin="45,0,0,0"
-                         VerticalAlignment="Center"
-                         Text="{Binding PlanDays}" />
+            <UniformGrid
+                Width="320"
+                Margin="0,15,0,6"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Columns="2">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Text="Start Date"
+                    ToolTip="Set the start date of the plan" />
+                <DatePicker Margin="45,0,0,0" SelectedDate="{Binding StartDate}" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Text="Days"
+                    ToolTip="Set the number of days in the plan" />
+                <TextBox
+                    Margin="45,0,0,0"
+                    VerticalAlignment="Center"
+                    Text="{Binding PlanDays}" />
             </UniformGrid>
-            <UniformGrid Width="320"
-                         Margin="0,15,0,0"
-                         HorizontalAlignment="Left"
-                         VerticalAlignment="Center"
-                         Columns="2">
-                <TextBlock VerticalAlignment="Center"
-                           Text="Minimum Altitude"
-                           ToolTip="Set the minimum acceptable target altitude" />
-                <ComboBox Margin="45,0,0,0"
-                          DisplayMemberPath="Value"
-                          ItemsSource="{Binding MinimumAltitudeChoices}"
-                          SelectedValue="{Binding MinimumAltitude}"
-                          SelectedValuePath="Key" />
-                <TextBlock VerticalAlignment="Center"
-                           Text="Minimum Imaging Time"
-                           ToolTip="Set the minimum acceptable imaging time" />
-                <ComboBox Margin="45,0,0,0"
-                          DisplayMemberPath="Value"
-                          ItemsSource="{Binding MinimumTimeChoices}"
-                          SelectedValue="{Binding MinimumTime}"
-                          SelectedValuePath="Key" />
-                <TextBlock VerticalAlignment="Center"
-                           Text="Minimum Moon Separation"
-                           ToolTip="Set the minimum acceptable moon separation angle" />
-                <ComboBox Margin="45,0,0,0"
-                          DisplayMemberPath="Value"
-                          ItemStringFormat="0°"
-                          ItemsSource="{Binding MoonSeparationChoices}"
-                          SelectedValue="{Binding MinimumMoonSeparation}"
-                          SelectedValuePath="Key" />
-                <TextBlock VerticalAlignment="Center"
-                           Text="Maximum Moon Illumination"
-                           ToolTip="Set the maximum acceptable moon illumination" />
-                <ComboBox Margin="45,0,0,0"
-                          DisplayMemberPath="Value"
-                          ItemsSource="{Binding MaximumMoonIlluminationChoices}"
-                          SelectedValue="{Binding MaximumMoonIllumination}"
-                          SelectedValuePath="Key" />
-                <TextBlock VerticalAlignment="Center"
-                           Text="Meridian Time Span"
-                           ToolTip="Set imaging time on either side of the meridian" />
-                <ComboBox Margin="45,0,0,0"
-                          DisplayMemberPath="Value"
-                          ItemsSource="{Binding MeridianTimeSpanChoices}"
-                          SelectedValue="{Binding MeridianTimeSpan}"
-                          SelectedValuePath="Key" />
+            <UniformGrid
+                Width="320"
+                Margin="0,15,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Columns="2">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Text="Minimum Altitude"
+                    ToolTip="Set the minimum acceptable target altitude" />
+                <ComboBox
+                    Margin="45,0,0,0"
+                    DisplayMemberPath="Value"
+                    ItemsSource="{Binding MinimumAltitudeChoices}"
+                    SelectedValue="{Binding MinimumAltitude}"
+                    SelectedValuePath="Key" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Text="Minimum Imaging Time"
+                    ToolTip="Set the minimum acceptable imaging time" />
+                <ComboBox
+                    Margin="45,0,0,0"
+                    DisplayMemberPath="Value"
+                    ItemsSource="{Binding MinimumTimeChoices}"
+                    SelectedValue="{Binding MinimumTime}"
+                    SelectedValuePath="Key" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Text="Minimum Moon Separation"
+                    ToolTip="Set the minimum acceptable moon separation angle" />
+                <ComboBox
+                    Margin="45,0,0,0"
+                    DisplayMemberPath="Value"
+                    ItemStringFormat="0°"
+                    ItemsSource="{Binding MoonSeparationChoices}"
+                    SelectedValue="{Binding MinimumMoonSeparation}"
+                    SelectedValuePath="Key" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Text="Maximum Moon Illumination"
+                    ToolTip="Set the maximum acceptable moon illumination" />
+                <ComboBox
+                    Margin="45,0,0,0"
+                    DisplayMemberPath="Value"
+                    ItemsSource="{Binding MaximumMoonIlluminationChoices}"
+                    SelectedValue="{Binding MaximumMoonIllumination}"
+                    SelectedValuePath="Key" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Text="Meridian Time Span"
+                    ToolTip="Set imaging time on either side of the meridian" />
+                <ComboBox
+                    Margin="45,0,0,0"
+                    DisplayMemberPath="Value"
+                    ItemsSource="{Binding MeridianTimeSpanChoices}"
+                    SelectedValue="{Binding MeridianTimeSpan}"
+                    SelectedValuePath="Key" />
             </UniformGrid>
             <StackPanel>
-                <ninactrl:CancellableButton Height="40"
-                                            Margin="5"
-                                            ButtonText="Calculate"
-                                            CancelButtonImage="{StaticResource CancelSVG}"
-                                            CancelCommand="{Binding CancelSearchCommand}"
-                                            CancelToolTip="Cancel"
-                                            Command="{Binding SearchCommand}"
-                                            Visibility="{Binding SearchCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
+                <ninactrl:CancellableButton
+                    Height="40"
+                    Margin="5"
+                    ButtonText="Calculate"
+                    CancelButtonImage="{StaticResource CancelSVG}"
+                    CancelCommand="{Binding CancelSearchCommand}"
+                    CancelToolTip="Cancel"
+                    Command="{Binding SearchCommand}"
+                    Visibility="{Binding SearchCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
             </StackPanel>
 
             <!--  Search result area  -->
@@ -232,182 +247,225 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <DataGrid Height="300"
-                          Margin="0,0,0,0"
-                          AutoGenerateColumns="False"
-                          HeadersVisibility="Column"
-                          HorizontalScrollBarVisibility="Disabled"
-                          ItemsSource="{Binding ItemPage, IsAsync=True}"
-                          RowHeight="28"
-                          SelectedItem="{Binding SelectedItem}"
-                          SelectionMode="Single">
+                <DataGrid x:Name="PlanDataGrid" 
+                    Height="300"
+                    Margin="0,0,0,0"
+                    AutoGenerateColumns="False"
+                    HeadersVisibility="Column"
+                    HorizontalScrollBarVisibility="Disabled"
+                    ItemsSource="{Binding ItemPage, IsAsync=True}"
+                    RowHeight="28"
+                    SelectedItem="{Binding SelectedItem}"
+                    SelectionMode="Single">
 
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="{x:Type DataGridColumnHeader}">
-                            <Setter Property="HorizontalAlignment"
-                                    Value="Left" />
-                            <Setter Property="BorderBrush"
-                                    Value="{StaticResource BorderBrush}" />
-                            <Setter Property="BorderThickness"
-                                    Value="0" />
-                            <Setter Property="MinHeight"
-                                    Value="25" />
-                            <Setter Property="Margin"
-                                    Value="5,3,5,3" />
-                            <Setter Property="FontWeight"
-                                    Value="Bold" />
-                            <Setter Property="FontSize"
-                                    Value="14" />
+                            <Setter Property="HorizontalAlignment" Value="Left" />
+                            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="MinHeight" Value="25" />
+                            <Setter Property="Margin" Value="5,3,5,3" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                            <Setter Property="FontSize" Value="14" />
                         </Style>
                     </DataGrid.ColumnHeaderStyle>
 
                     <DataGrid.CellStyle>
                         <Style TargetType="DataGridCell">
-                            <Setter Property="BorderBrush"
-                                    Value="{StaticResource BorderBrush}" />
-                            <Setter Property="BorderThickness"
-                                    Value="0" />
-                            <Setter Property="MinHeight"
-                                    Value="22" />
-                            <Setter Property="Margin"
-                                    Value="5,3,5,3" />
+                            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="MinHeight" Value="22" />
+                            <Setter Property="Margin" Value="5,3,5,3" />
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="False">
+                                    <Setter Property="Background" Value="Transparent" />
+                                </Trigger>
+                            </Style.Triggers>
                         </Style>
                     </DataGrid.CellStyle>
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
-                            <Setter Property="MinHeight"
-                                    Value="28" />
-                            <Setter Property="Background"
-                                    Value="Transparent" />
-                            <Setter Property="VerticalAlignment"
-                                    Value="Center" />
+                            <Setter Property="MinHeight" Value="28" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="False">
+                                    <Setter Property="Background" Value="Transparent" />
+                                </Trigger>
+                            </Style.Triggers>
                         </Style>
                     </DataGrid.RowStyle>
 
+                    <DataGrid.RowDetailsTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="0" Background="{StaticResource ButtonBackgroundBrush}" Padding="5">
+                                <StackPanel Orientation="Vertical">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Start: " VerticalAlignment="Center" />
+                                        <TextBlock Foreground="White" Text="{Binding StartImagingTime}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="End: " VerticalAlignment="Center" />
+                                        <TextBlock Foreground="White" Text="{Binding EndImagingTime}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Time: " VerticalAlignment="Center" />
+                                        <TextBlock Foreground="White" Text="{Binding ImagingTime}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </DataGrid.RowDetailsTemplate>
+
                     <DataGrid.Columns>
 
-                        <DataGridTemplateColumn Width="50"
-                                                CanUserSort="False"
-                                                Header="Status">
+                        <DataGridTemplateColumn
+                            Width="50"
+                            CanUserSort="False"
+                            Header="Status">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Path Width="15"
-                                          Height="15"
-                                          Data="{Binding Status, Converter={StaticResource ImagingStatusConverter}}"
-                                          Fill="{Binding Status, Converter={StaticResource ImagingStatusMarkColorConverter}}"
-                                          Stretch="Uniform" />
+                                    <Path
+                                        Width="15"
+                                        Height="15"
+                                        Data="{Binding Status, Converter={StaticResource ImagingStatusConverter}}"
+                                        Fill="{Binding Status, Converter={StaticResource ImagingStatusMarkColorConverter}}"
+                                        Stretch="Uniform" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Width="*"
-                                                CanUserSort="False"
-                                                Header="Start">
+                        <DataGridTemplateColumn
+                            Width="*"
+                            CanUserSort="False"
+                            Header="Start">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Width="Auto"
-                                               Margin="0,0,0,0"
-                                               Text="{Binding StartImagingTime}" />
+                                    <TextBlock
+                                        Width="Auto"
+                                        Margin="0,0,0,0"
+                                        Text="{Binding StartImagingTime}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-
-                        <DataGridTemplateColumn Width="*"
-                                                CanUserSort="False"
-                                                Header="End">
+                        <DataGridTemplateColumn
+                            Width="*"
+                            CanUserSort="False"
+                            Header="End">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Width="Auto"
-                                               Margin="0,0,0,0"
-                                               Text="{Binding EndImagingTime}" />
+                                    <TextBlock
+                                        Width="Auto"
+                                        Margin="0,0,0,0"
+                                        Text="{Binding EndImagingTime}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Width="*"
-                                                CanUserSort="False"
-                                                Header="Imaging Time">
+                        <DataGridTemplateColumn
+                            Width="*"
+                            CanUserSort="False"
+                            Header="Imaging Time">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Width="Auto"
-                                               Margin="0,0,0,0"
-                                               Foreground="{Binding ImagingTimeColor}"
-                                               Text="{Binding ImagingTime}" />
+                                    <TextBlock
+                                        Width="Auto"
+                                        Margin="0,0,0,0"
+                                        Foreground="{Binding ImagingTimeColor}"
+                                        Text="{Binding ImagingTime}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Width="*"
-                                                CanUserSort="False"
-                                                Header="Moon Illum">
+                        <DataGridTemplateColumn
+                            Width="*"
+                            CanUserSort="False"
+                            Header="Moon Illum">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Width="Auto"
-                                               Margin="0,0,0,0"
-                                               Foreground="{Binding MoonIlluminationColor}"
-                                               Text="{Binding MoonIllumination}" />
+                                    <TextBlock
+                                        Width="Auto"
+                                        Margin="0,0,0,0"
+                                        Foreground="{Binding MoonIlluminationColor}"
+                                        Text="{Binding MoonIllumination}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Width="*"
-                                                CanUserSort="False"
-                                                Header="Moon Sep">
+                        <DataGridTemplateColumn
+                            Width="*"
+                            CanUserSort="False"
+                            Header="Moon Sep">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Width="Auto"
-                                               Margin="0,0,0,0"
-                                               Foreground="{Binding MoonSeparationColor}"
-                                               Text="{Binding MoonSeparation}" />
+                                    <TextBlock
+                                        Width="Auto"
+                                        Margin="0,0,0,0"
+                                        Foreground="{Binding MoonSeparationColor}"
+                                        Text="{Binding MoonSeparation}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
                     </DataGrid.Columns>
                 </DataGrid>
-                <Grid Grid.Row="1"
-                      Visibility="{Binding Converter={StaticResource NullToVisibilityCollapsedConverter}}">
+
+                <Grid Grid.Row="1" Visibility="{Binding Converter={StaticResource NullToVisibilityCollapsedConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <StackPanel Height="35"
-                                Margin="5,0,5,0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Bottom"
-                                Orientation="Horizontal">
-                        <Button Width="35"
-                                Margin="5,2.5,0,2.5"
-                                Command="{Binding FirstPageCommand}"
-                                Content="&lt;|" />
-                        <Button Width="35"
-                                Margin="5,2.5,0,2.5"
-                                Command="{Binding PrevPageCommand}"
-                                Content="&lt;&lt;" />
-                        <ComboBox Margin="5,2.5,0,2.5"
-                                  ItemsSource="{Binding Pages}"
-                                  SelectedValue="{Binding CurrentPage, Mode=TwoWay}">
+                    <StackPanel
+                        Height="35"
+                        Margin="5,0,5,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Orientation="Horizontal">
+                        <Button
+                            Width="35"
+                            Margin="5,2.5,0,2.5"
+                            Command="{Binding FirstPageCommand}"
+                            Content="&lt;|" />
+                        <Button
+                            Width="35"
+                            Margin="5,2.5,0,2.5"
+                            Command="{Binding PrevPageCommand}"
+                            Content="&lt;&lt;" />
+                        <ComboBox
+                            Margin="5,2.5,0,2.5"
+                            ItemsSource="{Binding Pages}"
+                            SelectedValue="{Binding CurrentPage, Mode=TwoWay}">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="SelectionChanged">
                                     <i:InvokeCommandAction Command="{Binding PageByNumberCommand}" />
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </ComboBox>
-                        <TextBlock Margin="5,0,0,0"
-                                   VerticalAlignment="Center"
-                                   Text="{ns:Loc LblOf}" />
-                        <TextBlock Margin="5,0,0,0"
-                                   VerticalAlignment="Center"
-                                   Text="{Binding Pages.Count}" />
-                        <Button Width="35"
-                                Margin="5,2.5,0,2.5"
-                                Command="{Binding NextPageCommand}"
-                                Content="&gt;&gt;" />
-                        <Button Width="35"
-                                Margin="5,2.5,0,2.5"
-                                Command="{Binding LastPageCommand}"
-                                Content="|&gt;" />
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{ns:Loc LblOf}" />
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding Pages.Count}" />
+                        <Button
+                            Width="35"
+                            Margin="5,2.5,0,2.5"
+                            Command="{Binding NextPageCommand}"
+                            Content="&gt;&gt;" />
+                        <Button
+                            Width="35"
+                            Margin="5,2.5,0,2.5"
+                            Command="{Binding LastPageCommand}"
+                            Content="|&gt;" />
                     </StackPanel>
                 </Grid>
 

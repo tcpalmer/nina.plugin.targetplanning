@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
@@ -52,21 +51,26 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         /// This case should be detected before calling this method.
         /// </summary>
         /// <param name="altitudes"></param>
-        /// <param name="minimumAltitude"></param>
+        /// <param name="horizonDefinition"></param>
         /// <returns></returns>
-        public AltitudeAtTime FindRiseAboveMinimum(Altitudes altitudes, double minimumAltitude) {
+        public AltitudeAtTime FindRiseAboveMinimum(Altitudes altitudes, HorizonDefinition horizonDefinition) {
             Validate.Assert.notNull(altitudes, "altitudes cannot be null");
-            Validate.Assert.isTrue(minimumAltitude > 0, "minimumAltitude must be > 0");
-            Validate.Assert.isTrue(minimumAltitude <= 90, "minimumAltitude must be <= 90");
+            Validate.Assert.notNull(horizonDefinition, "horizonDefinition cannot be null");
 
             // Ensure the span does contain the crossing
             List<AltitudeAtTime> altitudeAtTimes = altitudes.AltitudeList;
-            if (altitudeAtTimes[0].Altitude > minimumAltitude || altitudeAtTimes[altitudeAtTimes.Count - 1].Altitude < minimumAltitude) {
+            double targetAltitude = horizonDefinition.GetTargetAltitude(altitudeAtTimes[0]);
+            if (altitudeAtTimes[0].Altitude > targetAltitude) {
+                return null;
+            }
+
+            targetAltitude = horizonDefinition.GetTargetAltitude(altitudeAtTimes[altitudeAtTimes.Count - 1]);
+            if (altitudeAtTimes[altitudeAtTimes.Count - 1].Altitude < targetAltitude) {
                 return null;
             }
 
             // Find step where altitude crosses the minimum
-            Altitudes targetStep = new RiseAboveMinimumFunction(minimumAltitude).determineStep(altitudes);
+            Altitudes targetStep = new RiseAboveMinimumFunction(horizonDefinition).determineStep(altitudes);
 
             // List of altitudes may not contain a crossing event (should never happen under normal circumstances
             if (targetStep == null) {
@@ -81,7 +85,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
 
             // Generate a new set of samples between the target step samples and continue
-            return FindRiseAboveMinimum(refiner.Refine(targetStep, 10), minimumAltitude);
+            return FindRiseAboveMinimum(refiner.Refine(targetStep, 10), horizonDefinition);
         }
 
         /// <summary>
@@ -127,21 +131,26 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         /// This case should be detected before calling this method.
         /// </summary>
         /// <param name="altitudes"></param>
-        /// <param name="minimumAltitude"></param>
+        /// <param name="horizonDefinition"></param>
         /// <returns></returns>
-        public AltitudeAtTime FindSetBelowMinimum(Altitudes altitudes, double minimumAltitude) {
+        public AltitudeAtTime FindSetBelowMinimum(Altitudes altitudes, HorizonDefinition horizonDefinition) {
             Validate.Assert.notNull(altitudes, "altitudes cannot be null");
-            Validate.Assert.isTrue(minimumAltitude > 0, "minimumAltitude must be > 0");
-            Validate.Assert.isTrue(minimumAltitude <= 90, "minimumAltitude must be <= 90");
+            Validate.Assert.notNull(horizonDefinition, "horizonDefinition cannot be null");
 
             // Ensure the span does contain the crossing
             List<AltitudeAtTime> altitudeAtTimes = altitudes.AltitudeList;
-            if (altitudeAtTimes[0].Altitude < minimumAltitude || altitudeAtTimes[altitudeAtTimes.Count - 1].Altitude > minimumAltitude) {
+            double targetAltitude = horizonDefinition.GetTargetAltitude(altitudeAtTimes[0]);
+            if (altitudeAtTimes[0].Altitude < targetAltitude) {
+                return null;
+            }
+
+            targetAltitude = horizonDefinition.GetTargetAltitude(altitudeAtTimes[altitudeAtTimes.Count - 1]);
+            if (altitudeAtTimes[altitudeAtTimes.Count - 1].Altitude > targetAltitude) {
                 return null;
             }
 
             // Find step where altitude crosses the minimum
-            Altitudes targetStep = new SetBelowMinimumFunction(minimumAltitude).determineStep(altitudes);
+            Altitudes targetStep = new SetBelowMinimumFunction(horizonDefinition).determineStep(altitudes);
 
             // List of altitudes may not contain a crossing event (should never happen under normal circumstances
             if (targetStep == null) {
@@ -156,7 +165,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
 
             // Generate a new set of samples between the target step samples and continue
-            return FindSetBelowMinimum(refiner.Refine(targetStep, 10), minimumAltitude);
+            return FindSetBelowMinimum(refiner.Refine(targetStep, 10), horizonDefinition);
         }
 
         /// <summary>

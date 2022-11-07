@@ -56,13 +56,19 @@ namespace TargetPlanning.NINAPlugin {
             InitializeCriteria();
         }
 
+        public static readonly double HORIZON_VALUE = double.MinValue;
+
         private void InitializeCriteria() {
 
             MinimumAltitudeChoices = new AsyncObservableCollection<KeyValuePair<double, string>>();
             for (int i = 0; i <= 60; i += 5) {
                 MinimumAltitudeChoices.Add(new KeyValuePair<double, string>(i, i + "°"));
             }
-            // Sky Atlas adds 'Horizon' to altitude choices to trigger use of custom horizon
+
+            // Add 'Horizon' to altitude choices to trigger use of custom horizon
+            if (profileService.ActiveProfile.AstrometrySettings.Horizon != null) {
+                MinimumAltitudeChoices.Add(new KeyValuePair<double, string>(HORIZON_VALUE, "Horizon"));
+            }
 
             MinimumTimeChoices = new AsyncObservableCollection<KeyValuePair<int, string>>();
             MinimumTimeChoices.Add(new KeyValuePair<int, string>(0, Loc.Instance["LblAny"]));
@@ -112,8 +118,6 @@ namespace TargetPlanning.NINAPlugin {
             }
             set {
                 _dSO = value;
-                // TODO: possibly have to do this when/if we pop a Nighttime chart:
-                //_dSO?.SetDateAndPosition(NighttimeCalculator.GetReferenceDate(DateTime.Now), profileService.ActiveProfile.AstrometrySettings.Latitude, profileService.ActiveProfile.AstrometrySettings.Longitude);
                 RaisePropertyChanged();
             }
         }
@@ -247,25 +251,43 @@ namespace TargetPlanning.NINAPlugin {
 
             return await Task.Run(() => {
 
+                // TODO: need to add to UI
+                double horizonOffset = 0;
+
+                // TODO: if user entered coords are not from the DSO, we have to whip up a fresh DSO object
+                // will have to look for prop changed on all coords fields and the DSO search box.
+                // See DeepSkyObjectSearchVM_PropertyChanged() - might be handled now
+
                 PlanParameters planParams = new PlanParameters();
                 planParams.Target = DSO;
                 planParams.ObserverInfo = getObserverInfo(profileService.ActiveProfile.AstrometrySettings);
                 planParams.StartDate = StartDate;
                 planParams.PlanDays = PlanDays;
-                planParams.MinimumAltitude = MinimumAltitude;
+                planParams.HorizonDefinition = MinimumAltitude != HORIZON_VALUE ?
+                        new HorizonDefinition(MinimumAltitude) :
+                        new HorizonDefinition(profileService.ActiveProfile.AstrometrySettings.Horizon, horizonOffset);
                 planParams.MinimumImagingTime = MinimumTime;
                 planParams.MinimumMoonSeparation = MinimumMoonSeparation;
                 planParams.MaximumMoonIllumination = MaximumMoonIllumination;
                 planParams.MeridianTimeSpan = MeridianTimeSpan;
 
                 Logger.Debug($"Starting Target Planning for: {planParams.StartDate}, {planParams.PlanDays} days");
-                Logger.Debug($"         Target: {planParams.Target.Name} RA: {planParams.Target.Coordinates.RA} Dec: {planParams.Target.Coordinates.Dec}");
-                Logger.Trace($"   Location Lat: {planParams.ObserverInfo.Latitude} Long: {planParams.ObserverInfo.Longitude}, Ele: {planParams.ObserverInfo.Elevation}\n");
-                Logger.Trace($"        Min alt: {planParams.MinimumAltitude}");
-                Logger.Trace($"       Min time: {planParams.MinimumImagingTime}");
-                Logger.Trace($" Max moon illum: {planParams.MaximumMoonIllumination}");
-                Logger.Trace($"   Min moon sep: {planParams.MinimumMoonSeparation}");
-                Logger.Trace($"  Meridian span: {planParams.MeridianTimeSpan}\n");
+                Logger.Debug($"          Target: {planParams.Target.Name} RA: {planParams.Target.Coordinates.RA} Dec: {planParams.Target.Coordinates.Dec}");
+                Logger.Trace($"    Location Lat: {planParams.ObserverInfo.Latitude} Long: {planParams.ObserverInfo.Longitude}, Ele: {planParams.ObserverInfo.Elevation}\n");
+
+                if (MinimumAltitude == HORIZON_VALUE) {
+                    Logger.Trace($"         Min alt: n/a");
+                    Logger.Trace($"  Custom horizon: applies, offset: {horizonOffset}\n");
+                }
+                else {
+                    Logger.Trace($"         Min alt: {MinimumAltitude}");
+                    Logger.Trace($"  Custom horizon: n/a\n");
+                }
+
+                Logger.Trace($"        Min time: {planParams.MinimumImagingTime}");
+                Logger.Trace($"  Max moon illum: {planParams.MaximumMoonIllumination}");
+                Logger.Trace($"    Min moon sep: {planParams.MinimumMoonSeparation}");
+                Logger.Trace($"   Meridian span: {planParams.MeridianTimeSpan}\n");
 
                 try {
                     SearchResult = null;
@@ -273,7 +295,7 @@ namespace TargetPlanning.NINAPlugin {
 
                     List<ImagingDayPlanViewAdapter> wrappedResults = new List<ImagingDayPlanViewAdapter>(results.Count());
                     foreach (ImagingDayPlan plan in results) {
-                        wrappedResults.Add(new ImagingDayPlanViewAdapter(plan, planParams));
+                        wrappedResults.Add(new ImagingDayPlanViewAdapter(plan, planParams, profileService));
                     }
 
                     LogResults(wrappedResults);
@@ -291,6 +313,8 @@ namespace TargetPlanning.NINAPlugin {
                 return true;
             });
         }
+
+        public ICommand ShowDetailCommand { get; private set; }
 
         private void LogResults(IEnumerable<ImagingDayPlanViewAdapter> results) {
             Logger.Trace("Search results:");

@@ -1,5 +1,4 @@
 ﻿
-using nom.tam.util;
 using System;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {

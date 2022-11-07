@@ -1,10 +1,17 @@
 ﻿using NINA.Astrometry;
-using NINA.Astrometry.Interfaces;
+using NINA.Core.Model;
 using System;
 using System.Collections.Generic;
 using TargetPlanning.NINAPlugin.Astrometry;
 
 namespace TargetPlanning.NINAPlugin {
+
+    // Note that NINA has ItemUtility.CalculateTimeAtAltitude() which will return the rise/set/meridian for a target
+    // based on location and a target altitude.  However, it seems that it's using some approximation since my testing
+    // showed its results differed by minutes (even for the transit time where no refraction could be impacting).  Not
+    // clear on the nature of the approximation but for now I'm continuing to use my previous methods (which are
+    // certainly more expensive).
+
     public class ImagingDay {
 
         public DateTime StartDate { get; private set; }
@@ -17,25 +24,31 @@ namespace TargetPlanning.NINAPlugin {
 
         public Altitudes SamplePositions { get; private set; }
 
+        private readonly HorizonDefinition horizonDefinition;
         private readonly DSORefiner refiner;
 
-        public ImagingDay(DateTime startDate, DateTime endDate, ObserverInfo location, Coordinates target) {
+        public ImagingDay(DateTime startDate, DateTime endDate, ObserverInfo location, Coordinates target, HorizonDefinition horizonDefinition) {
 
             Validate.Assert.notNull(location, "location cannot be null");
             Validate.Assert.notNull(target, "target cannot be null");
+            Validate.Assert.notNull(horizonDefinition, "horizonDefinition cannot be null");
 
             this.StartDate = startDate;
             this.EndDate = endDate;
             this.Target = target;
             this.Location = location;
+            this.horizonDefinition = horizonDefinition;
 
             refiner = new DSORefiner(Location, Target);
             SamplePositions = GetInitialSamplePositions();
         }
 
-        public bool IsEverAboveMinimumAltitude(double minimumAltitude) {
+        public bool IsEverAboveMinimumAltitude() {
+            // Console.WriteLine("TA: {0,6:F2}   AT: {1,6:F2}   AZ: {2,6:F2}", targetAltitude, aat.Altitude, aat.Azimuth);
+
             foreach (AltitudeAtTime aat in SamplePositions.AltitudeList) {
-                if (aat.Altitude > minimumAltitude) {
+                double targetAltitude = horizonDefinition.GetTargetAltitude(aat);
+                if (aat.Altitude > targetAltitude) {
                     return true;
                 }
             }
@@ -43,16 +56,14 @@ namespace TargetPlanning.NINAPlugin {
             return false;
         }
 
-        public DateTime GetRiseAboveMinimumTime(double minimumAltitude) {
-            Validate.Assert.isTrue(minimumAltitude >= 0, "minimumAltitude must be >= 0");
-
-            Altitudes startStep = new RiseAboveMinimumFunction(minimumAltitude).determineStep(SamplePositions);
+        public DateTime GetRiseAboveMinimumTime() {
+            Altitudes startStep = new RiseAboveMinimumFunction(horizonDefinition).determineStep(SamplePositions);
             if (startStep == null) {
                 return DateTime.MinValue;
             }
 
             AltitudeAtTime riseAboveMinimum = new CircumstanceSolver(refiner, 1).FindRiseAboveMinimum(startStep,
-                                                                                                      minimumAltitude);
+                                                                                                      horizonDefinition);
             return riseAboveMinimum != null ? riseAboveMinimum.AtTime : DateTime.MinValue;
         }
 
@@ -68,16 +79,14 @@ namespace TargetPlanning.NINAPlugin {
             }
         }
 
-        public DateTime GetSetBelowMinimumTime(double minimumAltitude) {
-            Validate.Assert.isTrue(minimumAltitude >= 0, "minimumAltitude must be >= 0");
-
-            Altitudes startStep = new SetBelowMinimumFunction(minimumAltitude).determineStep(SamplePositions);
+        public DateTime GetSetBelowMinimumTime() {
+            Altitudes startStep = new SetBelowMinimumFunction(horizonDefinition).determineStep(SamplePositions);
             if (startStep == null) {
                 return DateTime.MinValue;
             }
 
             AltitudeAtTime setBelowMinimum = new CircumstanceSolver(refiner, 1).FindSetBelowMinimum(startStep,
-                                                                                                    minimumAltitude);
+                                                                                                    horizonDefinition);
             return setBelowMinimum != null ? setBelowMinimum.AtTime : DateTime.MinValue;
         }
 
@@ -85,10 +94,10 @@ namespace TargetPlanning.NINAPlugin {
             List<AltitudeAtTime> alts = new List<AltitudeAtTime>(2);
 
             HorizontalCoordinate hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, StartDate);
-            alts.Add(new AltitudeAtTime(hz.Altitude, StartDate));
+            alts.Add(new AltitudeAtTime(hz.Altitude, hz.Azimuth, StartDate));
 
             hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, EndDate);
-            alts.Add(new AltitudeAtTime(hz.Altitude, EndDate));
+            alts.Add(new AltitudeAtTime(hz.Altitude, hz.Azimuth, EndDate));
 
             // Sample every 5 minutes
             int numPoints = (int)(EndDate.Subtract(StartDate).TotalMinutes / 5);

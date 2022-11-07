@@ -1,5 +1,5 @@
 ﻿using NINA.Astrometry;
-using NINA.Astrometry.Interfaces;
+using NINA.Core.Model;
 using System;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
@@ -16,25 +16,23 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         private readonly Coordinates target;
         private readonly DateTime startTime;
         private readonly DateTime endTime;
-        private readonly double minimumAltitude;
+        private readonly HorizonDefinition horizonDefinition;
 
         public DateTime RiseAboveMinimumTime { get; private set; }
         public DateTime TransitTime { get; private set; }
         public DateTime SetBelowMinimumTime { get; private set; }
 
-        public TargetImagingCircumstances(ObserverInfo location, Coordinates target, DateTime startTime, DateTime endTime, double minimumAltitude) {
+        public TargetImagingCircumstances(ObserverInfo location, Coordinates target, DateTime startTime, DateTime endTime, HorizonDefinition horizonDefinition) {
 
             Validate.Assert.notNull(location, "location cannot be null");
             Validate.Assert.notNull(target, "target cannot be null");
-
             Validate.Assert.isTrue(startTime < endTime, "startTime must be before endTime");
-            Validate.Assert.isTrue(minimumAltitude >= 0, "minimumAltitude must be >= 0");
 
             this.location = location;
             this.target = target;
             this.startTime = startTime;
             this.endTime = endTime;
-            this.minimumAltitude = minimumAltitude;
+            this.horizonDefinition = horizonDefinition;
         }
 
         public int Analyze() {
@@ -44,17 +42,17 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                 return STATUS_NEVER_VISIBLE;
             }
 
-            ImagingDay imagingDay = new ImagingDay(startTime, endTime, location, target);
+            ImagingDay imagingDay = new ImagingDay(startTime, endTime, location, target, horizonDefinition);
 
             // If the target never rises above the minimum altitude in this time span, stop
-            if (!imagingDay.IsEverAboveMinimumAltitude(minimumAltitude)) {
+            if (!imagingDay.IsEverAboveMinimumAltitude()) {
                 return STATUS_NEVER_ABOVE_MINIMUM_ALTITUDE;
             }
 
             // Determine the applicable circumstances
-            RiseAboveMinimumTime = imagingDay.GetRiseAboveMinimumTime(minimumAltitude);
+            RiseAboveMinimumTime = imagingDay.GetRiseAboveMinimumTime();
             TransitTime = imagingDay.GetTransitTime();
-            SetBelowMinimumTime = imagingDay.GetSetBelowMinimumTime(minimumAltitude);
+            SetBelowMinimumTime = imagingDay.GetSetBelowMinimumTime();
 
             return STATUS_POTENTIALLY_VISIBLE;
         }

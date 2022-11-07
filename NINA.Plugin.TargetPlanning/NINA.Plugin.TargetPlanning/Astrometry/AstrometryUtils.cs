@@ -1,5 +1,7 @@
 ﻿using NINA.Astrometry;
+using NINA.Core.Enum;
 using System;
+using static NINA.Sequencer.Utility.ItemUtility;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 

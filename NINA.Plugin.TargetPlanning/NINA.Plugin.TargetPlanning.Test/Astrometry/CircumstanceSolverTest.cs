@@ -1,6 +1,4 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Common;
-using NINA.Astrometry;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -17,9 +15,10 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
         public void TestFindRising(double altStart, double altEnd, int secs, double expectedAlt) {
             DateTime start = DateTime.Now;
             List<AltitudeAtTime> alts = new List<AltitudeAtTime>();
+            double az = 180;
 
-            alts.Add(new AltitudeAtTime(altStart, start));
-            alts.Add(new AltitudeAtTime(altEnd, start.AddSeconds(secs)));
+            alts.Add(new AltitudeAtTime(altStart, az, start));
+            alts.Add(new AltitudeAtTime(altEnd, az, start.AddSeconds(secs)));
             AltitudeAtTime aat = new CircumstanceSolver(new TestAltitudeRefiner()).FindRising(new Altitudes(alts));
 
             if (expectedAlt == double.MinValue) {
@@ -34,37 +33,32 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
         public void TestFindRiseAboveMinimum() {
 
             CircumstanceSolver cs = new CircumstanceSolver(new TestAltitudeRefiner());
+            HorizonDefinition hd = TestUtil.getHD(0);
 
-            var ex = Assert.Throws<ArgumentException>(() => cs.FindRiseAboveMinimum(null, 0));
+            var ex = Assert.Throws<ArgumentException>(() => cs.FindRiseAboveMinimum(null, hd));
             ex.Message.Should().Be("altitudes cannot be null");
 
             DateTime start = DateTime.Now.Date;
             List<AltitudeAtTime> alts = new List<AltitudeAtTime>();
 
-            alts.Add(new AltitudeAtTime(0, start));
-            alts.Add(new AltitudeAtTime(10, start.AddSeconds(60)));
-
-            ex = Assert.Throws<ArgumentException>(() => cs.FindRiseAboveMinimum(new Altitudes(alts), 0));
-            ex.Message.Should().Be("minimumAltitude must be > 0");
-
-            ex = Assert.Throws<ArgumentException>(() => cs.FindRiseAboveMinimum(new Altitudes(alts), 90.1));
-            ex.Message.Should().Be("minimumAltitude must be <= 90");
+            alts.Add(new AltitudeAtTime(0, 180, start));
+            alts.Add(new AltitudeAtTime(10, 180, start.AddSeconds(60)));
 
             alts.Clear();
-            alts.Add(new AltitudeAtTime(10, start));
-            alts.Add(new AltitudeAtTime(50, start.AddSeconds(60)));
+            alts.Add(new AltitudeAtTime(10, 180, start));
+            alts.Add(new AltitudeAtTime(50, 180, start.AddSeconds(60)));
 
             // min outside span
-            cs.FindRiseAboveMinimum(new Altitudes(alts), 5).Should().BeNull();
-            cs.FindRiseAboveMinimum(new Altitudes(alts), 55).Should().BeNull();
+            cs.FindRiseAboveMinimum(new Altitudes(alts), TestUtil.getHD(5)).Should().BeNull();
+            cs.FindRiseAboveMinimum(new Altitudes(alts), TestUtil.getHD(55)).Should().BeNull();
 
             alts.Clear();
-            alts.Add(new AltitudeAtTime(1, start));
-            alts.Add(new AltitudeAtTime(10, start.AddMinutes(1)));
-            alts.Add(new AltitudeAtTime(20, start.AddMinutes(2)));
-            alts.Add(new AltitudeAtTime(30, start.AddMinutes(3)));
+            alts.Add(new AltitudeAtTime(1, 180, start));
+            alts.Add(new AltitudeAtTime(10, 180, start.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(20, 180, start.AddMinutes(2)));
+            alts.Add(new AltitudeAtTime(30, 180, start.AddMinutes(3)));
 
-            AltitudeAtTime aat = cs.FindRiseAboveMinimum(new Altitudes(alts), 15);
+            AltitudeAtTime aat = cs.FindRiseAboveMinimum(new Altitudes(alts), TestUtil.getHD(15));
             aat.Altitude.Should().BeApproximately(15.0413, 0.001);
 
             aat.AtTime.Hour.Should().Be(0);
@@ -98,36 +92,30 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
 
             CircumstanceSolver cs = new CircumstanceSolver(new TestAltitudeRefiner());
 
-            var ex = Assert.Throws<ArgumentException>(() => cs.FindSetBelowMinimum(null, 0));
+            var ex = Assert.Throws<ArgumentException>(() => cs.FindSetBelowMinimum(null, TestUtil.getHD(0)));
             ex.Message.Should().Be("altitudes cannot be null");
 
             DateTime start = DateTime.Now.Date;
             List<AltitudeAtTime> alts = new List<AltitudeAtTime>();
 
-            alts.Add(new AltitudeAtTime(0, start));
-            alts.Add(new AltitudeAtTime(10, start.AddSeconds(60)));
-
-            ex = Assert.Throws<ArgumentException>(() => cs.FindSetBelowMinimum(new Altitudes(alts), 0));
-            ex.Message.Should().Be("minimumAltitude must be > 0");
-
-            ex = Assert.Throws<ArgumentException>(() => cs.FindSetBelowMinimum(new Altitudes(alts), 90.1));
-            ex.Message.Should().Be("minimumAltitude must be <= 90");
+            alts.Add(new AltitudeAtTime(0, 180, start));
+            alts.Add(new AltitudeAtTime(10, 180, start.AddSeconds(60)));
 
             alts.Clear();
-            alts.Add(new AltitudeAtTime(50, start));
-            alts.Add(new AltitudeAtTime(10, start.AddSeconds(60)));
+            alts.Add(new AltitudeAtTime(50, 180, start));
+            alts.Add(new AltitudeAtTime(10, 180, start.AddSeconds(60)));
 
             // min outside span
-            cs.FindSetBelowMinimum(new Altitudes(alts), 55).Should().BeNull();
-            cs.FindSetBelowMinimum(new Altitudes(alts), 5).Should().BeNull();
+            cs.FindSetBelowMinimum(new Altitudes(alts), TestUtil.getHD(55)).Should().BeNull();
+            cs.FindSetBelowMinimum(new Altitudes(alts), TestUtil.getHD(5)).Should().BeNull();
 
             alts.Clear();
-            alts.Add(new AltitudeAtTime(60, start));
-            alts.Add(new AltitudeAtTime(50, start.AddMinutes(1)));
-            alts.Add(new AltitudeAtTime(40, start.AddMinutes(2)));
-            alts.Add(new AltitudeAtTime(30, start.AddMinutes(3)));
+            alts.Add(new AltitudeAtTime(60, 180, start));
+            alts.Add(new AltitudeAtTime(50, 180, start.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(40, 180, start.AddMinutes(2)));
+            alts.Add(new AltitudeAtTime(30, 180, start.AddMinutes(3)));
 
-            AltitudeAtTime aat = cs.FindSetBelowMinimum(new Altitudes(alts), 55);
+            AltitudeAtTime aat = cs.FindSetBelowMinimum(new Altitudes(alts), TestUtil.getHD(55));
 
             aat.Altitude.Should().BeApproximately(55.0413, 0.001);
             aat.AtTime.Hour.Should().Be(0);
@@ -142,20 +130,20 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             CircumstanceSolver cs = new CircumstanceSolver(new TestAltitudeRefiner());
 
             // No setting present
-            alts.Add(new AltitudeAtTime(10, start));
-            alts.Add(new AltitudeAtTime(5, start.AddSeconds(60)));
+            alts.Add(new AltitudeAtTime(10, 180, start));
+            alts.Add(new AltitudeAtTime(5, 180, start.AddSeconds(60)));
             cs.FindSetting(new Altitudes(alts)).Should().BeNull();
 
             // No setting present
             alts.Clear();
-            alts.Add(new AltitudeAtTime(-1, start));
-            alts.Add(new AltitudeAtTime(-10, start.AddSeconds(60)));
+            alts.Add(new AltitudeAtTime(-1, 180, start));
+            alts.Add(new AltitudeAtTime(-10, 180, start.AddSeconds(60)));
             cs.FindSetting(new Altitudes(alts)).Should().BeNull();
 
             // Good test
             alts.Clear();
-            alts.Add(new AltitudeAtTime(45, start));
-            alts.Add(new AltitudeAtTime(-45, start.AddHours(6)));
+            alts.Add(new AltitudeAtTime(45, 180, start));
+            alts.Add(new AltitudeAtTime(-45, 180, start.AddHours(6)));
             AltitudeAtTime aat = cs.FindSetting(new Altitudes(alts));
             aat.Altitude.Should().BeApproximately(0.00307, 0.001);
 
@@ -173,16 +161,16 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             DateTime start = DateTime.Now;
             List<AltitudeAtTime> alts = new List<AltitudeAtTime>();
 
-            alts.Add(new AltitudeAtTime(-1, start));
-            alts.Add(new AltitudeAtTime(1, start.AddSeconds(10)));
-            alts.Add(new AltitudeAtTime(2, start.AddSeconds(20)));
+            alts.Add(new AltitudeAtTime(-1, 180, start));
+            alts.Add(new AltitudeAtTime(1, 180, start.AddSeconds(10)));
+            alts.Add(new AltitudeAtTime(2, 180, start.AddSeconds(20)));
 
             ex = Assert.Throws<ArgumentException>(() => cs.GetStepInterval(new Altitudes(alts)));
             ex.Message.Should().Be("altitudes must have exactly two points");
 
             alts.Clear();
-            alts.Add(new AltitudeAtTime(-1, start));
-            alts.Add(new AltitudeAtTime(1, start.AddSeconds(60)));
+            alts.Add(new AltitudeAtTime(-1, 180, start));
+            alts.Add(new AltitudeAtTime(1, 180, start.AddSeconds(60)));
 
             cs.GetStepInterval(new Altitudes(alts)).Should().Be(60);
         }
