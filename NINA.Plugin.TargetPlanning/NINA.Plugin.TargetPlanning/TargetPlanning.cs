@@ -297,7 +297,7 @@ namespace TargetPlanning.NINAPlugin {
 
                     List<ImagingDayPlanViewAdapter> wrappedResults = new List<ImagingDayPlanViewAdapter>(results.Count());
                     foreach (ImagingDayPlan plan in results) {
-                        wrappedResults.Add(new ImagingDayPlanViewAdapter(plan, planParams, profileService));
+                        wrappedResults.Add(new ImagingDayPlanViewAdapter(plan, new ImagingDayPlanContext(planParams, profileService)));
                     }
 
                     LogResults(wrappedResults);
@@ -480,7 +480,6 @@ namespace TargetPlanning.NINAPlugin {
             RaisePropertyChanged(nameof(DecMinutes));
             RaisePropertyChanged(nameof(DecSeconds));
             NegativeDec = DSO?.Coordinates?.Dec < 0;
-            //NighttimeData = nighttimeCalculator.Calculate();
         }
     }
 
