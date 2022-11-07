@@ -108,6 +108,8 @@ namespace TargetPlanning.NINAPlugin {
             RaisePropertyChanged(nameof(MinimumMoonSeparation));
             RaisePropertyChanged(nameof(MaximumMoonIllumination));
             RaisePropertyChanged(nameof(MeridianTimeSpan));
+
+            InitializeCriteria();
         }
 
         private DeepSkyObject _dSO;

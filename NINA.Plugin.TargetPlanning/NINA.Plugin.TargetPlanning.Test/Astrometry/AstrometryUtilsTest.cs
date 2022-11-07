@@ -10,6 +10,14 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
     public class AstrometryUtilsTest {
 
         [Test]
+        public void TestAirmass() {
+            for (int i = 0; i <= 90; i += 5) {
+                double airmass = AstroUtil.Airmass(i);
+                TestContext.WriteLine(String.Format("{0,2:F0} {1,9:F2}", i, airmass));
+            }
+        }
+
+        [Test]
         [TestCase("5:55:11", "7:24:30", 2022, 10, 27, 22, 25, 0, 0.0792, 80.9998)] // Betelgeuse rise
         [TestCase("5:55:11", "7:24:30", 2022, 10, 28, 4, 46, 20, 62.4049, 181.0032)] // Betelgeuse transit
         [TestCase("5:55:11", "7:24:30", 2022, 10, 28, 11, 5, 36, -0.2597, 279.2407)] // Betelgeuse set
