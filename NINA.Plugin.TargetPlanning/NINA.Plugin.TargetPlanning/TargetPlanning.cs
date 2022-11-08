@@ -301,7 +301,7 @@ namespace TargetPlanning.NINAPlugin {
                     }
 
                     LogResults(wrappedResults);
-                    SearchResult = new PagedList<ImagingDayPlanViewAdapter>(12, wrappedResults);
+                    SearchResult = new PagedList<ImagingDayPlanViewAdapter>(22, wrappedResults);
                 }
                 catch (OperationCanceledException) {
                     Logger.Debug("target planning canceled");

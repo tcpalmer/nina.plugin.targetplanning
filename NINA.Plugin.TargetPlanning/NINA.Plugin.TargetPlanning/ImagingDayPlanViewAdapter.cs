@@ -1,5 +1,4 @@
 ﻿using NINA.Astrometry;
-using NINA.Core.Utility;
 using System;
 using TargetPlanning.NINAPlugin.Astrometry;
 
@@ -15,6 +14,7 @@ namespace TargetPlanning.NINAPlugin {
 
         public DateTime StartImagingTime { get => plan.StartImagingTime; }
         public DateTime EndImagingTime { get => plan.EndImagingTime; }
+        public DateTime TransitTime { get => plan.TransitTime; }
 
         public string ImagingTime { get => GetTimeHM(); }
         public string ImagingTimeColor { get => GetImagingTimeColor(); }
@@ -29,10 +29,11 @@ namespace TargetPlanning.NINAPlugin {
         public string MoonSeparationColor { get => GetMoonSeparationColor(); }
 
         public DeepSkyObject Target { get => GetTarget(); }
-        public NighttimeData PlanNighttimeData { get => GetPlanNighttimeData(); }
+        public NighttimeData NighttimeData { get => GetPlanNighttimeData(); }
 
         private ImagingDayPlan plan;
         private ImagingDayPlanContext context;
+        private DeepSkyObject target;
 
         public ImagingDayPlanViewAdapter(ImagingDayPlan plan, ImagingDayPlanContext context) {
             Validate.Assert.notNull(plan, "plan cannot be null");
@@ -40,6 +41,9 @@ namespace TargetPlanning.NINAPlugin {
 
             this.plan = plan;
             this.context = context;
+
+            DeepSkyObject dso = context.PlanParameters.Target;
+            this.target = new DeepSkyObject(dso.Id, dso.Coordinates, null, context.Profile.ActiveProfile.AstrometrySettings.Horizon);
         }
 
         private bool GetStatus() {
@@ -71,29 +75,17 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         private NighttimeData GetPlanNighttimeData() {
-            Logger.Debug("GetNighttimeData");
-            NighttimeData data = context.NighttimeCalculator.Calculate(GetReferenceDate());
-            AsyncObservableCollection<OxyPlot.DataPoint> points = data.NauticalTwilightDuration;
-            Logger.Debug($"NT: {points.Count}");
-            foreach (OxyPlot.DataPoint point in points) {
-                Logger.Debug($"  NT-p: {point.X} {point.Y}");
-            }
-            return data;
+            return context.NighttimeCalculator.Calculate(GetReferenceDate());
         }
 
         private DeepSkyObject GetTarget() {
-            Logger.Debug("GetTarget");
-            DateTime refDate = GetReferenceDate();
-            DeepSkyObject target = context.PlanParameters.Target;
-            target.SetDateAndPosition(refDate, context.PlanParameters.ObserverInfo.Latitude, context.PlanParameters.ObserverInfo.Longitude);
-            target.SetCustomHorizon(context.Profile.ActiveProfile.AstrometrySettings.Horizon);
-            //target.Refresh(); SetCustomHorizon already does an update - no need for another
+            target.SetDateAndPosition(GetReferenceDate(), context.PlanParameters.ObserverInfo.Latitude, context.PlanParameters.ObserverInfo.Longitude);
+            target.Refresh();
             return target;
         }
 
         private DateTime GetReferenceDate() {
-            DateTime date = plan.StartImagingTime;
-            return new DateTime(date.Year, date.Month, date.Day, 12, 0, 0, date.Kind);
+            return NighttimeCalculator.GetReferenceDate(plan.StartDay);
         }
     }
 

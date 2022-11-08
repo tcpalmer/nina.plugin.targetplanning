@@ -338,6 +338,9 @@
                     <DataGrid.RowDetailsTemplate>
                         <DataTemplate>
                             <Grid>
+                                <Grid.Resources>
+                                    <util:BindingProxy x:Key="nighttimeProxy" Data="{Binding NighttimeData}" />
+                                </Grid.Resources>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="2*" />
@@ -345,44 +348,57 @@
                                 </Grid.ColumnDefinitions>
                                 <Border Grid.Column="0" Padding="5">
                                     <StackPanel Orientation="Vertical">
-                                        <TextBlock VerticalAlignment="Center" Text="Start Imaging Time: " />
-                                        <TextBlock VerticalAlignment="Center" Text="End Imaging Time: " />
-                                        <TextBlock VerticalAlignment="Center" Text="Imaging Time: " />
-                                        <TextBlock VerticalAlignment="Center" Text="Moon Illumination: " />
-                                        <TextBlock VerticalAlignment="Center" Text="Moon Angle: " />
+                                        <TextBlock Margin="0,3,0,0" VerticalAlignment="Center" Text="Start Imaging Time: " />
+                                        <TextBlock Margin="0,3,0,0" VerticalAlignment="Center" Text="End Imaging Time: " />
+                                        <TextBlock Margin="0,3,0,0" VerticalAlignment="Center" Text="Imaging Time: " />
+                                        <TextBlock Margin="0,3,0,0" VerticalAlignment="Center" Text="Transit Time: " />
+                                        <TextBlock Margin="0,3,0,0" VerticalAlignment="Center" Text="Moon Illumination: " />
+                                        <TextBlock Margin="0,3,0,0" VerticalAlignment="Center" Text="Moon Angle: " />
                                     </StackPanel>
                                 </Border>
                                 <Border Grid.Column="1" Padding="5">
                                     <StackPanel Orientation="Vertical">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock
+                                                Margin="0,3,0,0"
                                                 VerticalAlignment="Center"
                                                 Foreground="White"
                                                 Text="{Binding StartImagingTime, StringFormat={}{0:HH:mm:ss}}" />
                                             <TextBlock
+                                                Margin="0,3,0,0"
                                                 VerticalAlignment="Center"
                                                 Foreground="White"
                                                 Text="{Binding StartLimitingFactor}" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock
+                                                Margin="0,3,0,0"
                                                 VerticalAlignment="Center"
                                                 Foreground="White"
                                                 Text="{Binding EndImagingTime, StringFormat={}{0:HH:mm:ss}}" />
                                             <TextBlock
+                                                Margin="0,3,0,0"
                                                 VerticalAlignment="Center"
                                                 Foreground="White"
                                                 Text="{Binding EndLimitingFactor}" />
                                         </StackPanel>
                                         <TextBlock
+                                                Margin="0,3,0,0"
                                             VerticalAlignment="Center"
                                             Foreground="{Binding ImagingTimeColor}"
                                             Text="{Binding ImagingTime}" />
                                         <TextBlock
+                                                Margin="0,3,0,0"
+                                            VerticalAlignment="Center"
+                                            Foreground="White"
+                                            Text="{Binding TransitTime, StringFormat={}{0:HH:mm:ss}}" />
+                                        <TextBlock
+                                                Margin="0,3,0,0"
                                             VerticalAlignment="Center"
                                             Foreground="{Binding MoonIlluminationColor}"
                                             Text="{Binding MoonIllumination, StringFormat={}{0:F0}%}" />
                                         <TextBlock
+                                                Margin="0,3,0,0"
                                             VerticalAlignment="Center"
                                             Foreground="{Binding MoonSeparationColor}"
                                             Text="{Binding MoonSeparation, StringFormat={}{0:F0}°}" />
@@ -390,7 +406,10 @@
                                 </Border>
                                 <Border
                                     Grid.Column="3" Padding="5" MinHeight="200">
-                                    <alt:AltitudeChart NighttimeData="{Binding PlanNighttimeData}" DataContext="{Binding Target}" ShowMoon="True" />
+                                    <alt:AltitudeChart
+                                        NighttimeData="{Binding Source={StaticResource nighttimeProxy}, Path=Data}"
+                                        DataContext="{Binding Target}"
+                                        ShowMoon="True" />
                                 </Border>
                             </Grid>
                         </DataTemplate>
