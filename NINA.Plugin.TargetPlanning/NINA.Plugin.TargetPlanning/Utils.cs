@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TargetPlanning.NINAPlugin {
 
@@ -14,6 +10,10 @@ namespace TargetPlanning.NINAPlugin {
             return $"{hours}h {min}m";
         }
 
+        public static DateTime GetMidpointTime(DateTime startTime, DateTime endTime) {
+            long span = (long)endTime.Subtract(startTime).TotalSeconds;
+            return startTime.AddSeconds(span / 2);
+        }
     }
 
 }

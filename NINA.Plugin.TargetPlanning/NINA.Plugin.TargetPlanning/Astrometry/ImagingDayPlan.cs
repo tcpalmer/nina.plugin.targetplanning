@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.ConstrainedExecution;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
@@ -96,9 +95,9 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         public static ImagingLimit NotVisible { get { return new ImagingLimit(true, "not visible"); } }
         public static ImagingLimit MinimumTime { get { return new ImagingLimit(true, "not enough time"); } }
         public static ImagingLimit MoonIllumination { get { return new ImagingLimit(true, "moon illum"); } }
-        public static ImagingLimit MoonSeparation { get { return new ImagingLimit(true, "moon sep"); } }
+        public static ImagingLimit MoonSeparation { get { return new ImagingLimit(true, "moon angle"); } }
         public static ImagingLimit Meridian { get { return new ImagingLimit(true, "meridian time span"); } }
-        public static ImagingLimit MinimumAltitude { get { return new ImagingLimit(false, "min altitude"); } }
+        public static ImagingLimit MinimumAltitude { get { return new ImagingLimit(false, "minimum altitude"); } }
         public static ImagingLimit MeridianClip { get { return new ImagingLimit(false, "meridian"); } }
         public static ImagingLimit Twilight { get { return new ImagingLimit(false, "twilight"); } }
         public static ImagingLimit LocalHorizon { get { return new ImagingLimit(false, "custom horizon"); } }
@@ -109,7 +108,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
         private ImagingLimit(bool session, string name) {
             this.Session = session;
-            this.Name = name;
+            this.Name = String.Format("  (limited by {0})", name);
         }
 
     }

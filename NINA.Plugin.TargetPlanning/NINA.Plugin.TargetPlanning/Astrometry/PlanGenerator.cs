@@ -1,6 +1,5 @@
 ﻿using NINA.Astrometry;
 using NINA.Astrometry.RiseAndSet;
-using NINA.Core.Model;
 using NINA.Core.Utility;
 using System;
 using System.Collections.Generic;
@@ -53,7 +52,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                     if (status != TargetImagingCircumstances.STATUS_POTENTIALLY_VISIBLE) {
                         analyzer = new ImagingCriteriaAnalyzer(startTime, endTime);
 
-                        midPointTime = GetMidpointTime(analyzer.StartImagingTime, analyzer.EndImagingTime);
+                        midPointTime = Utils.GetMidpointTime(analyzer.StartImagingTime, analyzer.EndImagingTime);
                         moonIllumination = AstrometryUtils.GetMoonIllumination(midPointTime);
                         moonSeparation = AstrometryUtils.GetMoonSeparationAngle(location, midPointTime, target.Coordinates);
 
@@ -80,7 +79,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                     }
 
                     // Calculate moon metrics here so available if rejected early
-                    midPointTime = GetMidpointTime(analyzer.StartImagingTime, analyzer.EndImagingTime);
+                    midPointTime = Utils.GetMidpointTime(analyzer.StartImagingTime, analyzer.EndImagingTime);
                     moonIllumination = AstrometryUtils.GetMoonIllumination(midPointTime);
                     moonSeparation = AstrometryUtils.GetMoonSeparationAngle(location, midPointTime, target.Coordinates);
 
@@ -151,11 +150,6 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             return new ImagingDayPlan(analyzer.StartImagingTime, analyzer.EndImagingTime, transitTime,
                                       analyzer.StartLimitingFactor, analyzer.EndLimitingFactor, moonIllumination,
                                       moonSeparation);
-        }
-
-        public static DateTime GetMidpointTime(DateTime startImagingTime, DateTime endImagingTime) {
-            long span = (long)endImagingTime.Subtract(startImagingTime).TotalSeconds;
-            return startImagingTime.AddSeconds(span / 2);
         }
     }
 

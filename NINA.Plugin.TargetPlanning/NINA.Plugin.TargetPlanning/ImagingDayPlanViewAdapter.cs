@@ -1,4 +1,4 @@
-﻿using NINA.Profile.Interfaces;
+﻿using NINA.Astrometry;
 using System;
 using TargetPlanning.NINAPlugin.Astrometry;
 
@@ -12,8 +12,9 @@ namespace TargetPlanning.NINAPlugin {
         public string StatusMessage { get => plan.GetStatusMessage(); }
         public bool Status { get => GetStatus(); }
 
-        public string StartImagingTime { get => DateFmt(plan.StartImagingTime); }
-        public string EndImagingTime { get => DateFmt(plan.EndImagingTime); }
+        public DateTime StartImagingTime { get => plan.StartImagingTime; }
+        public DateTime EndImagingTime { get => plan.EndImagingTime; }
+        public DateTime TransitTime { get => plan.TransitTime; }
 
         public string ImagingTime { get => GetTimeHM(); }
         public string ImagingTimeColor { get => GetImagingTimeColor(); }
@@ -21,31 +22,32 @@ namespace TargetPlanning.NINAPlugin {
         public string StartLimitingFactor { get => plan.StartLimitingFactor.Name; }
         public string EndLimitingFactor { get => plan.EndLimitingFactor.Name; }
 
-        public string MoonIllumination { get => GetMoonIlluminationFormatted(); }
+        public double MoonIllumination { get => plan.MoonIllumination * 100; }
         public string MoonIlluminationColor { get => GetMoonIlluminationColor(); }
 
-        public string MoonSeparation { get => GetMoonSeparationFormatted(); }
+        public double MoonSeparation { get => plan.MoonSeparation; }
         public string MoonSeparationColor { get => GetMoonSeparationColor(); }
 
-        private ImagingDayPlan plan;
-        private PlanParameters planParameters;
-        private IProfileService profile;
+        public DeepSkyObject Target { get => GetTarget(); }
+        public NighttimeData NighttimeData { get => GetPlanNighttimeData(); }
 
-        public ImagingDayPlanViewAdapter(ImagingDayPlan plan, PlanParameters planParameters, IProfileService profile) {
+        private ImagingDayPlan plan;
+        private ImagingDayPlanContext context;
+        private DeepSkyObject target;
+
+        public ImagingDayPlanViewAdapter(ImagingDayPlan plan, ImagingDayPlanContext context) {
             Validate.Assert.notNull(plan, "plan cannot be null");
-            Validate.Assert.notNull(planParameters, "planParameters cannot be null");
+            Validate.Assert.notNull(context, "context cannot be null");
 
             this.plan = plan;
-            this.planParameters = planParameters;
-            this.profile = profile;
+            this.context = context;
+
+            DeepSkyObject dso = context.PlanParameters.Target;
+            this.target = new DeepSkyObject(dso.Id, dso.Coordinates, null, context.Profile.ActiveProfile.AstrometrySettings.Horizon);
         }
 
         private bool GetStatus() {
             return !plan.StartLimitingFactor.Session;
-        }
-
-        private string DateFmt(DateTime dt) {
-            return dt.ToString("MM/dd/yyyy HH:mm:ss");
         }
 
         private string GetTimeHM() {
@@ -53,33 +55,38 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         private string GetImagingTimeColor() {
-            return (plan.GetImagingMinutes() < planParameters.MinimumImagingTime) ? VIOLATION_COLOR : OK_COLOR;
-        }
-
-        private string GetMoonIlluminationFormatted() {
-            return String.Format("{0:F0}%", plan.MoonIllumination * 100);
+            return (plan.GetImagingMinutes() < context.PlanParameters.MinimumImagingTime) ? VIOLATION_COLOR : OK_COLOR;
         }
 
         private string GetMoonIlluminationColor() {
-            if (planParameters.MaximumMoonIllumination == 0) {
+            if (context.PlanParameters.MaximumMoonIllumination == 0) {
                 return OK_COLOR;
             }
 
-            return (plan.MoonIllumination > planParameters.MaximumMoonIllumination) ? VIOLATION_COLOR : OK_COLOR;
-        }
-
-        private string GetMoonSeparationFormatted() {
-            return String.Format("{0:F0}°", plan.MoonSeparation);
+            return (plan.MoonIllumination > context.PlanParameters.MaximumMoonIllumination) ? VIOLATION_COLOR : OK_COLOR;
         }
 
         private string GetMoonSeparationColor() {
-            if (planParameters.MinimumMoonSeparation == 0) {
+            if (context.PlanParameters.MinimumMoonSeparation == 0) {
                 return OK_COLOR;
             }
 
-            return (plan.MoonSeparation < planParameters.MinimumMoonSeparation) ? VIOLATION_COLOR : OK_COLOR;
+            return (plan.MoonSeparation < context.PlanParameters.MinimumMoonSeparation) ? VIOLATION_COLOR : OK_COLOR;
         }
 
+        private NighttimeData GetPlanNighttimeData() {
+            return context.NighttimeCalculator.Calculate(GetReferenceDate());
+        }
+
+        private DeepSkyObject GetTarget() {
+            target.SetDateAndPosition(GetReferenceDate(), context.PlanParameters.ObserverInfo.Latitude, context.PlanParameters.ObserverInfo.Longitude);
+            target.Refresh();
+            return target;
+        }
+
+        private DateTime GetReferenceDate() {
+            return NighttimeCalculator.GetReferenceDate(plan.StartDay);
+        }
     }
 
 }

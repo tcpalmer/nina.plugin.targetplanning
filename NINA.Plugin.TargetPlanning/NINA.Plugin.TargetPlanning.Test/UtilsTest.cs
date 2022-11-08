@@ -1,6 +1,7 @@
 ﻿
 using FluentAssertions;
 using NUnit.Framework;
+using System;
 using TargetPlanning.NINAPlugin;
 
 namespace NINA.Plugin.TargetPlanning.Test {
@@ -14,6 +15,13 @@ namespace NINA.Plugin.TargetPlanning.Test {
         [TestCase(719, "11h 59m")]
         public void TestMtoHM(int min, string expected) {
             Utils.MtoHM(min).Should().Be(expected);
+        }
+
+        [Test]
+        public void TestMidpoint() {
+            DateTime start = DateTime.Now;
+            DateTime mid = Utils.GetMidpointTime(start, start.AddHours(1));
+            mid.Should().Be(start.AddMinutes(30));
         }
     }
 
