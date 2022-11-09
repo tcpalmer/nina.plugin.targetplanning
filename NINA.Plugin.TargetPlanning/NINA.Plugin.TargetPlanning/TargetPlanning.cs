@@ -108,6 +108,8 @@ namespace TargetPlanning.NINAPlugin {
             RaisePropertyChanged(nameof(MinimumMoonSeparation));
             RaisePropertyChanged(nameof(MaximumMoonIllumination));
             RaisePropertyChanged(nameof(MeridianTimeSpan));
+            RaisePropertyChanged(nameof(MoonAvoidanceEnabled));
+            RaisePropertyChanged(nameof(MoonAvoidanceWidth));
 
             InitializeCriteria();
         }
@@ -237,6 +239,22 @@ namespace TargetPlanning.NINAPlugin {
             }
         }
 
+        public bool MoonAvoidanceEnabled {
+            get => pluginSettings.GetValueBoolean(nameof(MoonAvoidanceEnabled), false);
+            set {
+                pluginSettings.SetValueBoolean(nameof(MoonAvoidanceEnabled), value);
+                RaisePropertyChanged();
+            }
+        }
+
+        public int MoonAvoidanceWidth {
+            get => pluginSettings.GetValueInt32(nameof(MoonAvoidanceWidth), 14);
+            set {
+                pluginSettings.SetValueInt32(nameof(MoonAvoidanceWidth), value);
+                RaisePropertyChanged();
+            }
+        }
+
         public ICommand CancelSearchCommand { get; private set; }
 
         private CancellationTokenSource _searchTokenSource;
@@ -269,27 +287,31 @@ namespace TargetPlanning.NINAPlugin {
                         new HorizonDefinition(MinimumAltitude) :
                         new HorizonDefinition(profileService.ActiveProfile.AstrometrySettings.Horizon, horizonOffset);
                 planParams.MinimumImagingTime = MinimumTime;
+                planParams.MeridianTimeSpan = MeridianTimeSpan;
                 planParams.MinimumMoonSeparation = MinimumMoonSeparation;
                 planParams.MaximumMoonIllumination = MaximumMoonIllumination;
-                planParams.MeridianTimeSpan = MeridianTimeSpan;
+                planParams.MoonAvoidanceEnabled = MoonAvoidanceEnabled;
+                planParams.MoonAvoidanceWidth = MoonAvoidanceWidth;
 
                 Logger.Debug($"Starting Target Planning for: {planParams.StartDate}, {planParams.PlanDays} days");
                 Logger.Debug($"          Target: {planParams.Target.Name} RA: {planParams.Target.Coordinates.RA} Dec: {planParams.Target.Coordinates.Dec}");
                 Logger.Trace($"    Location Lat: {planParams.ObserverInfo.Latitude} Long: {planParams.ObserverInfo.Longitude}, Ele: {planParams.ObserverInfo.Elevation}\n");
 
                 if (MinimumAltitude == HORIZON_VALUE) {
-                    Logger.Trace($"         Min alt: n/a");
-                    Logger.Trace($"  Custom horizon: applies, offset: {horizonOffset}\n");
+                    Logger.Debug($"         Min alt: n/a");
+                    Logger.Debug($"  Custom horizon: applies, offset: {horizonOffset}\n");
                 }
                 else {
-                    Logger.Trace($"         Min alt: {MinimumAltitude}");
-                    Logger.Trace($"  Custom horizon: n/a\n");
+                    Logger.Debug($"         Min alt: {MinimumAltitude}");
+                    Logger.Debug($"  Custom horizon: n/a\n");
                 }
 
-                Logger.Trace($"        Min time: {planParams.MinimumImagingTime}");
-                Logger.Trace($"  Max moon illum: {planParams.MaximumMoonIllumination}");
-                Logger.Trace($"    Min moon sep: {planParams.MinimumMoonSeparation}");
-                Logger.Trace($"   Meridian span: {planParams.MeridianTimeSpan}\n");
+                Logger.Debug($"        Min time: {planParams.MinimumImagingTime}");
+                Logger.Debug($"   Meridian span: {planParams.MeridianTimeSpan}\n");
+                Logger.Debug($"  Max moon illum: {planParams.MaximumMoonIllumination}");
+                Logger.Debug($"    Min moon sep: {planParams.MinimumMoonSeparation}");
+                Logger.Debug($"      Moon avoid: {planParams.MoonAvoidanceEnabled}");
+                Logger.Debug($"Moon avoid width: {planParams.MoonAvoidanceWidth}");
 
                 try {
                     SearchResult = null;

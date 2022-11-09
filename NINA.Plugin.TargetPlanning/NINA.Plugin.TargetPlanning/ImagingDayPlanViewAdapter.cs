@@ -1,5 +1,7 @@
 ﻿using NINA.Astrometry;
+using NINA.Core.Model;
 using System;
+using System.IO;
 using TargetPlanning.NINAPlugin.Astrometry;
 
 namespace TargetPlanning.NINAPlugin {
@@ -43,7 +45,7 @@ namespace TargetPlanning.NINAPlugin {
             this.context = context;
 
             DeepSkyObject dso = context.PlanParameters.Target;
-            this.target = new DeepSkyObject(dso.Id, dso.Coordinates, null, context.Profile.ActiveProfile.AstrometrySettings.Horizon);
+            this.target = new DeepSkyObject(dso.Id, dso.Coordinates, null, GetCustomHorizon());
         }
 
         private bool GetStatus() {
@@ -86,6 +88,23 @@ namespace TargetPlanning.NINAPlugin {
 
         private DateTime GetReferenceDate() {
             return NighttimeCalculator.GetReferenceDate(plan.StartDay);
+        }
+
+        private CustomHorizon GetCustomHorizon() {
+            HorizonDefinition hd = context.PlanParameters.HorizonDefinition;
+            return hd.IsCustom() ? context.Profile.ActiveProfile.AstrometrySettings.Horizon : GetConstantHorizon(hd.GetFixedMinimumAltitude());
+        }
+
+        private CustomHorizon GetConstantHorizon(double altitude) {
+            string alt = String.Format("{0:F0}", altitude);
+            string horizonDefinition = $"0 {alt}" + Environment.NewLine
+            + $"90 {alt}" + Environment.NewLine
+            + $"180 {alt}" + Environment.NewLine
+            + $"270 {alt}";
+
+            using (var sr = new StringReader(horizonDefinition)) {
+                return CustomHorizon.FromReader_Standard(sr);
+            }
         }
     }
 

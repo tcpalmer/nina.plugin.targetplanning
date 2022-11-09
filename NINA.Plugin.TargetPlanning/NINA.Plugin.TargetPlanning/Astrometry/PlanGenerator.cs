@@ -160,9 +160,11 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         public int PlanDays { get; set; }
         public HorizonDefinition HorizonDefinition { get; set; }
         public int MinimumImagingTime { get; set; }
+        public int MeridianTimeSpan { get; set; }
         public double MinimumMoonSeparation { get; set; }
         public double MaximumMoonIllumination { get; set; }
-        public int MeridianTimeSpan { get; set; }
+        public bool MoonAvoidanceEnabled { get; set; }
+        public int MoonAvoidanceWidth { get; set; }
     }
 
 }

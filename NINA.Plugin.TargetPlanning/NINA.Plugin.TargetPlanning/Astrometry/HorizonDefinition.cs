@@ -1,4 +1,5 @@
 ﻿using NINA.Core.Model;
+using System;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
@@ -28,6 +29,18 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
 
             return horizon.GetAltitude(aat.Azimuth) + offset;
+        }
+
+        public bool IsCustom() {
+            return minimumAltitude == TargetPlanningPlugin.HORIZON_VALUE;
+        }
+
+        public double GetFixedMinimumAltitude() {
+            if (IsCustom()) {
+                throw new ArgumentException("minimumAltitude n/a in this context");
+            }
+
+            return this.minimumAltitude;
         }
     }
 

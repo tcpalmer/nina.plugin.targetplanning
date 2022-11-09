@@ -36,7 +36,7 @@
                 <Border Grid.Column="0">
                     <StackPanel>
                         <UniformGrid
-                            Width="250"
+                            Width="320"
                             Margin="0,6,0,6"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -59,7 +59,7 @@
                             </ninactrl:AutoCompleteBox>
                         </UniformGrid>
                         <UniformGrid
-                            Width="250"
+                            Width="320"
                             Margin="0,0,0,6"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -108,7 +108,7 @@
                             </StackPanel>
                         </UniformGrid>
                         <UniformGrid
-                            Width="250"
+                            Width="320"
                             Margin="0,0,0,6"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -161,7 +161,7 @@
                         </UniformGrid>
 
                         <UniformGrid
-                            Width="250"
+                            Width="320"
                             Margin="0,15,0,6"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -233,6 +233,17 @@
                             Columns="2">
                             <TextBlock
                                 VerticalAlignment="Center"
+                                Text="Maximum Moon Illumination"
+                                ToolTip="Set the maximum acceptable moon illumination" />
+                            <ComboBox
+                                Margin="45,0,0,0"
+                                DisplayMemberPath="Value"
+                                IsEnabled="{Binding Path=MoonAvoidanceEnabled, Converter={StaticResource InverseBooleanConverter}}"
+                                ItemsSource="{Binding MaximumMoonIlluminationChoices}"
+                                SelectedValue="{Binding MaximumMoonIllumination}"
+                                SelectedValuePath="Key" />
+                            <TextBlock
+                                VerticalAlignment="Center"
                                 Text="Minimum Moon Separation"
                                 ToolTip="Set the minimum acceptable moon separation angle" />
                             <ComboBox
@@ -244,14 +255,20 @@
                                 SelectedValuePath="Key" />
                             <TextBlock
                                 VerticalAlignment="Center"
-                                Text="Maximum Moon Illumination"
-                                ToolTip="Set the maximum acceptable moon illumination" />
-                            <ComboBox
+                                Text="Moon Avoidance"
+                                ToolTip="Enable Moon Avoidance Lorentzian" />
+                            <CheckBox
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding MoonAvoidanceEnabled}" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Text="Moon Avoidance Width"
+                                ToolTip="Set the Moon Avoidance width parameter" />
+                            <TextBox
+                                IsEnabled="{Binding Path=MoonAvoidanceEnabled}"
                                 Margin="45,0,0,0"
-                                DisplayMemberPath="Value"
-                                ItemsSource="{Binding MaximumMoonIlluminationChoices}"
-                                SelectedValue="{Binding MaximumMoonIllumination}"
-                                SelectedValuePath="Key" />
+                                VerticalAlignment="Center"
+                                Text="{Binding MoonAvoidanceWidth}" />
                         </UniformGrid>
                     </StackPanel>
                 </Border>
@@ -348,12 +365,30 @@
                                 </Grid.ColumnDefinitions>
                                 <Border Grid.Column="0" Padding="5">
                                     <StackPanel Orientation="Vertical">
-                                        <TextBlock Margin="0,3,0,0" VerticalAlignment="Center" Text="Start Imaging Time: " />
-                                        <TextBlock Margin="0,3,0,0" VerticalAlignment="Center" Text="End Imaging Time: " />
-                                        <TextBlock Margin="0,3,0,0" VerticalAlignment="Center" Text="Imaging Time: " />
-                                        <TextBlock Margin="0,3,0,0" VerticalAlignment="Center" Text="Transit Time: " />
-                                        <TextBlock Margin="0,3,0,0" VerticalAlignment="Center" Text="Moon Illumination: " />
-                                        <TextBlock Margin="0,3,0,0" VerticalAlignment="Center" Text="Moon Angle: " />
+                                        <TextBlock
+                                            Margin="0,3,0,0"
+                                            VerticalAlignment="Center"
+                                            Text="Start Imaging Time: " />
+                                        <TextBlock
+                                            Margin="0,3,0,0"
+                                            VerticalAlignment="Center"
+                                            Text="End Imaging Time: " />
+                                        <TextBlock
+                                            Margin="0,3,0,0"
+                                            VerticalAlignment="Center"
+                                            Text="Imaging Time: " />
+                                        <TextBlock
+                                            Margin="0,3,0,0"
+                                            VerticalAlignment="Center"
+                                            Text="Transit Time: " />
+                                        <TextBlock
+                                            Margin="0,3,0,0"
+                                            VerticalAlignment="Center"
+                                            Text="Moon Illumination: " />
+                                        <TextBlock
+                                            Margin="0,3,0,0"
+                                            VerticalAlignment="Center"
+                                            Text="Moon Angle: " />
                                     </StackPanel>
                                 </Border>
                                 <Border Grid.Column="1" Padding="5">
@@ -383,32 +418,34 @@
                                                 Text="{Binding EndLimitingFactor}" />
                                         </StackPanel>
                                         <TextBlock
-                                                Margin="0,3,0,0"
+                                            Margin="0,3,0,0"
                                             VerticalAlignment="Center"
                                             Foreground="{Binding ImagingTimeColor}"
                                             Text="{Binding ImagingTime}" />
                                         <TextBlock
-                                                Margin="0,3,0,0"
+                                            Margin="0,3,0,0"
                                             VerticalAlignment="Center"
                                             Foreground="White"
                                             Text="{Binding TransitTime, StringFormat={}{0:HH:mm:ss}}" />
                                         <TextBlock
-                                                Margin="0,3,0,0"
+                                            Margin="0,3,0,0"
                                             VerticalAlignment="Center"
                                             Foreground="{Binding MoonIlluminationColor}"
                                             Text="{Binding MoonIllumination, StringFormat={}{0:F0}%}" />
                                         <TextBlock
-                                                Margin="0,3,0,0"
+                                            Margin="0,3,0,0"
                                             VerticalAlignment="Center"
                                             Foreground="{Binding MoonSeparationColor}"
                                             Text="{Binding MoonSeparation, StringFormat={}{0:F0}°}" />
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Grid.Column="3" Padding="5" MinHeight="200">
+                                    Grid.Column="3"
+                                    MinHeight="200"
+                                    Padding="5">
                                     <alt:AltitudeChart
-                                        NighttimeData="{Binding Source={StaticResource nighttimeProxy}, Path=Data}"
                                         DataContext="{Binding Target}"
+                                        NighttimeData="{Binding Source={StaticResource nighttimeProxy}, Path=Data}"
                                         ShowMoon="True" />
                                 </Border>
                             </Grid>
