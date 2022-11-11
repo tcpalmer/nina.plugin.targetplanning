@@ -10,6 +10,10 @@ namespace TargetPlanning.NINAPlugin {
             return $"{hours}h {min}m";
         }
 
+        public static string FormatDateTimeFull(DateTime dateTime) {
+            return String.Format("{0:MM/dd/yyyy HH:mm:ss}", dateTime);
+        }
+
         public static DateTime GetMidpointTime(DateTime startTime, DateTime endTime) {
             long span = (long)endTime.Subtract(startTime).TotalSeconds;
             return startTime.AddSeconds(span / 2);

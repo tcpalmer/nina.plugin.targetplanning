@@ -45,6 +45,10 @@ namespace TargetPlanning.NINAPlugin {
             this.profileService = profileService;
             profileService.ProfileChanged += ProfileService_ProfileChanged;
 
+            if (profileService.ActiveProfile != null) {
+                profileService.ActiveProfile.AstrometrySettings.PropertyChanged += ProfileService_ProfileChanged;
+            }
+
             var defaultCoordinates = new Coordinates(0, 0, Epoch.J2000, Coordinates.RAType.Degrees);
             DSO = new DeepSkyObject(string.Empty, defaultCoordinates, profileService.ActiveProfile.ApplicationSettings.SkyAtlasImageRepository, profileService.ActiveProfile.AstrometrySettings.Horizon);
             DeepSkyObjectSearchVM = deepSkyObjectSearchVM;
@@ -66,9 +70,15 @@ namespace TargetPlanning.NINAPlugin {
             }
 
             // Add 'Horizon' to altitude choices to trigger use of custom horizon
+            MinimumAltitudeChoices.Add(new KeyValuePair<double, string>(HORIZON_VALUE, "Above Horizon"));
+            /*
             if (profileService.ActiveProfile.AstrometrySettings.Horizon != null) {
+                Logger.Debug("custom horizon found");
                 MinimumAltitudeChoices.Add(new KeyValuePair<double, string>(HORIZON_VALUE, "Horizon"));
             }
+            else {
+                Logger.Debug("custom horizon NOT found");
+            }*/
 
             MinimumTimeChoices = new AsyncObservableCollection<KeyValuePair<int, string>>();
             MinimumTimeChoices.Add(new KeyValuePair<int, string>(0, Loc.Instance["LblAny"]));
@@ -97,10 +107,15 @@ namespace TargetPlanning.NINAPlugin {
 
         public override Task Teardown() {
             profileService.ProfileChanged -= ProfileService_ProfileChanged;
+            profileService.ActiveProfile.AstrometrySettings.PropertyChanged -= ProfileService_ProfileChanged;
+            DeepSkyObjectSearchVM.PropertyChanged -= DeepSkyObjectSearchVM_PropertyChanged;
             return base.Teardown();
         }
 
         private void ProfileService_ProfileChanged(object sender, EventArgs e) {
+            SearchResult = null;
+            InitializeCriteria();
+
             RaisePropertyChanged(nameof(StartDate));
             RaisePropertyChanged(nameof(PlanDays));
             RaisePropertyChanged(nameof(MinimumTime));
@@ -111,7 +126,10 @@ namespace TargetPlanning.NINAPlugin {
             RaisePropertyChanged(nameof(MoonAvoidanceEnabled));
             RaisePropertyChanged(nameof(MoonAvoidanceWidth));
 
-            InitializeCriteria();
+            if (profileService.ActiveProfile != null) {
+                profileService.ActiveProfile.AstrometrySettings.PropertyChanged -= ProfileService_ProfileChanged;
+                profileService.ActiveProfile.AstrometrySettings.PropertyChanged += ProfileService_ProfileChanged;
+            }
         }
 
         private DeepSkyObject _dSO;
@@ -271,12 +289,8 @@ namespace TargetPlanning.NINAPlugin {
 
             return await Task.Run(() => {
 
-                // TODO: need to add to UI
+                // Leaving this fixed - at least for now: Target Planning isn't meant to determine exact timings for a real session.
                 double horizonOffset = 0;
-
-                // TODO: if user entered coords are not from the DSO, we have to whip up a fresh DSO object
-                // will have to look for prop changed on all coords fields and the DSO search box.
-                // See DeepSkyObjectSearchVM_PropertyChanged() - might be handled now
 
                 PlanParameters planParams = new PlanParameters();
                 planParams.Target = DSO;
@@ -293,7 +307,7 @@ namespace TargetPlanning.NINAPlugin {
                 planParams.MoonAvoidanceEnabled = MoonAvoidanceEnabled;
                 planParams.MoonAvoidanceWidth = MoonAvoidanceWidth;
 
-                Logger.Debug($"Starting Target Planning for: {planParams.StartDate}, {planParams.PlanDays} days");
+                Logger.Debug($"Starting Target Planning for: {Utils.FormatDateTimeFull(planParams.StartDate)}, {planParams.PlanDays} days");
                 Logger.Debug($"          Target: {planParams.Target.Name} RA: {planParams.Target.Coordinates.RA} Dec: {planParams.Target.Coordinates.Dec}");
                 Logger.Trace($"    Location Lat: {planParams.ObserverInfo.Latitude} Long: {planParams.ObserverInfo.Longitude}, Ele: {planParams.ObserverInfo.Elevation}\n");
 
@@ -322,7 +336,7 @@ namespace TargetPlanning.NINAPlugin {
                         wrappedResults.Add(new ImagingDayPlanViewAdapter(plan, new ImagingDayPlanContext(planParams, profileService)));
                     }
 
-                    LogResults(wrappedResults);
+                    LogResults(planParams, wrappedResults);
                     SearchResult = new PagedList<ImagingDayPlanViewAdapter>(22, wrappedResults);
                 }
                 catch (OperationCanceledException) {
@@ -340,19 +354,26 @@ namespace TargetPlanning.NINAPlugin {
 
         public ICommand ShowDetailCommand { get; private set; }
 
-        private void LogResults(IEnumerable<ImagingDayPlanViewAdapter> results) {
+        private void LogResults(PlanParameters planParams, IEnumerable<ImagingDayPlanViewAdapter> results) {
             Logger.Trace("Search results:");
             foreach (ImagingDayPlanViewAdapter plan in results) {
                 Logger.Trace($"      status: {plan.StatusMessage}");
-                Logger.Trace($"  start time: {plan.StartImagingTime}");
-                Logger.Trace($"    end time: {plan.EndImagingTime}");
+                Logger.Trace($"  start time: {Utils.FormatDateTimeFull(plan.StartImagingTime)}");
+                Logger.Trace($"    end time: {Utils.FormatDateTimeFull(plan.EndImagingTime)}");
                 Logger.Trace($"        time: {plan.ImagingTime}");
 
                 Logger.Trace($" start limit: {plan.StartLimitingFactor}");
                 Logger.Trace($"   end limit: {plan.EndLimitingFactor}");
 
                 Logger.Trace($"  moon illum: {plan.MoonIllumination}");
-                Logger.Trace($"    moon sep: {plan.MoonSeparation}\n");
+                Logger.Trace($"    moon sep: {plan.MoonSeparation}");
+
+                if (planParams.MoonAvoidanceEnabled) {
+                    Logger.Trace($"   avoid sep: {plan.MoonAvoidanceSeparation}\n");
+                }
+                else {
+                    Logger.Trace($"   avoid sep: n/a\n");
+                }
             }
         }
 

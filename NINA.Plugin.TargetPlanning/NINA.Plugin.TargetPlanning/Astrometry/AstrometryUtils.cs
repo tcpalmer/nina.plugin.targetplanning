@@ -63,7 +63,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
         /// <summary>
         /// Determine the angle in degrees between the moon and a target at location and time.  Copied from
-        /// NINA MoonInfo which is private.
+        /// NINA MoonInfo.CalculateSeparation() which is private.
         /// </summary>
         /// <param name="location"></param>
         /// <param name="atTime"></param>
@@ -85,6 +85,9 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
         /// <summary>
         /// Determine the moon avoidance separation for the moon age and separation angle (distance) to the target.
+        /// 
+        /// Basically, distance is selected to be the minimum acceptable separation at full moon.  Width is then the
+        /// number of days (before or after full) for the acceptable separation to drop to distance/2.
         /// 
         /// The Moon Avoidance Lorentzian concept is from the Berkeley Automated Imaging Telescope (BAIT) team.  See
         /// http://astron.berkeley.edu/~bait/.  This formulation is from ACP, see

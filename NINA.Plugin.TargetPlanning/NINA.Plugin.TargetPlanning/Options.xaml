@@ -257,18 +257,23 @@
                                 VerticalAlignment="Center"
                                 Text="Moon Avoidance"
                                 ToolTip="Enable Moon Avoidance Lorentzian" />
-                            <CheckBox
-                                VerticalAlignment="Center"
-                                IsChecked="{Binding MoonAvoidanceEnabled}" />
+                            <CheckBox VerticalAlignment="Center" IsChecked="{Binding MoonAvoidanceEnabled}" />
                             <TextBlock
                                 VerticalAlignment="Center"
                                 Text="Moon Avoidance Width"
                                 ToolTip="Set the Moon Avoidance width parameter" />
                             <TextBox
-                                IsEnabled="{Binding Path=MoonAvoidanceEnabled}"
                                 Margin="45,0,0,0"
                                 VerticalAlignment="Center"
-                                Text="{Binding MoonAvoidanceWidth}" />
+                                IsEnabled="{Binding Path=MoonAvoidanceEnabled}">
+                                <TextBox.Text>
+                                    <Binding Path="MoonAvoidanceWidth" UpdateSourceTrigger="LostFocus">
+                                        <Binding.ValidationRules>
+                                            <rules:GreaterThanZeroRule />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
                         </UniformGrid>
                     </StackPanel>
                 </Border>
@@ -389,6 +394,10 @@
                                             Margin="0,3,0,0"
                                             VerticalAlignment="Center"
                                             Text="Moon Angle: " />
+                                        <TextBlock
+                                            Margin="0,3,0,0"
+                                            VerticalAlignment="Center"
+                                            Text="Moon Avoid Angle: " />
                                     </StackPanel>
                                 </Border>
                                 <Border Grid.Column="1" Padding="5">
@@ -397,24 +406,20 @@
                                             <TextBlock
                                                 Margin="0,3,0,0"
                                                 VerticalAlignment="Center"
-                                                Foreground="White"
                                                 Text="{Binding StartImagingTime, StringFormat={}{0:HH:mm:ss}}" />
                                             <TextBlock
                                                 Margin="0,3,0,0"
                                                 VerticalAlignment="Center"
-                                                Foreground="White"
                                                 Text="{Binding StartLimitingFactor}" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock
                                                 Margin="0,3,0,0"
                                                 VerticalAlignment="Center"
-                                                Foreground="White"
                                                 Text="{Binding EndImagingTime, StringFormat={}{0:HH:mm:ss}}" />
                                             <TextBlock
                                                 Margin="0,3,0,0"
                                                 VerticalAlignment="Center"
-                                                Foreground="White"
                                                 Text="{Binding EndLimitingFactor}" />
                                         </StackPanel>
                                         <TextBlock
@@ -425,7 +430,6 @@
                                         <TextBlock
                                             Margin="0,3,0,0"
                                             VerticalAlignment="Center"
-                                            Foreground="White"
                                             Text="{Binding TransitTime, StringFormat={}{0:HH:mm:ss}}" />
                                         <TextBlock
                                             Margin="0,3,0,0"
@@ -437,6 +441,11 @@
                                             VerticalAlignment="Center"
                                             Foreground="{Binding MoonSeparationColor}"
                                             Text="{Binding MoonSeparation, StringFormat={}{0:F0}°}" />
+                                        <TextBlock
+                                            Margin="0,3,0,0"
+                                            VerticalAlignment="Center"
+                                            Foreground="{Binding MoonAvoidanceSeparationColor}"
+                                            Text="{Binding MoonAvoidanceSeparationDisplay}" />
                                     </StackPanel>
                                 </Border>
                                 <Border

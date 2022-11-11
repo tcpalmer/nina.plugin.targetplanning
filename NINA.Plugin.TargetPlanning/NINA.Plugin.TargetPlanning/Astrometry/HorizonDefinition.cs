@@ -15,12 +15,17 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         }
 
         public HorizonDefinition(CustomHorizon customHorizon, double offset) {
-            Validate.Assert.notNull(customHorizon, "customHorizon cannot be null");
             Validate.Assert.isTrue(offset >= 0, "offset must be >= 0");
 
-            this.minimumAltitude = TargetPlanningPlugin.HORIZON_VALUE;
-            this.horizon = customHorizon;
-            this.offset = offset;
+            if (customHorizon != null) {
+                this.minimumAltitude = TargetPlanningPlugin.HORIZON_VALUE;
+                this.horizon = customHorizon;
+                this.offset = offset;
+            }
+            else {
+                // Protection against a weird horizon change in the profile
+                this.minimumAltitude = 0;
+            }
         }
 
         public double GetTargetAltitude(AltitudeAtTime aat) {

@@ -31,8 +31,11 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
         public double MoonIllumination { get; private set; }
         public double MoonSeparation { get; private set; }
+        public double MoonAvoidanceSeparation { get; private set; }
 
-        public ImagingDayPlan(DateTime startImagingTime, DateTime endImagingTime, DateTime transitTime, ImagingLimit startLimitingFactor, ImagingLimit endLimitingFactor, double moonIllumination, double moonSeparation) {
+        public ImagingDayPlan(DateTime startImagingTime, DateTime endImagingTime, DateTime transitTime,
+            ImagingLimit startLimitingFactor, ImagingLimit endLimitingFactor,
+            double moonIllumination, double moonSeparation, double moonAvoidanceSeparation) {
 
             Validate.Assert.notNull(startLimitingFactor, "startLimitingFactor cannot be null");
             Validate.Assert.notNull(endLimitingFactor, "endLimitingFactor cannot be null");
@@ -44,6 +47,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             EndLimitingFactor = endLimitingFactor;
             MoonIllumination = moonIllumination;
             MoonSeparation = moonSeparation;
+            MoonAvoidanceSeparation = moonAvoidanceSeparation;
 
             if (startImagingTime != null) {
                 StartDay = startImagingTime;
@@ -74,6 +78,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             return StartLimitingFactor.Equals(ImagingLimit.MoonSeparation);
         }
 
+        public bool BelowMinimumMoonAvoidanceSeparation() {
+            return StartLimitingFactor.Equals(ImagingLimit.MoonAvoidanceSeparation);
+        }
+
         public String GetStatusMessage() {
             return StartLimitingFactor.Session ? StartLimitingFactor.Name : "yes";
         }
@@ -96,6 +104,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         public static ImagingLimit MinimumTime { get { return new ImagingLimit(true, "not enough time"); } }
         public static ImagingLimit MoonIllumination { get { return new ImagingLimit(true, "moon illum"); } }
         public static ImagingLimit MoonSeparation { get { return new ImagingLimit(true, "moon angle"); } }
+        public static ImagingLimit MoonAvoidanceSeparation { get { return new ImagingLimit(true, "moon avoidance"); } }
         public static ImagingLimit Meridian { get { return new ImagingLimit(true, "meridian time span"); } }
         public static ImagingLimit MinimumAltitude { get { return new ImagingLimit(false, "minimum altitude"); } }
         public static ImagingLimit MeridianClip { get { return new ImagingLimit(false, "meridian"); } }
