@@ -59,6 +59,18 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
         }
 
+        public double AdjustForMoonAvoidanceSeparation(DateTime atTime, double moonSeparation, double minimumMoonSeparation, int moonAvoidanceWidth) {
+            double moonAge = AstrometryUtils.GetMoonAge(atTime);
+            double moonAvoidanceSeparation = AstrometryUtils.GetMoonAvoidanceLorentzianSeparation(moonAge, minimumMoonSeparation, moonAvoidanceWidth);
+
+            if (moonSeparation < moonAvoidanceSeparation) {
+                StartLimitingFactor = ImagingLimit.MoonAvoidanceSeparation;
+                EndLimitingFactor = ImagingLimit.MoonAvoidanceSeparation;
+            }
+
+            return moonAvoidanceSeparation;
+        }
+
         public void AdjustForMeridianProximity(DateTime transitTime, long meridianProximityTime) {
 
             if (transitTime == DateTime.MinValue) {

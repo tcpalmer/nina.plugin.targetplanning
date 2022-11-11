@@ -1,11 +1,12 @@
 ﻿using NINA.Astrometry;
-using NINA.Core.Enum;
+using NINA.Core.Utility;
 using System;
-using static NINA.Sequencer.Utility.ItemUtility;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
     public class AstrometryUtils {
+
+        private const double DAYS_IN_LUNAR_CYCLE = 29.53059;
 
         /// <summary>
         /// Return the horizontal coordinates for the coordinates at the specific location and time.
@@ -62,7 +63,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
         /// <summary>
         /// Determine the angle in degrees between the moon and a target at location and time.  Copied from
-        /// NINA MoonInfo which is private.
+        /// NINA MoonInfo.CalculateSeparation() which is private.
         /// </summary>
         /// <param name="location"></param>
         /// <param name="atTime"></param>
@@ -80,6 +81,44 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             var theta = SOFA.Seps(moonRaRadians, moonDecRadians, targetRaRadians, targetDecRadians);
             return AstroUtil.ToDegree(theta);
+        }
+
+        /// <summary>
+        /// Determine the moon avoidance separation for the moon age and separation angle (distance) to the target.
+        /// 
+        /// Basically, distance is selected to be the minimum acceptable separation at full moon.  Width is then the
+        /// number of days (before or after full) for the acceptable separation to drop to distance/2.
+        /// 
+        /// The Moon Avoidance Lorentzian concept is from the Berkeley Automated Imaging Telescope (BAIT) team.  See
+        /// http://astron.berkeley.edu/~bait/.  This formulation is from ACP, see
+        /// http://bobdenny.com/ar/RefDocs/HelpFiles/ACPScheduler81Help/Constraints.htm.
+        /// </summary>
+        /// <param name="moonAge"></param>
+        /// <param name="distance"></param>
+        /// <param name="width"></param>
+        /// <returns></returns>
+        public static double GetMoonAvoidanceLorentzianSeparation(double moonAge, double distance, int width) {
+            if (width == 0) {
+                Logger.Error("moon avoidance width cannot be zero");
+                return 0;
+            }
+
+            // The ACP page has a typo in the formula - missing parens.  The JavaScript on that page shows:
+            //     (d / (1.0 + Math.pow(((0.5 - (a / 29.5)) / (w / 29.5)), 2)))
+            // With that change, this duplicates ACP.
+
+            return distance / (1 + Math.Pow((0.5 - (moonAge / DAYS_IN_LUNAR_CYCLE)) / (width / DAYS_IN_LUNAR_CYCLE), 2));
+        }
+
+        /// <summary>
+        /// Get the moon's age in days at time.
+        /// </summary>
+        /// <param name="atTime"></param>
+        /// <returns>age in days</returns>
+        public static double GetMoonAge(DateTime atTime) {
+            double moonPA = AstroUtil.GetMoonPositionAngle(atTime);
+            moonPA = moonPA > 0 ? moonPA : (180 + moonPA) + 180;
+            return moonPA * (DAYS_IN_LUNAR_CYCLE / 360);
         }
 
         /// <summary>

@@ -13,7 +13,8 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
         public void TestAirmass() {
             for (int i = 0; i <= 90; i += 5) {
                 double airmass = AstroUtil.Airmass(i);
-                TestContext.WriteLine(String.Format("{0,2:F0} {1,9:F2}", i, airmass));
+                // TODO: ...
+                //TestContext.WriteLine(String.Format("{0,2:F0} {1,9:F2}", i, airmass));
             }
         }
 
@@ -49,6 +50,53 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
             DateTime dateTime = new DateTime(2022, 11, day, hour, min, 0);
             double moonSeparation = AstrometryUtils.GetMoonSeparationAngle(TestUtil.TEST_LOCATION_1, dateTime, TestUtil.BETELGEUSE);
             moonSeparation.Should().BeApproximately(expected, 0.001);
+        }
+
+        [Test]
+        [TestCase(1, 61.0143)]
+        [TestCase(2, 65.5239)]
+        [TestCase(3, 70.3303)]
+        [TestCase(4, 75.4108)]
+        [TestCase(5, 80.7246)]
+        [TestCase(6, 86.2074)]
+        [TestCase(7, 91.7675)]
+        [TestCase(8, 97.2829)]
+        [TestCase(9, 102.6005)]
+        [TestCase(10, 107.5406)]
+        [TestCase(11, 111.9054)]
+        [TestCase(12, 115.4940)]
+        [TestCase(13, 118.1219)]
+        [TestCase(14, 119.6425)]
+        [TestCase(15, 119.9663)]
+        [TestCase(16, 119.0738)]
+        [TestCase(17, 117.0185)]
+        [TestCase(18, 113.9185)]
+        [TestCase(19, 109.9411)]
+        [TestCase(20, 105.2810)]
+        [TestCase(21, 100.1398)]
+        [TestCase(22, 94.7085)]
+        [TestCase(23, 89.1549)]
+        [TestCase(24, 83.6178)]
+        [TestCase(25, 78.2047)]
+        [TestCase(26, 72.9939)]
+        [TestCase(27, 68.0382)]
+        [TestCase(28, 63.3693)]
+        [TestCase(29, 59.0026)]
+        public void TestGetMoonAvoidanceLorentzianSeparation(int moonAge, double expected) {
+            // These test cases duplicate http://bobdenny.com/ar/RefDocs/HelpFiles/ACPScheduler81Help/Constraints.htm
+            double separation = AstrometryUtils.GetMoonAvoidanceLorentzianSeparation(moonAge, 120, 14);
+            separation.Should().BeApproximately(expected, 0.001);
+        }
+
+        [Test]
+        [TestCase(11, 1, 2, 37, 7.91)]
+        [TestCase(11, 8, 6, 2, 14.744)]
+        [TestCase(11, 16, 8, 27, 22.606)]
+        [TestCase(11, 23, 17, 57, 29.4829)]
+        public void TestMoonAge(int month, int day, int hour, int min, double expected) {
+            DateTime dateTime = new DateTime(2022, month, day, hour, min, 0);
+            double moonAge = AstrometryUtils.GetMoonAge(dateTime);
+            moonAge.Should().BeApproximately(expected, 0.001);
         }
 
         [Test]

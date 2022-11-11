@@ -47,6 +47,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                     DateTime midPointTime;
                     double moonIllumination;
                     double moonSeparation;
+                    double moonAvoidanceSeparation = double.MinValue;
 
                     // Check if the target is visible at all
                     if (status != TargetImagingCircumstances.STATUS_POTENTIALLY_VISIBLE) {
@@ -57,7 +58,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                         moonSeparation = AstrometryUtils.GetMoonSeparationAngle(location, midPointTime, target.Coordinates);
 
                         imagingDayList.Add(new ImagingDayPlan(startTime, endTime, startTime.AddMinutes(1), ImagingLimit.NotVisible, ImagingLimit.NotVisible,
-                            moonIllumination, moonSeparation));
+                            moonIllumination, moonSeparation, moonAvoidanceSeparation));
                         continue;
                     }
 
@@ -85,28 +86,40 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
                     // Stop if already rejected
                     if (analyzer.SessionIsRejected()) {
-                        imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation));
+                        imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation));
                         continue;
                     }
 
                     // Accept/reject for moon illumination criteria
-                    if (PlanParameters.MaximumMoonIllumination != 0) {
+                    if (!PlanParameters.MoonAvoidanceEnabled && PlanParameters.MaximumMoonIllumination != 0) {
                         analyzer.AdjustForMoonIllumination(moonIllumination, PlanParameters.MaximumMoonIllumination);
 
                         // Stop if already rejected
                         if (analyzer.SessionIsRejected()) {
-                            imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation));
+                            imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation));
                             continue;
                         }
                     }
 
                     // Accept/reject for moon separation criteria
-                    if (PlanParameters.MinimumMoonSeparation != 0) {
+                    if (!PlanParameters.MoonAvoidanceEnabled && PlanParameters.MinimumMoonSeparation != 0) {
                         analyzer.AdjustForMoonSeparation(moonSeparation, PlanParameters.MinimumMoonSeparation);
 
                         // Stop if already rejected
                         if (analyzer.SessionIsRejected()) {
-                            imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation));
+                            imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation));
+                            continue;
+                        }
+                    }
+
+                    // Accept/reject for moon avoidance separation criteria
+                    if (PlanParameters.MoonAvoidanceEnabled && PlanParameters.MinimumMoonSeparation != 0) {
+                        moonAvoidanceSeparation = analyzer.AdjustForMoonAvoidanceSeparation(midPointTime, moonSeparation,
+                            PlanParameters.MinimumMoonSeparation, PlanParameters.MoonAvoidanceWidth);
+
+                        // Stop if already rejected
+                        if (analyzer.SessionIsRejected()) {
+                            imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation));
                             continue;
                         }
                     }
@@ -116,7 +129,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                         analyzer.AdjustForMinimumImagingTime(PlanParameters.MinimumImagingTime);
                     }
 
-                    ImagingDayPlan plan = GetPlan(analyzer, transitTime, moonIllumination, moonSeparation);
+                    ImagingDayPlan plan = GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation);
                     imagingDayList.Add(plan);
                 }
 
@@ -146,10 +159,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         }
 
         private ImagingDayPlan GetPlan(ImagingCriteriaAnalyzer analyzer, DateTime transitTime, double moonIllumination,
-                                       double moonSeparation) {
+                                       double moonSeparation, double moonAvoidanceSeparation) {
             return new ImagingDayPlan(analyzer.StartImagingTime, analyzer.EndImagingTime, transitTime,
                                       analyzer.StartLimitingFactor, analyzer.EndLimitingFactor, moonIllumination,
-                                      moonSeparation);
+                                      moonSeparation, moonAvoidanceSeparation);
         }
     }
 
@@ -160,9 +173,11 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         public int PlanDays { get; set; }
         public HorizonDefinition HorizonDefinition { get; set; }
         public int MinimumImagingTime { get; set; }
+        public int MeridianTimeSpan { get; set; }
         public double MinimumMoonSeparation { get; set; }
         public double MaximumMoonIllumination { get; set; }
-        public int MeridianTimeSpan { get; set; }
+        public bool MoonAvoidanceEnabled { get; set; }
+        public int MoonAvoidanceWidth { get; set; }
     }
 
 }
