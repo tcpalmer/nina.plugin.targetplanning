@@ -1,5 +1,4 @@
-﻿using OxyPlot;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace TargetPlanning.NINAPlugin.AnnualChart {
@@ -13,18 +12,12 @@ namespace TargetPlanning.NINAPlugin.AnnualChart {
             InitializeComponent();
         }
 
-        public static DependencyProperty AnnualPlanningChartProperty = DependencyProperty.Register("AnnualPlanningChartModel", typeof(PlotModel), typeof(AnnualPlanningChart));
+        public static DependencyProperty AnnualPlanningChartProperty = DependencyProperty.Register("AnnualPlanningChartModel", typeof(AnnualPlanningChartModel), typeof(AnnualPlanningChart));
 
-        public PlotModel AnnualPlanningChartModel {
-            get => (PlotModel)GetValue(AnnualPlanningChartProperty);
+        public AnnualPlanningChartModel AnnualPlanningChartModel {
+            get => (AnnualPlanningChartModel)GetValue(AnnualPlanningChartProperty);
             set => SetValue(AnnualPlanningChartProperty, value);
         }
 
-        public static DependencyProperty ShowMoonProperty = DependencyProperty.Register("ShowMoon", typeof(bool), typeof(AnnualPlanningChart), new PropertyMetadata(true));
-
-        public bool ShowMoon {
-            get => (bool)GetValue(ShowMoonProperty);
-            set => SetValue(ShowMoonProperty, value);
-        }
     }
 }

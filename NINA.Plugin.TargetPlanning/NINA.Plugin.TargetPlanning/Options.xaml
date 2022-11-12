@@ -297,9 +297,9 @@
             <!-- Annual Chart -->
             <Grid>
                 <Grid.Resources>
-                    <util:BindingProxy x:Key="annualChart" Data="{Binding AnnualPlanningChart}" />
+                    <util:BindingProxy x:Key="annualChartModel" Data="{Binding AnnualPlanningChartModel}" />
                 </Grid.Resources>
-                <tp:AnnualPlanningChart AnnualPlanningChartModel="{Binding Source={StaticResource annualChart}, Path=Data}" />
+                <tp:AnnualPlanningChart AnnualPlanningChartModel="{Binding Source={StaticResource annualChartModel}, Path=Data}" />
             </Grid>
 
             <!--  Search result area  -->

@@ -7,8 +7,6 @@ using NINA.Plugin.Interfaces;
 using NINA.Profile;
 using NINA.Profile.Interfaces;
 using NINA.WPF.Base.Interfaces.ViewModel;
-using OxyPlot;
-using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,6 +16,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using TargetPlanning.NINAPlugin.AnnualChart;
 using TargetPlanning.NINAPlugin.Astrometry;
 
 namespace TargetPlanning.NINAPlugin {
@@ -61,8 +60,7 @@ namespace TargetPlanning.NINAPlugin {
 
             InitializeCriteria();
 
-            AnnualPlanningChart = new PlotModel { Title = "Example 1" };
-            AnnualPlanningChart.Series.Add(new FunctionSeries(Math.Cos, 0, 10, 0.1, "cos(x)"));
+            AnnualPlanningChartModel = new AnnualPlanningChartModel();
         }
 
         public static readonly double HORIZON_VALUE = double.MinValue;
@@ -270,11 +268,11 @@ namespace TargetPlanning.NINAPlugin {
             }
         }
 
-        private PlotModel _annualPlanningChart;
-        public PlotModel AnnualPlanningChart {
-            get => _annualPlanningChart;
+        private AnnualPlanningChartModel _annualPlanningChartModel;
+        public AnnualPlanningChartModel AnnualPlanningChartModel {
+            get => _annualPlanningChartModel;
             set {
-                _annualPlanningChart = value;
+                _annualPlanningChartModel = value;
             }
         }
 

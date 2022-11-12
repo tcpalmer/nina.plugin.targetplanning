@@ -20,7 +20,7 @@
                 MinWidth="300"
                 MinHeight="100"
                 Background="{StaticResource BackgroundBrush}"
-                Model="{Binding Source={StaticResource proxy}, Path=Data}" />
+                Model="{Binding Source={StaticResource proxy}, Path=Data.Chart}" />
         </StackPanel>
     </Grid>
 </UserControl>

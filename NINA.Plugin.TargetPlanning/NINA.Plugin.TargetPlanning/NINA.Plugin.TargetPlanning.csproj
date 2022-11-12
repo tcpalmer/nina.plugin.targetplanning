@@ -266,6 +266,7 @@
     <Compile Include="AnnualChart\AnnualPlanningChart.xaml.cs">
       <DependentUpon>AnnualPlanningChart.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AnnualChart\AnnualPlanningChartModel.cs" />
     <Compile Include="Astrometry\Altitudes.cs" />
     <Compile Include="Astrometry\AstrometryUtils.cs" />
     <Compile Include="Astrometry\CircumstanceSolver.cs" />
