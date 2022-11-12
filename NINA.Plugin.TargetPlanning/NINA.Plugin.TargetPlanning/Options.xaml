@@ -10,6 +10,7 @@
     xmlns:ninactrl="clr-namespace:NINACustomControlLibrary;assembly=NINACustomControlLibrary"
     xmlns:ns="clr-namespace:NINA.Core.Locale;assembly=NINA.Core"
     xmlns:rules="clr-namespace:NINA.Core.Utility.ValidationRules;assembly=NINA.Core"
+    xmlns:tp="clr-namespace:TargetPlanning.NINAPlugin.AnnualChart"
     xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core">
 
     <!--  This data template will be displayed in N.I.N.A. on the options->plugin tab with the datacontext of the TestPlugin instance  -->
@@ -292,6 +293,14 @@
                     Command="{Binding SearchCommand}"
                     Visibility="{Binding SearchCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
             </StackPanel>
+
+            <!-- Annual Chart -->
+            <Grid>
+                <Grid.Resources>
+                    <util:BindingProxy x:Key="annualChart" Data="{Binding AnnualPlanningChart}" />
+                </Grid.Resources>
+                <tp:AnnualPlanningChart AnnualPlanningChartModel="{Binding Source={StaticResource annualChart}, Path=Data}" />
+            </Grid>
 
             <!--  Search result area  -->
             <Grid DataContext="{Binding SearchResult}">

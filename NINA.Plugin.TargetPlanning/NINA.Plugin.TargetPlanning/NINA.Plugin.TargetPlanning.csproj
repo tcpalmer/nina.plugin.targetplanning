@@ -263,6 +263,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnnualChart\AnnualPlanningChart.xaml.cs">
+      <DependentUpon>AnnualPlanningChart.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Astrometry\Altitudes.cs" />
     <Compile Include="Astrometry\AstrometryUtils.cs" />
     <Compile Include="Astrometry\CircumstanceSolver.cs" />
@@ -306,6 +309,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="AnnualChart\AnnualPlanningChart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Options.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -7,6 +7,8 @@ using NINA.Plugin.Interfaces;
 using NINA.Profile;
 using NINA.Profile.Interfaces;
 using NINA.WPF.Base.Interfaces.ViewModel;
+using OxyPlot;
+using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -58,6 +60,9 @@ namespace TargetPlanning.NINAPlugin {
             CancelSearchCommand = new RelayCommand(CancelSearch);
 
             InitializeCriteria();
+
+            AnnualPlanningChart = new PlotModel { Title = "Example 1" };
+            AnnualPlanningChart.Series.Add(new FunctionSeries(Math.Cos, 0, 10, 0.1, "cos(x)"));
         }
 
         public static readonly double HORIZON_VALUE = double.MinValue;
@@ -69,16 +74,8 @@ namespace TargetPlanning.NINAPlugin {
                 MinimumAltitudeChoices.Add(new KeyValuePair<double, string>(i, i + "°"));
             }
 
-            // Add 'Horizon' to altitude choices to trigger use of custom horizon
+            // Add 'Above Horizon' to altitude choices to trigger use of custom horizon (if available)
             MinimumAltitudeChoices.Add(new KeyValuePair<double, string>(HORIZON_VALUE, "Above Horizon"));
-            /*
-            if (profileService.ActiveProfile.AstrometrySettings.Horizon != null) {
-                Logger.Debug("custom horizon found");
-                MinimumAltitudeChoices.Add(new KeyValuePair<double, string>(HORIZON_VALUE, "Horizon"));
-            }
-            else {
-                Logger.Debug("custom horizon NOT found");
-            }*/
 
             MinimumTimeChoices = new AsyncObservableCollection<KeyValuePair<int, string>>();
             MinimumTimeChoices.Add(new KeyValuePair<int, string>(0, Loc.Instance["LblAny"]));
@@ -270,6 +267,14 @@ namespace TargetPlanning.NINAPlugin {
             set {
                 pluginSettings.SetValueInt32(nameof(MoonAvoidanceWidth), value);
                 RaisePropertyChanged();
+            }
+        }
+
+        private PlotModel _annualPlanningChart;
+        public PlotModel AnnualPlanningChart {
+            get => _annualPlanningChart;
+            set {
+                _annualPlanningChart = value;
             }
         }
 
