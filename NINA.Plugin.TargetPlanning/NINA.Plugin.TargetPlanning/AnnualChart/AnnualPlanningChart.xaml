@@ -6,21 +6,60 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
     xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core"
+    xmlns:wpfutil="clr-namespace:NINA.WPF.Base.Utility"
     x:Name="UC"
     d:DesignHeight="300"
     d:DesignWidth="300"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/NINA.WPF.Base;component/Resources/StaticResources/ProfileService.xaml" />
+                <ResourceDictionary Source="/NINA.WPF.Base;component/Resources/StaticResources/SVGDictionary.xaml" />
+                <ResourceDictionary Source="/NINA.WPF.Base;component/Resources/StaticResources/Brushes.xaml" />
+                <ResourceDictionary Source="/NINA.WPF.Base;component/Resources/StaticResources/Converters.xaml" />
+                <ResourceDictionary Source="/NINA.WPF.Base;component/Resources/Styles/ToggleButton.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Grid.Resources>
             <util:BindingProxy x:Key="proxy" Data="{Binding ElementName=UC, Path=AnnualPlanningChartModel}" />
         </Grid.Resources>
 
         <StackPanel Orientation="Vertical">
-            <oxy:PlotView
-                MinWidth="300"
-                MinHeight="100"
+            <oxy:Plot
+                MinHeight="300"
+                VerticalAlignment="Stretch"
                 Background="{StaticResource BackgroundBrush}"
-                Model="{Binding Source={StaticResource proxy}, Path=Data.Chart}" />
+                PlotAreaBackground="{StaticResource BackgroundBrush}"
+                PlotAreaBorderColor="{Binding Path=Color, Source={StaticResource BorderBrush}}">
+                <oxy:Plot.Axes>
+                    <oxy:LinearAxis
+                        AxislineColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
+                        IsPanEnabled="False"
+                        IsZoomEnabled="False"
+                        MajorGridlineColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}, Converter={StaticResource SetAlphaToColorConverter}, ConverterParameter=60}"
+                        MajorGridlineStyle="LongDash"
+                        MajorStep="5"
+                        Position="Bottom"
+                        TextColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
+                        TicklineColor="{Binding Path=Color, Source={StaticResource SecondaryBrush}}" />
+                    <oxy:LinearAxis
+                        AxislineColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
+                        IsPanEnabled="False"
+                        IsZoomEnabled="False"
+                        MajorGridlineColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}, Converter={StaticResource SetAlphaToColorConverter}, ConverterParameter=60}"
+                        MajorGridlineStyle="LongDash"
+                        MajorStep="5"
+                        Position="Left"
+                        TextColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
+                        TicklineColor="{Binding Path=Color, Source={StaticResource SecondaryBrush}}" />
+                </oxy:Plot.Axes>
+                <oxy:Plot.Series>
+                    <oxy:LineSeries ItemsSource="{Binding Source={StaticResource proxy}, Path=Data.Points}" Color="{Binding Path=Color, Source={StaticResource SecondaryBrush}}" />
+                </oxy:Plot.Series>
+            </oxy:Plot>
         </StackPanel>
     </Grid>
 </UserControl>
