@@ -10,6 +10,7 @@
     xmlns:ninactrl="clr-namespace:NINACustomControlLibrary;assembly=NINACustomControlLibrary"
     xmlns:ns="clr-namespace:NINA.Core.Locale;assembly=NINA.Core"
     xmlns:rules="clr-namespace:NINA.Core.Utility.ValidationRules;assembly=NINA.Core"
+    xmlns:tp="clr-namespace:TargetPlanning.NINAPlugin.AnnualChart"
     xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core">
 
     <!--  This data template will be displayed in N.I.N.A. on the options->plugin tab with the datacontext of the TestPlugin instance  -->
@@ -279,336 +280,386 @@
                 </Border>
             </Grid>
 
-            <StackPanel>
+            <StackPanel Orientation="Horizontal">
                 <ninactrl:CancellableButton
                     Width="250"
                     Height="35"
                     Margin="5"
                     HorizontalAlignment="Left"
-                    ButtonText="Calculate"
+                    ButtonText="Daily Details"
                     CancelButtonImage="{StaticResource CancelSVG}"
-                    CancelCommand="{Binding CancelSearchCommand}"
+                    CancelCommand="{Binding CancelDailyDetailsCommand}"
                     CancelToolTip="Cancel"
-                    Command="{Binding SearchCommand}"
-                    Visibility="{Binding SearchCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
+                    Command="{Binding DailyDetailsCommand}"
+                    IsEnabled="{Binding DSOIsSelected}"
+                    ToolTip="Display a table of daily imaging circumstances"
+                    Visibility="{Binding DailyDetailsCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
+                <ninactrl:CancellableButton
+                    Width="250"
+                    Height="35"
+                    Margin="5"
+                    HorizontalAlignment="Left"
+                    ButtonText="Annual Chart"
+                    CancelButtonImage="{StaticResource CancelSVG}"
+                    CancelCommand="{Binding CancelAnnualCommand}"
+                    CancelToolTip="Cancel"
+                    Command="{Binding AnnualChartCommand}"
+                    IsEnabled="{Binding DSOIsSelected}"
+                    ToolTip="Display annual chart of target and moon altitude at local midnight"
+                    Visibility="{Binding AnnualChartCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
             </StackPanel>
 
-            <!--  Search result area  -->
-            <Grid DataContext="{Binding SearchResult}">
-
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-
-                <DataGrid
-                    x:Name="PlanDataGrid"
-                    Height="375"
-                    Margin="0,0,0,0"
-                    AutoGenerateColumns="False"
-                    HeadersVisibility="Column"
-                    HorizontalScrollBarVisibility="Disabled"
-                    ItemsSource="{Binding ItemPage, IsAsync=True}"
-                    RowHeight="28"
-                    SelectedItem="{Binding SelectedItem}"
-                    SelectionMode="Single">
-
-                    <DataGrid.ColumnHeaderStyle>
-                        <Style TargetType="{x:Type DataGridColumnHeader}">
-                            <Setter Property="HorizontalAlignment" Value="Left" />
-                            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
-                            <Setter Property="BorderThickness" Value="0" />
-                            <Setter Property="MinHeight" Value="25" />
-                            <Setter Property="Margin" Value="5,3,5,3" />
-                            <Setter Property="FontWeight" Value="Bold" />
-                            <Setter Property="FontSize" Value="14" />
-                        </Style>
-                    </DataGrid.ColumnHeaderStyle>
-
-                    <DataGrid.CellStyle>
-                        <Style TargetType="DataGridCell">
-                            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
-                            <Setter Property="BorderThickness" Value="0" />
-                            <Setter Property="MinHeight" Value="22" />
-                            <Setter Property="Margin" Value="5,3,5,3" />
-                            <Style.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
-                                </Trigger>
-                                <Trigger Property="IsSelected" Value="False">
-                                    <Setter Property="Background" Value="Transparent" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGrid.CellStyle>
-                    <DataGrid.RowStyle>
-                        <Style TargetType="DataGridRow">
-                            <Setter Property="MinHeight" Value="28" />
-                            <Setter Property="Background" Value="Transparent" />
-                            <Setter Property="VerticalAlignment" Value="Center" />
-                            <Style.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
-                                </Trigger>
-                                <Trigger Property="IsSelected" Value="False">
-                                    <Setter Property="Background" Value="Transparent" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGrid.RowStyle>
-
-                    <DataGrid.RowDetailsTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.Resources>
-                                    <util:BindingProxy x:Key="nighttimeProxy" Data="{Binding NighttimeData}" />
-                                </Grid.Resources>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="6*" />
-                                </Grid.ColumnDefinitions>
-                                <Border Grid.Column="0" Padding="5">
-                                    <StackPanel Orientation="Vertical">
-                                        <TextBlock
-                                            Margin="0,3,0,0"
-                                            VerticalAlignment="Center"
-                                            Text="Start Imaging Time: " />
-                                        <TextBlock
-                                            Margin="0,3,0,0"
-                                            VerticalAlignment="Center"
-                                            Text="End Imaging Time: " />
-                                        <TextBlock
-                                            Margin="0,3,0,0"
-                                            VerticalAlignment="Center"
-                                            Text="Imaging Time: " />
-                                        <TextBlock
-                                            Margin="0,3,0,0"
-                                            VerticalAlignment="Center"
-                                            Text="Transit Time: " />
-                                        <TextBlock
-                                            Margin="0,3,0,0"
-                                            VerticalAlignment="Center"
-                                            Text="Moon Illumination: " />
-                                        <TextBlock
-                                            Margin="0,3,0,0"
-                                            VerticalAlignment="Center"
-                                            Text="Moon Angle: " />
-                                        <TextBlock
-                                            Margin="0,3,0,0"
-                                            VerticalAlignment="Center"
-                                            Text="Moon Avoid Angle: " />
-                                    </StackPanel>
-                                </Border>
-                                <Border Grid.Column="1" Padding="5">
-                                    <StackPanel Orientation="Vertical">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock
-                                                Margin="0,3,0,0"
-                                                VerticalAlignment="Center"
-                                                Text="{Binding StartImagingTime, StringFormat={}{0:HH:mm:ss}}" />
-                                            <TextBlock
-                                                Margin="0,3,0,0"
-                                                VerticalAlignment="Center"
-                                                Text="{Binding StartLimitingFactor}" />
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock
-                                                Margin="0,3,0,0"
-                                                VerticalAlignment="Center"
-                                                Text="{Binding EndImagingTime, StringFormat={}{0:HH:mm:ss}}" />
-                                            <TextBlock
-                                                Margin="0,3,0,0"
-                                                VerticalAlignment="Center"
-                                                Text="{Binding EndLimitingFactor}" />
-                                        </StackPanel>
-                                        <TextBlock
-                                            Margin="0,3,0,0"
-                                            VerticalAlignment="Center"
-                                            Foreground="{Binding ImagingTimeColor}"
-                                            Text="{Binding ImagingTime}" />
-                                        <TextBlock
-                                            Margin="0,3,0,0"
-                                            VerticalAlignment="Center"
-                                            Text="{Binding TransitTime, StringFormat={}{0:HH:mm:ss}}" />
-                                        <TextBlock
-                                            Margin="0,3,0,0"
-                                            VerticalAlignment="Center"
-                                            Foreground="{Binding MoonIlluminationColor}"
-                                            Text="{Binding MoonIllumination, StringFormat={}{0:F0}%}" />
-                                        <TextBlock
-                                            Margin="0,3,0,0"
-                                            VerticalAlignment="Center"
-                                            Foreground="{Binding MoonSeparationColor}"
-                                            Text="{Binding MoonSeparation, StringFormat={}{0:F0}°}" />
-                                        <TextBlock
-                                            Margin="0,3,0,0"
-                                            VerticalAlignment="Center"
-                                            Foreground="{Binding MoonAvoidanceSeparationColor}"
-                                            Text="{Binding MoonAvoidanceSeparationDisplay}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Grid.Column="3"
-                                    MinHeight="200"
-                                    Padding="5">
-                                    <alt:AltitudeChart
-                                        DataContext="{Binding Target}"
-                                        NighttimeData="{Binding Source={StaticResource nighttimeProxy}, Path=Data}"
-                                        ShowMoon="True" />
-                                </Border>
-                            </Grid>
-                        </DataTemplate>
-                    </DataGrid.RowDetailsTemplate>
-
-                    <DataGrid.Columns>
-
-                        <DataGridTemplateColumn
-                            Width="50"
-                            CanUserSort="False"
-                            Header="Status">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Path
-                                        Width="15"
-                                        Height="15"
-                                        Data="{Binding Status, Converter={StaticResource ImagingStatusConverter}}"
-                                        Fill="{Binding Status, Converter={StaticResource ImagingStatusMarkColorConverter}}"
-                                        Stretch="Uniform" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn
-                            Width="*"
-                            CanUserSort="False"
-                            Header="Start">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock
-                                        Width="Auto"
-                                        Margin="0,0,0,0"
-                                        Text="{Binding StartImagingTime, StringFormat={}{0:MM/dd HH:mm}}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn
-                            Width="*"
-                            CanUserSort="False"
-                            Header="End">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock
-                                        Width="Auto"
-                                        Margin="0,0,0,0"
-                                        Text="{Binding EndImagingTime, StringFormat={}{0:MM/dd HH:mm}}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn
-                            Width="*"
-                            CanUserSort="False"
-                            Header="Imaging Time">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock
-                                        Width="Auto"
-                                        Margin="0,0,0,0"
-                                        Foreground="{Binding ImagingTimeColor}"
-                                        Text="{Binding ImagingTime}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn
-                            Width="*"
-                            CanUserSort="False"
-                            Header="Moon Illum">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock
-                                        Width="Auto"
-                                        Margin="0,0,0,0"
-                                        Foreground="{Binding MoonIlluminationColor}"
-                                        Text="{Binding MoonIllumination, StringFormat={}{0:F0}%}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn
-                            Width="*"
-                            CanUserSort="False"
-                            Header="Moon Angle">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock
-                                        Width="Auto"
-                                        Margin="0,0,0,0"
-                                        Foreground="{Binding MoonSeparationColor}"
-                                        Text="{Binding MoonSeparation, StringFormat={}{0:F0}°}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                    </DataGrid.Columns>
-                </DataGrid>
-
-                <Grid Grid.Row="1" Visibility="{Binding Converter={StaticResource NullToVisibilityCollapsedConverter}}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel
-                        Height="35"
-                        Margin="5,0,5,0"
+            <Grid>
+                <StackPanel Height="410" Orientation="Vertical">
+                    <ninactrl:LoadingControl
+                        Grid.Column="1"
+                        MaxWidth="100"
+                        MaxHeight="100"
                         HorizontalAlignment="Center"
-                        VerticalAlignment="Bottom"
-                        Orientation="Horizontal">
-                        <Button
-                            Width="35"
-                            Margin="5,2.5,0,2.5"
-                            Command="{Binding FirstPageCommand}"
-                            Content="&lt;|" />
-                        <Button
-                            Width="35"
-                            Margin="5,2.5,0,2.5"
-                            Command="{Binding PrevPageCommand}"
-                            Content="&lt;&lt;" />
-                        <ComboBox
-                            Margin="5,2.5,0,2.5"
-                            ItemsSource="{Binding Pages}"
-                            SelectedValue="{Binding CurrentPage, Mode=TwoWay}">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="SelectionChanged">
-                                    <i:InvokeCommandAction Command="{Binding PageByNumberCommand}" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </ComboBox>
-                        <TextBlock
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="{ns:Loc LblOf}" />
-                        <TextBlock
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="{Binding Pages.Count}" />
-                        <Button
-                            Width="35"
-                            Margin="5,2.5,0,2.5"
-                            Command="{Binding NextPageCommand}"
-                            Content="&gt;&gt;" />
-                        <Button
-                            Width="35"
-                            Margin="5,2.5,0,2.5"
-                            Command="{Binding LastPageCommand}"
-                            Content="|&gt;" />
-                    </StackPanel>
-                </Grid>
+                        VerticalAlignment="Center"
+                        LoadingImageBrush="{StaticResource PrimaryBrush}"
+                        Visibility="{Binding DailyDetailsCommand.Execution.IsNotCompleted, Converter={StaticResource BooleanToVisibilityCollapsedConverter}, FallbackValue=Collapsed}" />
+                    <ninactrl:LoadingControl
+                        Grid.Column="1"
+                        MaxWidth="100"
+                        MaxHeight="100"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        LoadingImageBrush="{StaticResource PrimaryBrush}"
+                        Visibility="{Binding AnnualChartCommand.Execution.IsNotCompleted, Converter={StaticResource BooleanToVisibilityCollapsedConverter}, FallbackValue=Collapsed}" />
+                </StackPanel>
+
+                <!--  Daily Details Table  -->
+                <StackPanel Orientation="Vertical" Visibility="{Binding Path=DailyDetailsEnabled, Converter={StaticResource BooleanToVisibilityCollapsedConverter}}">
+                    <Grid DataContext="{Binding DailyDetailsResults}">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <DataGrid
+                            x:Name="PlanDataGrid"
+                            Height="375"
+                            Margin="0,0,0,0"
+                            AutoGenerateColumns="False"
+                            HeadersVisibility="Column"
+                            HorizontalScrollBarVisibility="Disabled"
+                            ItemsSource="{Binding ItemPage, IsAsync=True}"
+                            RowHeight="28"
+                            SelectedItem="{Binding SelectedItem}"
+                            SelectionMode="Single">
+
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                    <Setter Property="HorizontalAlignment" Value="Left" />
+                                    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="MinHeight" Value="25" />
+                                    <Setter Property="Margin" Value="5,3,5,3" />
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                    <Setter Property="FontSize" Value="14" />
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="MinHeight" Value="22" />
+                                    <Setter Property="Margin" Value="5,3,5,3" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter Property="Background" Value="Transparent" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.CellStyle>
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <Setter Property="MinHeight" Value="28" />
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter Property="Background" Value="Transparent" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.RowStyle>
+
+                            <DataGrid.RowDetailsTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.Resources>
+                                            <util:BindingProxy x:Key="nighttimeProxy" Data="{Binding NighttimeData}" />
+                                        </Grid.Resources>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="2*" />
+                                            <ColumnDefinition Width="6*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Padding="5">
+                                            <StackPanel Orientation="Vertical">
+                                                <TextBlock
+                                                    Margin="0,3,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Text="Start Imaging Time: " />
+                                                <TextBlock
+                                                    Margin="0,3,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Text="End Imaging Time: " />
+                                                <TextBlock
+                                                    Margin="0,3,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Text="Imaging Time: " />
+                                                <TextBlock
+                                                    Margin="0,3,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Text="Transit Time: " />
+                                                <TextBlock
+                                                    Margin="0,3,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Text="Moon Illumination: " />
+                                                <TextBlock
+                                                    Margin="0,3,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Text="Moon Angle: " />
+                                                <TextBlock
+                                                    Margin="0,3,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Text="Moon Avoid Angle: " />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Column="1" Padding="5">
+                                            <StackPanel Orientation="Vertical">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock
+                                                        Margin="0,3,0,0"
+                                                        VerticalAlignment="Center"
+                                                        Text="{Binding StartImagingTime, StringFormat={}{0:HH:mm:ss}}" />
+                                                    <TextBlock
+                                                        Margin="0,3,0,0"
+                                                        VerticalAlignment="Center"
+                                                        Text="{Binding StartLimitingFactor}" />
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock
+                                                        Margin="0,3,0,0"
+                                                        VerticalAlignment="Center"
+                                                        Text="{Binding EndImagingTime, StringFormat={}{0:HH:mm:ss}}" />
+                                                    <TextBlock
+                                                        Margin="0,3,0,0"
+                                                        VerticalAlignment="Center"
+                                                        Text="{Binding EndLimitingFactor}" />
+                                                </StackPanel>
+                                                <TextBlock
+                                                    Margin="0,3,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Foreground="{Binding ImagingTimeColor}"
+                                                    Text="{Binding ImagingTime}" />
+                                                <TextBlock
+                                                    Margin="0,3,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Text="{Binding TransitTime, StringFormat={}{0:HH:mm:ss}}" />
+                                                <TextBlock
+                                                    Margin="0,3,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Foreground="{Binding MoonIlluminationColor}"
+                                                    Text="{Binding MoonIllumination, StringFormat={}{0:F0}%}" />
+                                                <TextBlock
+                                                    Margin="0,3,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Foreground="{Binding MoonSeparationColor}"
+                                                    Text="{Binding MoonSeparation, StringFormat={}{0:F0}°}" />
+                                                <TextBlock
+                                                    Margin="0,3,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Foreground="{Binding MoonAvoidanceSeparationColor}"
+                                                    Text="{Binding MoonAvoidanceSeparationDisplay}" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border
+                                            Grid.Column="3"
+                                            MinHeight="200"
+                                            Padding="5">
+                                            <alt:AltitudeChart
+                                                DataContext="{Binding Target}"
+                                                NighttimeData="{Binding Source={StaticResource nighttimeProxy}, Path=Data}"
+                                                ShowMoon="True" />
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGrid.RowDetailsTemplate>
+
+                            <DataGrid.Columns>
+
+                                <DataGridTemplateColumn
+                                    Width="50"
+                                    CanUserSort="False"
+                                    Header="Status">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Path
+                                                Width="15"
+                                                Height="15"
+                                                Data="{Binding Status, Converter={StaticResource ImagingStatusConverter}}"
+                                                Fill="{Binding Status, Converter={StaticResource ImagingStatusMarkColorConverter}}"
+                                                Stretch="Uniform" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn
+                                    Width="*"
+                                    CanUserSort="False"
+                                    Header="Start">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                Width="Auto"
+                                                Margin="0,0,0,0"
+                                                Text="{Binding StartImagingTime, StringFormat={}{0:MM/dd HH:mm}}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn
+                                    Width="*"
+                                    CanUserSort="False"
+                                    Header="End">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                Width="Auto"
+                                                Margin="0,0,0,0"
+                                                Text="{Binding EndImagingTime, StringFormat={}{0:MM/dd HH:mm}}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn
+                                    Width="*"
+                                    CanUserSort="False"
+                                    Header="Imaging Time">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                Width="Auto"
+                                                Margin="0,0,0,0"
+                                                Foreground="{Binding ImagingTimeColor}"
+                                                Text="{Binding ImagingTime}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn
+                                    Width="*"
+                                    CanUserSort="False"
+                                    Header="Moon Illum">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                Width="Auto"
+                                                Margin="0,0,0,0"
+                                                Foreground="{Binding MoonIlluminationColor}"
+                                                Text="{Binding MoonIllumination, StringFormat={}{0:F0}%}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn
+                                    Width="*"
+                                    CanUserSort="False"
+                                    Header="Moon Angle">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                Width="Auto"
+                                                Margin="0,0,0,0"
+                                                Foreground="{Binding MoonSeparationColor}"
+                                                Text="{Binding MoonSeparation, StringFormat={}{0:F0}°}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Grid Grid.Row="1" Visibility="{Binding Converter={StaticResource NullToVisibilityCollapsedConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel
+                                Height="35"
+                                Margin="5,0,5,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom"
+                                Orientation="Horizontal">
+                                <Button
+                                    Width="35"
+                                    Margin="5,2.5,0,2.5"
+                                    Command="{Binding FirstPageCommand}"
+                                    Content="&lt;|" />
+                                <Button
+                                    Width="35"
+                                    Margin="5,2.5,0,2.5"
+                                    Command="{Binding PrevPageCommand}"
+                                    Content="&lt;&lt;" />
+                                <ComboBox
+                                    Margin="5,2.5,0,2.5"
+                                    ItemsSource="{Binding Pages}"
+                                    SelectedValue="{Binding CurrentPage, Mode=TwoWay}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <i:InvokeCommandAction Command="{Binding PageByNumberCommand}" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </ComboBox>
+                                <TextBlock
+                                    Margin="5,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="{ns:Loc LblOf}" />
+                                <TextBlock
+                                    Margin="5,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="{Binding Pages.Count}" />
+                                <Button
+                                    Width="35"
+                                    Margin="5,2.5,0,2.5"
+                                    Command="{Binding NextPageCommand}"
+                                    Content="&gt;&gt;" />
+                                <Button
+                                    Width="35"
+                                    Margin="5,2.5,0,2.5"
+                                    Command="{Binding LastPageCommand}"
+                                    Content="|&gt;" />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </StackPanel>
+
+                <!--  Annual Chart  -->
+                <StackPanel
+                    Height="410"
+                    Orientation="Vertical"
+                    Visibility="{Binding Path=AnnualChartEnabled, Converter={StaticResource BooleanToVisibilityCollapsedConverter}, FallbackValue=Collapsed}">
+                    <Grid>
+                        <Grid.Resources>
+                            <util:BindingProxy x:Key="annualChartModel" Data="{Binding AnnualPlanningChartModel}" />
+                        </Grid.Resources>
+                        <tp:AnnualPlanningChart AnnualPlanningChartModel="{Binding Source={StaticResource annualChartModel}, Path=Data}" />
+                    </Grid>
+                </StackPanel>
 
             </Grid>
-
         </StackPanel>
 
     </DataTemplate>
