@@ -291,6 +291,7 @@
                     CancelCommand="{Binding CancelDailyDetailsCommand}"
                     CancelToolTip="Cancel"
                     Command="{Binding DailyDetailsCommand}"
+                    IsEnabled="{Binding DSOIsSelected}"
                     ToolTip="Display a table of daily imaging circumstances"
                     Visibility="{Binding DailyDetailsCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
                 <ninactrl:CancellableButton
@@ -303,6 +304,7 @@
                     CancelCommand="{Binding CancelAnnualCommand}"
                     CancelToolTip="Cancel"
                     Command="{Binding AnnualChartCommand}"
+                    IsEnabled="{Binding DSOIsSelected}"
                     ToolTip="Display annual chart of target and moon altitude at local midnight"
                     Visibility="{Binding AnnualChartCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
             </StackPanel>

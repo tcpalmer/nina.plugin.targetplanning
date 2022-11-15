@@ -141,7 +141,7 @@ namespace TargetPlanning.NINAPlugin {
         private void DeepSkyObjectSearchVM_PropertyChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(DeepSkyObjectSearchVM.Coordinates) && DeepSkyObjectSearchVM.Coordinates != null) {
                 DSO = new DeepSkyObject(DeepSkyObjectSearchVM.TargetName, DeepSkyObjectSearchVM.Coordinates, profileService.ActiveProfile.ApplicationSettings.SkyAtlasImageRepository, profileService.ActiveProfile.AstrometrySettings.Horizon);
-                RaiseCoordinatesChanged();
+                RaiseCoordinatesChanged(false);
             }
             else if (e.PropertyName == nameof(DeepSkyObjectSearchVM.TargetName) && DSO != null) {
                 DSO.Name = DeepSkyObjectSearchVM.TargetName;
@@ -260,7 +260,7 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         public int MoonAvoidanceWidth {
-            get => pluginSettings.GetValueInt32(nameof(MoonAvoidanceWidth), 14);
+            get => pluginSettings.GetValueInt32(nameof(MoonAvoidanceWidth), 7);
             set {
                 pluginSettings.SetValueInt32(nameof(MoonAvoidanceWidth), value);
                 RaisePropertyChanged();
@@ -282,7 +282,6 @@ namespace TargetPlanning.NINAPlugin {
             get => _dailyDetailsEnabled;
             set {
                 _dailyDetailsEnabled = value;
-                Logger.Debug($"*** DailyDetailsEnabled: {value}");
                 RaisePropertyChanged();
             }
         }
@@ -389,7 +388,6 @@ namespace TargetPlanning.NINAPlugin {
             try { _annualTokenSource?.Cancel(); } catch { }
         }
 
-
         public ICommand AnnualChartCommand { get; private set; }
 
         private async Task<bool> ShowAnnualChart() {
@@ -401,7 +399,7 @@ namespace TargetPlanning.NINAPlugin {
                 DailyDetailsEnabled = false;
 
                 try {
-                    AnnualPlanningChartModel = new AnnualPlanningChartModel(getObserverInfo(profileService.ActiveProfile.AstrometrySettings), DSO, StartDate);
+                    AnnualPlanningChartModel = new AnnualPlanningChartModel(getObserverInfo(profileService.ActiveProfile.AstrometrySettings), DSO, StartDate, _annualTokenSource.Token);
                     DailyDetailsEnabled = false;
                     AnnualChartEnabled = true;
                 }
@@ -477,7 +475,7 @@ namespace TargetPlanning.NINAPlugin {
             set {
                 if (value >= 0) {
                     DSO.Coordinates.RA = DSO.Coordinates.RA - RAHours + value;
-                    RaiseCoordinatesChanged();
+                    RaiseCoordinatesChanged(true);
                 }
             }
         }
@@ -495,7 +493,7 @@ namespace TargetPlanning.NINAPlugin {
             set {
                 if (value >= 0) {
                     DSO.Coordinates.RA = DSO.Coordinates.RA - RAMinutes / 60.0d + value / 60.0d;
-                    RaiseCoordinatesChanged();
+                    RaiseCoordinatesChanged(true);
                 }
             }
         }
@@ -511,7 +509,7 @@ namespace TargetPlanning.NINAPlugin {
             set {
                 if (value >= 0) {
                     DSO.Coordinates.RA = DSO.Coordinates.RA - RASeconds / (60.0d * 60.0d) + value / (60.0d * 60.0d);
-                    RaiseCoordinatesChanged();
+                    RaiseCoordinatesChanged(true);
                 }
             }
         }
@@ -537,7 +535,7 @@ namespace TargetPlanning.NINAPlugin {
                 else {
                     DSO.Coordinates.Dec = value + DecMinutes / 60.0d + DecSeconds / (60.0d * 60.0d);
                 }
-                RaiseCoordinatesChanged();
+                RaiseCoordinatesChanged(true);
             }
         }
 
@@ -559,7 +557,7 @@ namespace TargetPlanning.NINAPlugin {
                     DSO.Coordinates.Dec = DSO.Coordinates.Dec - DecMinutes / 60.0d + value / 60.0d;
                 }
 
-                RaiseCoordinatesChanged();
+                RaiseCoordinatesChanged(true);
             }
         }
 
@@ -579,11 +577,20 @@ namespace TargetPlanning.NINAPlugin {
                     DSO.Coordinates.Dec = DSO.Coordinates.Dec - DecSeconds / (60.0d * 60.0d) + value / (60.0d * 60.0d);
                 }
 
-                RaiseCoordinatesChanged();
+                RaiseCoordinatesChanged(true);
             }
         }
 
-        private void RaiseCoordinatesChanged() {
+        private bool _dsoIsSelected = false;
+        public bool DSOIsSelected {
+            get => _dsoIsSelected;
+            set {
+                _dsoIsSelected = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private void RaiseCoordinatesChanged(bool manualChange) {
             RaisePropertyChanged(nameof(RAHours));
             RaisePropertyChanged(nameof(RAMinutes));
             RaisePropertyChanged(nameof(RASeconds));
@@ -591,6 +598,15 @@ namespace TargetPlanning.NINAPlugin {
             RaisePropertyChanged(nameof(DecMinutes));
             RaisePropertyChanged(nameof(DecSeconds));
             NegativeDec = DSO?.Coordinates?.Dec < 0;
+
+            if (DSO?.Coordinates != null && (DSO.Coordinates.RA != 0 || DSO.Coordinates.Dec == 0)) {
+                DSOIsSelected = true;
+            }
+
+            if (manualChange) {
+                DeepSkyObjectSearchVM.TargetName = "";
+                DSO.Name = null;
+            }
         }
     }
 
