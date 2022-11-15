@@ -26,8 +26,6 @@ namespace TargetPlanning.NINAPlugin {
         private IPluginOptionsAccessor pluginSettings;
         private IProfileService profileService;
 
-        private PagedList<ImagingDayPlanViewAdapter> _searchResult;
-
         private AsyncObservableCollection<KeyValuePair<double, string>> _minimumAltitudeChoices;
         private AsyncObservableCollection<KeyValuePair<int, string>> _minimumTimeChoices;
         private AsyncObservableCollection<KeyValuePair<double, string>> _moonSeparationChoices;
@@ -55,12 +53,12 @@ namespace TargetPlanning.NINAPlugin {
             DeepSkyObjectSearchVM = deepSkyObjectSearchVM;
             DeepSkyObjectSearchVM.PropertyChanged += DeepSkyObjectSearchVM_PropertyChanged;
 
-            SearchCommand = new AsyncCommand<bool>(() => Search());
-            CancelSearchCommand = new RelayCommand(CancelSearch);
+            DailyDetailsCommand = new AsyncCommand<bool>(() => ShowDailyDetails());
+            CancelDailyDetailsCommand = new RelayCommand(CancelDaily);
+            AnnualChartCommand = new AsyncCommand<bool>(() => ShowAnnualChart());
+            CancelAnnualCommand = new RelayCommand(CancelAnnual);
 
             InitializeCriteria();
-
-            AnnualPlanningChartModel = new AnnualPlanningChartModel();
         }
 
         public static readonly double HORIZON_VALUE = double.MinValue;
@@ -108,7 +106,7 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         private void ProfileService_ProfileChanged(object sender, EventArgs e) {
-            SearchResult = null;
+            DailyDetailsResults = null;
             InitializeCriteria();
 
             RaisePropertyChanged(nameof(StartDate));
@@ -135,6 +133,7 @@ namespace TargetPlanning.NINAPlugin {
             }
             set {
                 _dSO = value;
+                Logger.Trace($"{_dSO.Name} {_dSO.Coordinates.RA} {_dSO.Coordinates.Dec}");
                 RaisePropertyChanged();
             }
         }
@@ -268,27 +267,32 @@ namespace TargetPlanning.NINAPlugin {
             }
         }
 
-        private AnnualPlanningChartModel _annualPlanningChartModel;
-        public AnnualPlanningChartModel AnnualPlanningChartModel {
-            get => _annualPlanningChartModel;
+        public ICommand CancelDailyDetailsCommand { get; private set; }
+
+        private CancellationTokenSource _dailyDetailsCommandTokenSource;
+
+        private void CancelDaily(object obj) {
+            try { _dailyDetailsCommandTokenSource?.Cancel(); } catch { }
+        }
+
+        public ICommand DailyDetailsCommand { get; private set; }
+
+        private bool _dailyDetailsEnabled = false;
+        public bool DailyDetailsEnabled {
+            get => _dailyDetailsEnabled;
             set {
-                _annualPlanningChartModel = value;
+                _dailyDetailsEnabled = value;
+                Logger.Debug($"*** DailyDetailsEnabled: {value}");
+                RaisePropertyChanged();
             }
         }
 
-        public ICommand CancelSearchCommand { get; private set; }
+        private async Task<bool> ShowDailyDetails() {
+            AnnualChartEnabled = false;
+            DailyDetailsEnabled = false;
 
-        private CancellationTokenSource _searchTokenSource;
-
-        private void CancelSearch(object obj) {
-            try { _searchTokenSource?.Cancel(); } catch { }
-        }
-
-        public ICommand SearchCommand { get; private set; }
-
-        private async Task<bool> Search() {
-            _searchTokenSource?.Dispose();
-            _searchTokenSource = new CancellationTokenSource();
+            _dailyDetailsCommandTokenSource?.Dispose();
+            _dailyDetailsCommandTokenSource = new CancellationTokenSource();
 
             return await Task.Run(() => {
 
@@ -331,8 +335,8 @@ namespace TargetPlanning.NINAPlugin {
                 Logger.Debug($"Moon avoid width: {planParams.MoonAvoidanceWidth}");
 
                 try {
-                    SearchResult = null;
-                    IEnumerable<ImagingDayPlan> results = new PlanGenerator(planParams).Generate(_searchTokenSource.Token);
+                    DailyDetailsResults = null;
+                    IEnumerable<ImagingDayPlan> results = new PlanGenerator(planParams).Generate(_dailyDetailsCommandTokenSource.Token);
 
                     List<ImagingDayPlanViewAdapter> wrappedResults = new List<ImagingDayPlanViewAdapter>(results.Count());
                     foreach (ImagingDayPlan plan in results) {
@@ -340,15 +344,74 @@ namespace TargetPlanning.NINAPlugin {
                     }
 
                     LogResults(planParams, wrappedResults);
-                    SearchResult = new PagedList<ImagingDayPlanViewAdapter>(22, wrappedResults);
+                    DailyDetailsResults = new PagedList<ImagingDayPlanViewAdapter>(22, wrappedResults);
+
+                    AnnualChartEnabled = false;
+                    DailyDetailsEnabled = true;
                 }
                 catch (OperationCanceledException) {
-                    Logger.Debug("target planning canceled");
-                    SearchResult = null;
+                    Logger.Debug("daily details canceled");
+                    DailyDetailsResults = null;
                 }
                 catch (Exception ex) {
-                    Logger.Error($"target planning search exception: {ex.Message} {ex.StackTrace}");
-                    SearchResult = null;
+                    Logger.Error($"daily details exception: {ex.Message} {ex.StackTrace}");
+                    DailyDetailsResults = null;
+                }
+
+                return true;
+            });
+        }
+
+        private AnnualPlanningChartModel _annualPlanningChartModel;
+        public AnnualPlanningChartModel AnnualPlanningChartModel {
+            get => _annualPlanningChartModel;
+            set {
+                _annualPlanningChartModel = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private bool _annualChartEnabled = false;
+        public bool AnnualChartEnabled {
+            get => _annualChartEnabled;
+            set {
+                _annualChartEnabled = value;
+                Logger.Debug($"*** AnnualChartEnabled: {value}");
+                RaisePropertyChanged();
+            }
+        }
+
+        public ICommand CancelAnnualCommand { get; private set; }
+
+        private CancellationTokenSource _annualTokenSource;
+
+        private void CancelAnnual(object obj) {
+            try { _annualTokenSource?.Cancel(); } catch { }
+        }
+
+
+        public ICommand AnnualChartCommand { get; private set; }
+
+        private async Task<bool> ShowAnnualChart() {
+            _annualTokenSource?.Dispose();
+            _annualTokenSource = new CancellationTokenSource();
+
+            return await Task.Run(() => {
+                AnnualChartEnabled = false;
+                DailyDetailsEnabled = false;
+
+                try {
+                    AnnualPlanningChartModel = new AnnualPlanningChartModel(getObserverInfo(profileService.ActiveProfile.AstrometrySettings), DSO, StartDate);
+                    DailyDetailsEnabled = false;
+                    AnnualChartEnabled = true;
+                }
+                catch (OperationCanceledException) {
+                    Logger.Debug("annual chart canceled");
+                    AnnualPlanningChartModel = null;
+                }
+                catch (Exception ex) {
+                    Logger.Error($"annual chart exception: {ex.Message} {ex.StackTrace}");
+                    AnnualPlanningChartModel = null;
                 }
 
                 return true;
@@ -388,13 +451,15 @@ namespace TargetPlanning.NINAPlugin {
             return oi;
         }
 
-        public PagedList<ImagingDayPlanViewAdapter> SearchResult {
+        private PagedList<ImagingDayPlanViewAdapter> _dailyDetailsResults = null;
+
+        public PagedList<ImagingDayPlanViewAdapter> DailyDetailsResults {
             get {
-                return _searchResult;
+                return _dailyDetailsResults;
             }
 
             set {
-                _searchResult = value;
+                _dailyDetailsResults = value;
                 RaisePropertyChanged();
             }
         }

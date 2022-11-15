@@ -16,7 +16,9 @@ namespace TargetPlanning.NINAPlugin.AnnualChart {
 
         public AnnualPlanningChartModel AnnualPlanningChartModel {
             get => (AnnualPlanningChartModel)GetValue(AnnualPlanningChartProperty);
-            set => SetValue(AnnualPlanningChartProperty, value);
+            set {
+                SetValue(AnnualPlanningChartProperty, value);
+            }
         }
 
     }

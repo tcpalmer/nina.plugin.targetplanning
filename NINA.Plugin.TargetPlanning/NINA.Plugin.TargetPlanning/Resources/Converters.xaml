@@ -5,5 +5,5 @@
 
     <tp:ImagingStatusConverter x:Key="ImagingStatusConverter" />
     <tp:ImagingStatusMarkColorConverter x:Key="ImagingStatusMarkColorConverter" />
-
+    <tp:VisibilityMultiConverter x:Key="VisibilityMultiConverter" />
 </ResourceDictionary>
