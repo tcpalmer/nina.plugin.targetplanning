@@ -311,6 +311,20 @@
 
             <Grid>
                 <StackPanel Height="410" Orientation="Vertical">
+                    <Path
+                        Grid.Column="1"
+                        Width="100"
+                        Height="100"
+                        Margin="0,30,0,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Data="{StaticResource TP_CalendarSVG}"
+                        Fill="{StaticResource ButtonForegroundDisabledBrush}"
+                        Opacity="0.4"
+                        Stretch="Uniform" />
+
+                </StackPanel>
+                <StackPanel Height="410" Orientation="Vertical">
                     <ninactrl:LoadingControl
                         Grid.Column="1"
                         MaxWidth="100"
