@@ -310,12 +310,15 @@
             </StackPanel>
 
             <Grid>
-                <StackPanel Height="410" Orientation="Vertical">
+                <StackPanel
+                    Height="410"
+                    Orientation="Vertical"
+                    Visibility="{Binding EmptyReport, Converter={StaticResource BooleanToVisibilityCollapsedConverter}}">
                     <Path
                         Grid.Column="1"
                         Width="100"
                         Height="100"
-                        Margin="0,30,0,0"
+                        Margin="0,150,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Data="{StaticResource TP_CalendarSVG}"
@@ -399,7 +402,7 @@
                                     <Setter Property="VerticalAlignment" Value="Center" />
                                     <Style.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+                                            <Setter Property="Background" Value="{StaticResource SecondaryBackgroundBrush}" />
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="False">
                                             <Setter Property="Background" Value="Transparent" />

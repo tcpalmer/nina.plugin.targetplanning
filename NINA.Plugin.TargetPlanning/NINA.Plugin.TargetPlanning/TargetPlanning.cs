@@ -107,6 +107,10 @@ namespace TargetPlanning.NINAPlugin {
 
         private void ProfileService_ProfileChanged(object sender, EventArgs e) {
             DailyDetailsResults = null;
+            EmptyReport = true;
+            DailyDetailsEnabled = false;
+            AnnualChartEnabled = false;
+
             InitializeCriteria();
 
             RaisePropertyChanged(nameof(StartDate));
@@ -345,11 +349,11 @@ namespace TargetPlanning.NINAPlugin {
                     LogResults(planParams, wrappedResults);
                     DailyDetailsResults = new PagedList<ImagingDayPlanViewAdapter>(22, wrappedResults);
 
+                    EmptyReport = false;
                     AnnualChartEnabled = false;
                     DailyDetailsEnabled = true;
                 }
                 catch (OperationCanceledException) {
-                    Logger.Debug("daily details canceled");
                     DailyDetailsResults = null;
                 }
                 catch (Exception ex) {
@@ -375,7 +379,6 @@ namespace TargetPlanning.NINAPlugin {
             get => _annualChartEnabled;
             set {
                 _annualChartEnabled = value;
-                Logger.Debug($"*** AnnualChartEnabled: {value}");
                 RaisePropertyChanged();
             }
         }
@@ -400,11 +403,11 @@ namespace TargetPlanning.NINAPlugin {
 
                 try {
                     AnnualPlanningChartModel = new AnnualPlanningChartModel(getObserverInfo(profileService.ActiveProfile.AstrometrySettings), DSO, StartDate, _annualTokenSource.Token);
+                    EmptyReport = false;
                     DailyDetailsEnabled = false;
                     AnnualChartEnabled = true;
                 }
                 catch (OperationCanceledException) {
-                    Logger.Debug("annual chart canceled");
                     AnnualPlanningChartModel = null;
                 }
                 catch (Exception ex) {
@@ -586,6 +589,15 @@ namespace TargetPlanning.NINAPlugin {
             get => _dsoIsSelected;
             set {
                 _dsoIsSelected = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private bool _emptyReport = true;
+        public bool EmptyReport {
+            get => _emptyReport;
+            set {
+                _emptyReport = value;
                 RaisePropertyChanged();
             }
         }
