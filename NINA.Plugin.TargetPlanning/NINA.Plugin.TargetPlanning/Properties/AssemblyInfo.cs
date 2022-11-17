@@ -51,7 +51,7 @@ The following options act as filters for the report so you can tailor the calcul
 * Minimum Imaging Time: set the minimum acceptable imaging time.  Days when the available time is below this threshold are rejected.
 * Meridian Time Span: set the time on either side of the target's meridian crossing that is acceptable for imaging.  The start/end times will be adjusted to reflect this (taking other criteria into account as well).
 
-* Maximum Moon Illumination: set the maximum acceptable moon illumination.  Disabled if Moon Avoidance is used.
+* Maximum Moon Illumination: set the maximum acceptable moon illumination percentage.  Disabled if Moon Avoidance is used.
 * Minimum Moon Separation: set the minimum acceptable angle between the moon and the target.  If Moon Avoidance is enabled, this is the *distance* parameter to the Moon Avoidance formula - see below.
 * Moon Avoidance: enable/disable moon avoidance - see below.
 * Moon Avoidance Width: set the width parameter for moon avoidance - see below.
@@ -70,7 +70,8 @@ The parameters used on the ACP site (distance = 120, width = 14) are very conser
 * Your latitude/longitude are taken from the currently active NINA profile.  If you want to plan for a different location, you'll need to create a profile for it and make it active.
 * Airmass isn't a filter option since it penalizes you for your latitude.  Instead, use the Meridian Time Span filter to select times that minimize airmass for your target.
 * The time used for all moon calculations is taken to be the midpoint of the start/end imaging times for that day.  For this reason, the values displayed may differ from what you see in other NINA displays.
-* When using a custom local horizon, be aware that the tool will use the target/horizon crossing closest to the rise or set event for the target (altitude = 0).  For example, if you have a tree in the southwest but then a lower horizon to the west of that, your target may first disappear behind the tree but then appear later.  The NINA 'Wait Until Above Horizon' instruction would stop you just east of the tree while the plugin wouldn't stop the session until the horizon closest to target setting.
+* Fixing the moon's position and illumination for the entire night is an obvious approximation.  This may be improved in a future version, possibly also discounting moon impact altogether if it is below the horizon by some distance.
+* When using a custom local horizon, be aware that the tool will use the target/horizon crossing closest to the rise or set event for the target (altitude = 0).  For example, if you have a tree in the southwest but then a lower horizon to the west of that, your target may first disappear behind the tree but then reappear later.  The NINA 'Wait Until Above Horizon' instruction would stop you just east of the tree while the plugin wouldn't stop the session until the horizon closest to target setting.
 * There is no ability to specify an offset when using a custom horizon.  Again, the plugin provides guidelines, not precise timings.
 
 ## Acknowledgements ##
