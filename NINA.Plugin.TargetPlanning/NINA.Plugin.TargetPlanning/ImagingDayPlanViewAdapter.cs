@@ -52,7 +52,7 @@ namespace TargetPlanning.NINAPlugin {
             this.target = new DeepSkyObject(dso.Id, dso.Coordinates, null, GetCustomHorizon());
 
             primaryColor = context.Profile.ActiveProfile.ColorSchemaSettings.ColorSchema.PrimaryColor.ToString();
-            errorColor = context.Profile.ActiveProfile.ColorSchemaSettings.ColorSchema.NotificationErrorColor.ToString();
+            errorColor = context.Profile.ActiveProfile.ColorSchemaSettings.ColorSchema.NotificationWarningColor.ToString();
         }
 
         private bool GetStatus() {
