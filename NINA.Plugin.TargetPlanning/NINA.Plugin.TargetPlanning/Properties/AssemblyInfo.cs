@@ -22,8 +22,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("LicenseURL", "https://www.mozilla.org/en-US/MPL/2.0/")]
 [assembly: AssemblyMetadata("Repository", "https://github.com/tcpalmer/nina.plugin.targetplanning/")]
 [assembly: AssemblyMetadata("FeaturedImageURL", "https://github.com/tcpalmer/nina.plugin.targetplanning/tree/main/NINA.Plugin.TargetPlanning/assets/target-planning-logo.png?raw=true")]
-[assembly: AssemblyMetadata("ScreenshotURL", "")]
-[assembly: AssemblyMetadata("AltScreenshotURL", "")]
+[assembly: AssemblyMetadata("ScreenshotURL", "https://github.com/tcpalmer/nina.plugin.targetplanning/tree/main/NINA.Plugin.TargetPlanning/assets/screenshot1.png?raw=true")]
+[assembly: AssemblyMetadata("AltScreenshotURL", "https://github.com/tcpalmer/nina.plugin.targetplanning/tree/main/NINA.Plugin.TargetPlanning/assets/screenshot2.png?raw=true")]
 
 [assembly: AssemblyMetadata("LongDescription", @"Target Planning is the converse of the NINA Sky Atlas.  Rather than searching for multiple targets for one particular day, Target Planning takes your desired target and shows imaging options across multiple days.  Various filters let you establish criteria to restrict the available imaging time based on your imaging needs and local circumstances.
 
@@ -47,7 +47,7 @@ The following options act as filters for the report so you can tailor the calcul
 
 * Start Date: set the start date for the report.
 * Days: set the number of days in the report.
-* Minimum Altitude: set the minimum altitude that the target must exceed, which restricts the start/end times.  Use 'Above Horizon' to use your custom local horizon.
+* Minimum Altitude: set the minimum altitude that the target must exceed, which restricts the start/end times.  Select 'Above Horizon' to use your custom local horizon.
 * Minimum Imaging Time: set the minimum acceptable imaging time.  Days when the available time is below this threshold are rejected.
 * Meridian Time Span: set the time on either side of the target's meridian crossing that is acceptable for imaging.  The start/end times will be adjusted to reflect this (taking other criteria into account as well).
 
@@ -75,7 +75,9 @@ The parameters used on the ACP site (distance = 120, width = 14) are very conser
 * There is no ability to specify an offset when using a custom horizon.  Again, the plugin provides guidelines, not precise timings.
 
 ## Acknowledgements ##
-TBD ...
+* Originally inspired by a James Lamb [YouTube video](https://www.youtube.com/watch?v=kM8Jy1Kwhr8&t=1s)
+* PatriotAstro for pointing me to [airmass.org](https://airmass.org/) and for reviewing an early release
+* [Moon avoidance](http://bobdenny.com/ar/RefDocs/HelpFiles/ACPScheduler81Help/Constraints.htm) calculation
 
 # Getting Help #
 * Ask for help in the #plugin-discussions channel on the NINA project [Discord server](https://discord.com/invite/rWRbVbw).
