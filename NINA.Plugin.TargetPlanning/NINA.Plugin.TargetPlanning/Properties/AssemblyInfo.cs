@@ -40,6 +40,7 @@ The Daily Details Report displays a table showing available imaging times and de
 *Notes*
 * Some filter settings will simply adjust the available start/end imaging times appropriately, without rejecting the entire day.  Others will reject the day outright.
 * The calculation begins by assuming that the available imaging time on any given day includes astronomical twilight.  This is a reasonable assumption since many users do narrowband imaging during this time.  In addition, the report is intended as a guideline, not for exact timings.  This can't be changed in the current version.
+* Your latitude/longitude are taken from the currently active NINA profile.  If you want to plan for a different location, create a profile for it and make it active.
 
 *Daily Details Report Options*
 
@@ -67,17 +68,16 @@ The formula progressively relaxes the separation criteria as the moon gets away 
 The parameters used on the ACP site (distance = 120, width = 14) are very conservative - especially so for narrowband imaging.  Values like 60/7 may be more applicable.
 
 ## Other Notes ##
-* Your latitude/longitude are taken from the currently active NINA profile.  If you want to plan for a different location, you'll need to create a profile for it and make it active.
 * Airmass isn't a filter option since it penalizes you for your latitude.  Instead, use the Meridian Time Span filter to select times that minimize airmass for your target.
 * The time used for all moon calculations is taken to be the midpoint of the start/end imaging times for that day.  For this reason, the values displayed may differ from what you see in other NINA displays.
 * Fixing the moon's position and illumination for the entire night is an obvious approximation.  This may be improved in a future version, possibly also discounting moon impact altogether if it is below the horizon by some distance.
-* When using a custom local horizon, be aware that the tool will use the target/horizon crossing closest to the rise or set event for the target (altitude = 0).  For example, if you have a tree in the southwest but then a lower horizon to the west of that, your target may first disappear behind the tree but then reappear later.  The NINA 'Wait Until Above Horizon' instruction would stop you just east of the tree while the plugin wouldn't stop the session until the horizon closest to target setting.
+* When using a custom local horizon, be aware that the tool will use the target/horizon crossing closest to the rise or set event for the target (altitude = 0).  For example, if you have a tree in the southwest but then a lower horizon to the west of that, your target may first disappear behind the tree but then reappear later.  The NINA 'Loop while Altitude Above Horizon' instruction would stop you just east of the tree while the plugin wouldn't stop the session until the horizon closest to target setting.
 * There is no ability to specify an offset when using a custom horizon.  Again, the plugin provides guidelines, not precise timings.
 
 ## Acknowledgements ##
-* Originally inspired by a James Lamb [YouTube video](https://www.youtube.com/watch?v=kM8Jy1Kwhr8&t=1s)
+* James Lamb for his planning tool ([YouTube](https://www.youtube.com/watch?v=kM8Jy1Kwhr8&t=1s))
 * PatriotAstro for pointing me to [airmass.org](https://airmass.org/) and for reviewing an early release
-* [Moon avoidance](http://bobdenny.com/ar/RefDocs/HelpFiles/ACPScheduler81Help/Constraints.htm) calculation
+* ACP and BAIT teams for the [Moon avoidance](http://bobdenny.com/ar/RefDocs/HelpFiles/ACPScheduler81Help/Constraints.htm) formula
 
 # Getting Help #
 * Ask for help in the #plugin-discussions channel on the NINA project [Discord server](https://discord.com/invite/rWRbVbw).

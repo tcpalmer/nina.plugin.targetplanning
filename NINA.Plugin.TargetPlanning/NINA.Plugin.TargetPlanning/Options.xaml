@@ -327,7 +327,9 @@
                         Stretch="Uniform" />
 
                 </StackPanel>
-                <StackPanel Height="410" Orientation="Vertical">
+                <StackPanel
+                    Height="410"
+                    Orientation="Vertical">
                     <ninactrl:LoadingControl
                         Grid.Column="1"
                         MaxWidth="100"
