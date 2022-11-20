@@ -21,9 +21,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("License", "MPL-2.0")]
 [assembly: AssemblyMetadata("LicenseURL", "https://www.mozilla.org/en-US/MPL/2.0/")]
 [assembly: AssemblyMetadata("Repository", "https://github.com/tcpalmer/nina.plugin.targetplanning/")]
-[assembly: AssemblyMetadata("FeaturedImageURL", "https://github.com/tcpalmer/nina.plugin.targetplanning/tree/main/NINA.Plugin.TargetPlanning/assets/target-planning-logo.png?raw=true")]
-[assembly: AssemblyMetadata("ScreenshotURL", "https://github.com/tcpalmer/nina.plugin.targetplanning/tree/main/NINA.Plugin.TargetPlanning/assets/screenshot1.png?raw=true")]
-[assembly: AssemblyMetadata("AltScreenshotURL", "https://github.com/tcpalmer/nina.plugin.targetplanning/tree/main/NINA.Plugin.TargetPlanning/assets/screenshot2.png?raw=true")]
+[assembly: AssemblyMetadata("FeaturedImageURL", "https://raw.githubusercontent.com/tcpalmer/nina.plugin.targetplanning/main/NINA.Plugin.TargetPlanning/assets/target-planning-logo.png?raw=true")]
+[assembly: AssemblyMetadata("ScreenshotURL", "https://raw.githubusercontent.com/tcpalmer/nina.plugin.targetplanning/main/NINA.Plugin.TargetPlanning/assets/screenshot1.png?raw=true")]
+[assembly: AssemblyMetadata("AltScreenshotURL", "https://raw.githubusercontent.com/tcpalmer/nina.plugin.targetplanning/main/NINA.Plugin.TargetPlanning/assets/screenshot2.png?raw=true")]
 
 [assembly: AssemblyMetadata("LongDescription", @"Target Planning is the converse of the NINA Sky Atlas.  Rather than searching for multiple targets for one particular day, Target Planning takes your desired target and shows imaging options across multiple days.  Various filters let you establish criteria to restrict the available imaging time based on your imaging needs and local circumstances.
 
