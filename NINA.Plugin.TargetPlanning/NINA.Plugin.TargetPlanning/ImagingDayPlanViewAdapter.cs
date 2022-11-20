@@ -68,7 +68,7 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         private string GetMoonIlluminationColor() {
-            if (context.PlanParameters.MaximumMoonIllumination == 0) {
+            if (context.PlanParameters.MaximumMoonIllumination == 0 || context.PlanParameters.MoonAvoidanceEnabled) {
                 return primaryColor;
             }
 
@@ -80,7 +80,12 @@ namespace TargetPlanning.NINAPlugin {
                 return primaryColor;
             }
 
-            return (plan.MoonSeparation < context.PlanParameters.MinimumMoonSeparation) ? errorColor : primaryColor;
+            if (context.PlanParameters.MoonAvoidanceEnabled) {
+                return (plan.MoonSeparation < plan.MoonAvoidanceSeparation) ? errorColor : primaryColor;
+            }
+            else {
+                return (plan.MoonSeparation < context.PlanParameters.MinimumMoonSeparation) ? errorColor : primaryColor;
+            }
         }
 
         private string GetMoonAvoidanceSeparationDisplay() {
@@ -96,7 +101,7 @@ namespace TargetPlanning.NINAPlugin {
                 return primaryColor;
             }
 
-            return (plan.MoonAvoidanceSeparation < context.PlanParameters.MinimumMoonSeparation) ? errorColor : primaryColor;
+            return (plan.MoonSeparation < plan.MoonAvoidanceSeparation) ? errorColor : primaryColor;
         }
 
         private NighttimeData GetPlanNighttimeData() {
