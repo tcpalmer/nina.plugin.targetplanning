@@ -79,6 +79,24 @@
                         TrackerFormatString="X: {2:MM/dd/yyyy}&#x0a;Y: {4:0.00}&#176;"
                         Color="{Binding Path=Color, Source={StaticResource NotificationErrorBrush}}" />
                 </oxy:Plot.Series>
+                <oxy:Plot.Annotations>
+                    <oxy:LineAnnotation
+                        MaximumY="90"
+                        Text="Start Date"
+                        TextColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
+                        Type="Vertical"
+                        X="{Binding Source={StaticResource proxy}, Path=Data.StartDate}"
+                        Color="{Binding Path=Color, Source={StaticResource PrimaryBrush}}" />
+                    <oxy:PointAnnotation
+                        FontSize="16"
+                        Shape="None"
+                        Text="{Binding Source={StaticResource proxy}, Path=Data.AnnoText}"
+                        TextColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
+                        Visibility="Visible"
+                        X="{Binding Source={StaticResource proxy}, Path=Data.AnnoPoint.X}"
+                        Y="{Binding Source={StaticResource proxy}, Path=Data.AnnoPoint.Y}" />
+                </oxy:Plot.Annotations>
+
             </oxy:Plot>
         </StackPanel>
     </Grid>
