@@ -295,10 +295,12 @@
     <Compile Include="Astrometry\AstrometryUtilsTest.cs" />
     <Compile Include="Astrometry\CircumstanceSolverTest.cs" />
     <Compile Include="Astrometry\DSORefinerTest.cs" />
+    <Compile Include="Astrometry\HeliacalSolverTest.cs" />
     <Compile Include="Astrometry\HorizonDefinitionTest.cs" />
     <Compile Include="Astrometry\ImagingCriteriaAnalyzerTest.cs" />
     <Compile Include="Astrometry\ImagingDayPlanTest.cs" />
     <Compile Include="Astrometry\ImagingDayTest.cs" />
+    <Compile Include="Astrometry\OptimalImagingSeasonTest.cs" />
     <Compile Include="Astrometry\PlanGeneratorTest.cs" />
     <Compile Include="Astrometry\TargetImagingCircumstancesTest.cs" />
     <Compile Include="Astrometry\TestAltitudeRefiner.cs" />

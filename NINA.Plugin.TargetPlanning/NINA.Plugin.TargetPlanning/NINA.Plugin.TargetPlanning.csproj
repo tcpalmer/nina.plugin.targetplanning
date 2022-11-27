@@ -271,10 +271,13 @@
     <Compile Include="Astrometry\AstrometryUtils.cs" />
     <Compile Include="Astrometry\CircumstanceSolver.cs" />
     <Compile Include="Astrometry\DSORefiner.cs" />
+    <Compile Include="Astrometry\HeliacalSolver.cs" />
     <Compile Include="Astrometry\HorizontalCoordinate.cs" />
     <Compile Include="Astrometry\IAltitudeRefiner.cs" />
     <Compile Include="Astrometry\ImagingCriteriaAnalyzer.cs" />
     <Compile Include="Astrometry\ImagingDayPlan.cs" />
+    <Compile Include="Astrometry\ImagingDayPlanCache.cs" />
+    <Compile Include="Astrometry\OptimalImagingSeason.cs" />
     <Compile Include="Astrometry\PlanGenerator.cs" />
     <Compile Include="Astrometry\ImagingDay.cs" />
     <Compile Include="Astrometry\Solver.cs" />

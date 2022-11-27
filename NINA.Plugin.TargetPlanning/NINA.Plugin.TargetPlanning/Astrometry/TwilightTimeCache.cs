@@ -8,7 +8,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
     public class TwilightTimeCache {
 
-        private static readonly TimeSpan ITEM_TIMEOUT = TimeSpan.FromHours(1);
+        private static readonly TimeSpan ITEM_TIMEOUT = TimeSpan.FromHours(2);
         private static readonly MemoryCache _cache = new MemoryCache("Target Planning Twilight Times");
 
         public static RiseAndSetEvent Get(DateTime dateTime, double latitude, double longitude) {

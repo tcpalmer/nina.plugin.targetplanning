@@ -1,6 +1,7 @@
 ﻿using NINA.Astrometry;
 using NINA.Core.Utility;
 using System;
+using System.Threading;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
@@ -142,6 +143,29 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         }
 
         /// <summary>
+        /// Return true if the target object can ever rise above the horizon at the location when a minimum viewing altitude
+        /// is considered.  Note that this doesn't necessarily mean that the target has a rising event (which a circumpolar
+        /// target would not), just that it can be above the horizon at some point.
+        /// 
+        /// </summary>
+        /// <param name="location"></param>
+        /// <param name="coordinates"></param>
+        /// <param name="minimumAltitude"></param>
+        /// <returns>true/false</returns>
+        public static bool RisesAtLocationWithMinimumAltitude(ObserverInfo location, Coordinates coordinates, double minimumAltitude) {
+            Validate.Assert.notNull(location, "location cannot be null");
+            Validate.Assert.notNull(coordinates, "coordinates cannot be null");
+            Validate.Assert.isTrue(minimumAltitude > 0, "minimumAltitude must be > 0");
+
+            double declination = coordinates.Dec;
+            double latitude = location.Latitude;
+
+            // The object will never rise above the local horizon with a minimum altitude if (dec-min) - lat is less than -90°
+            // (observer in Northern Hemisphere), or (dec+min) - lat is greater than +90° (observer in Southern Hemisphere)
+            return !((declination - minimumAltitude - latitude) < -90) && !(declination + minimumAltitude - latitude > 90);
+        }
+
+        /// <summary>
         /// Return true if the target object is circumpolar at the location.
         /// </summary>
         /// <param name="location"></param>
@@ -187,6 +211,50 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         /// <returns>true/false</returns>
         public static bool IsAbovePolarCircle(ObserverInfo location) {
             return location.Latitude >= 66.6 || location.Latitude <= -66.6;
+        }
+
+        /// <summary>
+        /// Determine the date on which the target transits closest to local midnight
+        /// </summary>
+        /// <param name="location"></param>
+        /// <param name="coordinates"></param>
+        /// <param name="year"></param>
+        /// <param name="token"></param>
+        /// <returns>date </returns>
+        public static DateTime GetMidnightTransitDate(ObserverInfo location, Coordinates coordinates, int year, CancellationToken token) {
+
+            int daysInYear = DateTime.IsLeapYear(year) ? 366 : 365;
+            double[] hourAngles = new double[daysInYear];
+
+            DateTime dateTimeLocal = new DateTime(year, 1, 1, 0, 0, 0, DateTimeKind.Local);
+            DateTime jan1Local = dateTimeLocal;
+
+            for (int i = 0; i < daysInYear; i++) {
+                if (token.IsCancellationRequested) {
+                    throw new OperationCanceledException();
+                }
+
+                double siderealTime = AstroUtil.GetLocalSiderealTime(dateTimeLocal, location.Longitude);
+                hourAngles[i] = AstroUtil.GetHourAngle(siderealTime, coordinates.RA);
+                dateTimeLocal = dateTimeLocal.AddDays(1);
+            }
+
+            int index = -1;
+            double minDiff = double.MaxValue;
+
+            for (int i = 0; i < daysInYear; i++) {
+                if (token.IsCancellationRequested) {
+                    throw new OperationCanceledException();
+                }
+
+                double diff = hourAngles[i] > 12 ? 24 - hourAngles[i] : hourAngles[i];
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    index = i;
+                }
+            }
+
+            return jan1Local.AddDays(index);
         }
     }
 

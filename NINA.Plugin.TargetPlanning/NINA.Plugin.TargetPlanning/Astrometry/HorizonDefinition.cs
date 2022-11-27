@@ -47,6 +47,25 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             return this.minimumAltitude;
         }
+
+        public string GetCacheKey() {
+            if (minimumAltitude != TargetPlanningPlugin.HORIZON_VALUE) {
+                return minimumAltitude.ToString();
+            }
+
+            // Something of a hack but CustomHorizon is closed up, hopefully reasonably unique
+            double sum = horizon.GetMinAltitude() + horizon.GetMaxAltitude();
+            sum += horizon.GetAltitude(0);
+            sum += horizon.GetAltitude(45);
+            sum += horizon.GetAltitude(90);
+            sum += horizon.GetAltitude(135);
+            sum += horizon.GetAltitude(180);
+            sum += horizon.GetAltitude(225);
+            sum += horizon.GetAltitude(270);
+            sum += horizon.GetAltitude(315);
+
+            return sum.ToString();
+        }
     }
 
 }
