@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:tp="clr-namespace:TargetPlanning.NINAPlugin.Converters">
 
+    <tp:ImagingMinutesConverter x:Key="ImagingMinutesConverter" />
     <tp:ImagingStatusConverter x:Key="ImagingStatusConverter" />
     <tp:ImagingStatusMarkColorConverter x:Key="ImagingStatusMarkColorConverter" />
     <tp:VisibilityMultiConverter x:Key="VisibilityMultiConverter" />

@@ -347,6 +347,7 @@
                         Grid.Column="1"
                         MaxWidth="100"
                         MaxHeight="100"
+                        Margin="0,30,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         LoadingImageBrush="{StaticResource PrimaryBrush}"
@@ -355,10 +356,20 @@
                         Grid.Column="1"
                         MaxWidth="100"
                         MaxHeight="100"
+                        Margin="0,30,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         LoadingImageBrush="{StaticResource PrimaryBrush}"
                         Visibility="{Binding AnnualChartCommand.Execution.IsNotCompleted, Converter={StaticResource BooleanToVisibilityCollapsedConverter}, FallbackValue=Collapsed}" />
+                    <ninactrl:LoadingControl
+                        Grid.Column="1"
+                        MaxWidth="100"
+                        MaxHeight="100"
+                        Margin="0,30,0,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        LoadingImageBrush="{StaticResource PrimaryBrush}"
+                        Visibility="{Binding ImagingSeasonCommand.Execution.IsNotCompleted, Converter={StaticResource BooleanToVisibilityCollapsedConverter}, FallbackValue=Collapsed}" />
                 </StackPanel>
 
                 <!--  Daily Details Table  -->

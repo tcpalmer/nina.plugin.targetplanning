@@ -283,6 +283,7 @@
     <Compile Include="Astrometry\Solver.cs" />
     <Compile Include="Astrometry\TargetImagingCircumstances.cs" />
     <Compile Include="Astrometry\TwilightTimeCache.cs" />
+    <Compile Include="Converters\ImagingMinutesConverter.cs" />
     <Compile Include="Converters\ImagingStatusConverter.cs" />
     <Compile Include="Converters\ImagingStatusMarkColorConverter.cs" />
     <Compile Include="Astrometry\HorizonDefinition.cs" />
