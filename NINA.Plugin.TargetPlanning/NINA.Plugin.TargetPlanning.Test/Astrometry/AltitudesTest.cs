@@ -9,6 +9,86 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
     public class AltitudesTest {
 
         [Test]
+        public void TestFindMax() {
+            List<AltitudeAtTime> alts = new List<AltitudeAtTime>();
+            DateTime dt = DateTime.Now;
+            alts.Add(new AltitudeAtTime(1, 180, dt));
+            alts.Add(new AltitudeAtTime(2, 180, dt.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(3, 180, dt.AddMinutes(2)));
+            alts.Add(new AltitudeAtTime(2, 180, dt.AddMinutes(3)));
+            Altitudes altitudes = new Altitudes(alts);
+
+            Tuple<int, AltitudeAtTime> max = altitudes.FindMaximumAltitude();
+            max.Item2.Altitude.Should().BeApproximately(3, 0.001);
+            max.Item2.AtTime.Should().BeSameDateAs(dt.AddMinutes(2));
+            max.Item1.Should().Be(2);
+
+            alts.Clear();
+            alts.Add(new AltitudeAtTime(1, 180, dt));
+            alts.Add(new AltitudeAtTime(2, 180, dt.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(3, 180, dt.AddMinutes(2)));
+            alts.Add(new AltitudeAtTime(4, 180, dt.AddMinutes(3)));
+            altitudes = new Altitudes(alts);
+
+            max = altitudes.FindMaximumAltitude();
+            max.Item2.Altitude.Should().BeApproximately(4, 0.001);
+            max.Item2.AtTime.Should().BeSameDateAs(dt.AddMinutes(3));
+            max.Item1.Should().Be(3);
+
+            alts.Clear();
+            alts.Add(new AltitudeAtTime(4, 180, dt));
+            alts.Add(new AltitudeAtTime(3, 180, dt.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(2, 180, dt.AddMinutes(2)));
+            alts.Add(new AltitudeAtTime(1, 180, dt.AddMinutes(3)));
+            altitudes = new Altitudes(alts);
+
+            max = altitudes.FindMaximumAltitude();
+            max.Item2.Altitude.Should().BeApproximately(4, 0.001);
+            max.Item2.AtTime.Should().BeSameDateAs(dt.AddMinutes(1));
+            max.Item1.Should().Be(0);
+        }
+
+        [Test]
+        public void TestFindMin() {
+            List<AltitudeAtTime> alts = new List<AltitudeAtTime>();
+            DateTime dt = DateTime.Now;
+            alts.Add(new AltitudeAtTime(4, 180, dt));
+            alts.Add(new AltitudeAtTime(3, 180, dt.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(2, 180, dt.AddMinutes(2)));
+            alts.Add(new AltitudeAtTime(3, 180, dt.AddMinutes(3)));
+            Altitudes altitudes = new Altitudes(alts);
+
+            Tuple<int, AltitudeAtTime> min = altitudes.FindMinimumAltitude();
+            min.Item2.Altitude.Should().BeApproximately(2, 0.001);
+            min.Item2.AtTime.Should().BeSameDateAs(dt.AddMinutes(2));
+            min.Item1.Should().Be(2);
+
+            alts.Clear();
+            alts.Add(new AltitudeAtTime(1, 180, dt));
+            alts.Add(new AltitudeAtTime(2, 180, dt.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(3, 180, dt.AddMinutes(2)));
+            alts.Add(new AltitudeAtTime(4, 180, dt.AddMinutes(3)));
+            altitudes = new Altitudes(alts);
+
+            min = altitudes.FindMinimumAltitude();
+            min.Item2.Altitude.Should().BeApproximately(1, 0.001);
+            min.Item2.AtTime.Should().BeSameDateAs(dt);
+            min.Item1.Should().Be(0);
+
+            alts.Clear();
+            alts.Add(new AltitudeAtTime(4, 180, dt));
+            alts.Add(new AltitudeAtTime(3, 180, dt.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(2, 180, dt.AddMinutes(2)));
+            alts.Add(new AltitudeAtTime(1, 180, dt.AddMinutes(3)));
+            altitudes = new Altitudes(alts);
+
+            min = altitudes.FindMinimumAltitude();
+            min.Item2.Altitude.Should().BeApproximately(1, 0.001);
+            min.Item2.AtTime.Should().BeSameDateAs(dt.AddMinutes(3));
+            min.Item1.Should().Be(3);
+        }
+
+        [Test]
         public void TestBad() {
 
             var ex = Assert.Throws<ArgumentException>(() => new Altitudes(null));

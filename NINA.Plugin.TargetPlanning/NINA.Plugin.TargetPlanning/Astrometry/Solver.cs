@@ -208,15 +208,24 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             List<AltitudeAtTime> list = altitudes.AltitudeList;
 
-            // If the last sample is above, there can't be a minimum crossing
-            double targetAltitude = horizonDefinition.GetTargetAltitude(list[altitudes.AltitudeList.Count - 1]);
-            if (list[altitudes.AltitudeList.Count - 1].Altitude > targetAltitude) {
-                return null;
+            // If rising at the end, we need to find minimum and continue search (backwards) from there.
+            int pos = altitudes.AltitudeList.Count - 1;
+            if (altitudes.IsRisingAtEnd()) {
+                Tuple<int, AltitudeAtTime> min = altitudes.FindMinimumAltitude();
+                pos = min.Item1;
+
+            }
+            else {
+                // If not rising at end and last sample is above, there can't be a minimum crossing
+                double targetAltitude = horizonDefinition.GetTargetAltitude(list[altitudes.AltitudeList.Count - 1]);
+                if (list[altitudes.AltitudeList.Count - 1].Altitude > targetAltitude) {
+                    return null;
+                }
             }
 
             // Walk the list backwards looking for the minimum crossing
-            for (int i = altitudes.AltitudeList.Count - 1; i > 0; i--) {
-                targetAltitude = horizonDefinition.GetTargetAltitude(list[i - 1]);
+            for (int i = pos; i > 0; i--) {
+                double targetAltitude = horizonDefinition.GetTargetAltitude(list[i - 1]);
 
                 if (list[i - 1].Altitude > targetAltitude) {
                     List<AltitudeAtTime> step = new List<AltitudeAtTime>(2);

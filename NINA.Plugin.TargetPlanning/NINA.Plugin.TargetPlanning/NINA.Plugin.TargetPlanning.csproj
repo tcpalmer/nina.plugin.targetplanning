@@ -289,6 +289,10 @@
     <Compile Include="Converters\VisibilityMultiConverter.cs" />
     <Compile Include="ImagingDayPlanContext.cs" />
     <Compile Include="ImagingDayPlanViewAdapter.cs" />
+    <Compile Include="ImagingSeason\ImagingSeasonChart.xaml.cs">
+      <DependentUpon>ImagingSeasonChart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImagingSeason\ImagingSeasonChartModel.cs" />
     <Compile Include="TargetPlanning.cs" />
     <Compile Include="Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
@@ -315,6 +319,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="AnnualChart\AnnualPlanningChart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ImagingSeason\ImagingSeasonChart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

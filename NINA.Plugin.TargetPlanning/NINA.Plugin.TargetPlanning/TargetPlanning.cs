@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using TargetPlanning.NINAPlugin.AnnualChart;
 using TargetPlanning.NINAPlugin.Astrometry;
+using TargetPlanning.NINAPlugin.ImagingSeason;
 
 namespace TargetPlanning.NINAPlugin {
 
@@ -55,8 +56,12 @@ namespace TargetPlanning.NINAPlugin {
 
             DailyDetailsCommand = new AsyncCommand<bool>(() => ShowDailyDetails());
             CancelDailyDetailsCommand = new RelayCommand(CancelDaily);
+
             AnnualChartCommand = new AsyncCommand<bool>(() => ShowAnnualChart());
             CancelAnnualCommand = new RelayCommand(CancelAnnual);
+
+            ImagingSeasonCommand = new AsyncCommand<bool>(() => ShowImagingSeason());
+            CancelImagingSeasonCommand = new RelayCommand(CancelImagingSeason);
 
             InitializeCriteria();
         }
@@ -299,43 +304,7 @@ namespace TargetPlanning.NINAPlugin {
 
             return await Task.Run(() => {
 
-                // Leaving this fixed - at least for now: Target Planning isn't meant to determine exact timings for a real session.
-                double horizonOffset = 0;
-
-                PlanParameters planParams = new PlanParameters();
-                planParams.Target = DSO;
-                planParams.ObserverInfo = getObserverInfo(profileService.ActiveProfile.AstrometrySettings);
-                planParams.StartDate = StartDate;
-                planParams.PlanDays = PlanDays;
-                planParams.HorizonDefinition = MinimumAltitude != HORIZON_VALUE ?
-                        new HorizonDefinition(MinimumAltitude) :
-                        new HorizonDefinition(profileService.ActiveProfile.AstrometrySettings.Horizon, horizonOffset);
-                planParams.MinimumImagingTime = MinimumTime;
-                planParams.MeridianTimeSpan = MeridianTimeSpan;
-                planParams.MinimumMoonSeparation = MinimumMoonSeparation;
-                planParams.MaximumMoonIllumination = MaximumMoonIllumination;
-                planParams.MoonAvoidanceEnabled = MoonAvoidanceEnabled;
-                planParams.MoonAvoidanceWidth = MoonAvoidanceWidth;
-
-                Logger.Debug($"Starting Target Planning for: {Utils.FormatDateTimeFull(planParams.StartDate)}, {planParams.PlanDays} days");
-                Logger.Debug($"          Target: {planParams.Target.Name} RA: {planParams.Target.Coordinates.RA} Dec: {planParams.Target.Coordinates.Dec}");
-                Logger.Trace($"    Location Lat: {planParams.ObserverInfo.Latitude} Long: {planParams.ObserverInfo.Longitude}, Ele: {planParams.ObserverInfo.Elevation}\n");
-
-                if (MinimumAltitude == HORIZON_VALUE) {
-                    Logger.Debug($"         Min alt: n/a");
-                    Logger.Debug($"  Custom horizon: applies, offset: {horizonOffset}\n");
-                }
-                else {
-                    Logger.Debug($"         Min alt: {MinimumAltitude}");
-                    Logger.Debug($"  Custom horizon: n/a\n");
-                }
-
-                Logger.Debug($"        Min time: {planParams.MinimumImagingTime}");
-                Logger.Debug($"   Meridian span: {planParams.MeridianTimeSpan}\n");
-                Logger.Debug($"  Max moon illum: {planParams.MaximumMoonIllumination}");
-                Logger.Debug($"    Min moon sep: {planParams.MinimumMoonSeparation}");
-                Logger.Debug($"      Moon avoid: {planParams.MoonAvoidanceEnabled}");
-                Logger.Debug($"Moon avoid width: {planParams.MoonAvoidanceWidth}");
+                PlanParameters planParams = GetCurrentPlanParameters();
 
                 try {
                     DailyDetailsResults = null;
@@ -352,6 +321,7 @@ namespace TargetPlanning.NINAPlugin {
                     EmptyReport = false;
                     AnnualChartEnabled = false;
                     DailyDetailsEnabled = true;
+                    ImagingSeasonEnabled = false;
                 }
                 catch (OperationCanceledException) {
                     DailyDetailsResults = null;
@@ -363,6 +333,45 @@ namespace TargetPlanning.NINAPlugin {
 
                 return true;
             });
+        }
+
+        private PlanParameters GetCurrentPlanParameters() {
+            PlanParameters planParams = new PlanParameters();
+            planParams.Target = DSO;
+            planParams.ObserverInfo = getObserverInfo(profileService.ActiveProfile.AstrometrySettings);
+            planParams.StartDate = StartDate;
+            planParams.PlanDays = PlanDays;
+            planParams.HorizonDefinition = MinimumAltitude != HORIZON_VALUE ?
+                    new HorizonDefinition(MinimumAltitude) :
+                    new HorizonDefinition(profileService.ActiveProfile.AstrometrySettings.Horizon, 0);
+            planParams.MinimumImagingTime = MinimumTime;
+            planParams.MeridianTimeSpan = MeridianTimeSpan;
+            planParams.MinimumMoonSeparation = MinimumMoonSeparation;
+            planParams.MaximumMoonIllumination = MaximumMoonIllumination;
+            planParams.MoonAvoidanceEnabled = MoonAvoidanceEnabled;
+            planParams.MoonAvoidanceWidth = MoonAvoidanceWidth;
+
+            Logger.Debug($"Starting planning for: {Utils.FormatDateTimeFull(planParams.StartDate)}, {planParams.PlanDays} days");
+            Logger.Debug($"          Target: {planParams.Target.Name} RA: {planParams.Target.Coordinates.RA} Dec: {planParams.Target.Coordinates.Dec}");
+            Logger.Trace($"    Location Lat: {planParams.ObserverInfo.Latitude} Long: {planParams.ObserverInfo.Longitude}, Ele: {planParams.ObserverInfo.Elevation}\n");
+
+            if (MinimumAltitude == HORIZON_VALUE) {
+                Logger.Debug($"         Min alt: n/a");
+                Logger.Debug($"  Custom horizon: applies\n");
+            }
+            else {
+                Logger.Debug($"         Min alt: {MinimumAltitude}");
+                Logger.Debug($"  Custom horizon: n/a\n");
+            }
+
+            Logger.Debug($"        Min time: {planParams.MinimumImagingTime}");
+            Logger.Debug($"   Meridian span: {planParams.MeridianTimeSpan}\n");
+            Logger.Debug($"  Max moon illum: {planParams.MaximumMoonIllumination}");
+            Logger.Debug($"    Min moon sep: {planParams.MinimumMoonSeparation}");
+            Logger.Debug($"      Moon avoid: {planParams.MoonAvoidanceEnabled}");
+            Logger.Debug($"Moon avoid width: {planParams.MoonAvoidanceWidth}");
+
+            return planParams;
         }
 
         private AnnualPlanningChartModel _annualPlanningChartModel;
@@ -400,12 +409,14 @@ namespace TargetPlanning.NINAPlugin {
             return await Task.Run(() => {
                 AnnualChartEnabled = false;
                 DailyDetailsEnabled = false;
+                ImagingSeasonEnabled = false;
 
                 try {
                     AnnualPlanningChartModel = new AnnualPlanningChartModel(getObserverInfo(profileService.ActiveProfile.AstrometrySettings), DSO, StartDate, _annualTokenSource.Token);
                     EmptyReport = false;
                     DailyDetailsEnabled = false;
                     AnnualChartEnabled = true;
+                    ImagingSeasonEnabled = false;
                 }
                 catch (OperationCanceledException) {
                     AnnualPlanningChartModel = null;
@@ -442,6 +453,63 @@ namespace TargetPlanning.NINAPlugin {
                     Logger.Trace($"   avoid sep: n/a\n");
                 }
             }
+        }
+
+        private ImagingSeasonChartModel _imagingSeasonChartModel;
+        public ImagingSeasonChartModel ImagingSeasonChartModel {
+            get => _imagingSeasonChartModel;
+            set {
+                _imagingSeasonChartModel = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private bool _imagingSeasonEnabled = false;
+        public bool ImagingSeasonEnabled {
+            get => _imagingSeasonEnabled;
+            set {
+                _imagingSeasonEnabled = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public ICommand CancelImagingSeasonCommand { get; private set; }
+
+        private CancellationTokenSource _imagingSeasonTokenSource;
+
+        private void CancelImagingSeason(object obj) {
+            try { _imagingSeasonTokenSource?.Cancel(); } catch { }
+        }
+
+        public ICommand ImagingSeasonCommand { get; private set; }
+
+        private async Task<bool> ShowImagingSeason() {
+            _imagingSeasonTokenSource?.Dispose();
+            _imagingSeasonTokenSource = new CancellationTokenSource();
+
+            return await Task.Run(() => {
+                AnnualChartEnabled = false;
+                DailyDetailsEnabled = false;
+                ImagingSeasonEnabled = false;
+
+                PlanParameters planParams = GetCurrentPlanParameters();
+
+                try {
+                    ImagingSeasonChartModel = new OptimalImagingSeason().GetOptimalSeason(planParams, _imagingSeasonTokenSource.Token);
+                    EmptyReport = false;
+                    ImagingSeasonEnabled = true;
+                }
+                catch (OperationCanceledException) {
+                    ImagingSeasonChartModel = null;
+                }
+                catch (Exception ex) {
+                    Logger.Error($"imaging season exception: {ex.Message} {ex.StackTrace}");
+                    ImagingSeasonChartModel = null;
+                }
+
+                return true;
+            });
+
         }
 
         private ObserverInfo getObserverInfo(IAstrometrySettings astrometrySettings) {

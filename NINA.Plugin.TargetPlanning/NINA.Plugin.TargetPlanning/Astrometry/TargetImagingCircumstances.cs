@@ -1,5 +1,4 @@
 ﻿using NINA.Astrometry;
-using NINA.Core.Model;
 using System;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {

@@ -22,19 +22,19 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             tokenSource.Dispose();
         }
 
-        //[Test]
+        [Test]
         public void testIt() {
             PlanParameters pp = new PlanParameters();
             pp.StartDate = new DateTime(2022, 1, 1);
             pp.PlanDays = 3;
             pp.ObserverInfo = TestUtil.TEST_LOCATION_1;
-            pp.Target = new NINA.Astrometry.DeepSkyObject("", TestUtil.BETELGEUSE, null, null);
+            pp.Target = new NINA.Astrometry.DeepSkyObject("", TestUtil.M31, null, null);
             pp.HorizonDefinition = new HorizonDefinition(20);
 
             OptimalImagingSeason sut = new OptimalImagingSeason();
             sut.GetOptimalSeason(pp, tokenSource.Token);
 
-            throw new Exception("oops");
+            //throw new Exception("oops");
         }
     }
 

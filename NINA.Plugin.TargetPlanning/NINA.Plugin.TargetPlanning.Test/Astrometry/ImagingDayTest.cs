@@ -86,6 +86,25 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
         }
 
         [Test]
+        public void TestGetSetBelowMinimumTimeDescending() {
+
+            // This tests the case where the target has an anti-meridian in the time span which leads to
+            // altitude dropping below minimum but then later rising above.
+
+            DateTime start = new DateTime(2022, 3, 15, 20, 18, 51);
+            DateTime end = new DateTime(2022, 3, 16, 6, 31, 10);
+            ImagingDay imagingDay = new ImagingDay(start, end, TestUtil.TEST_LOCATION_1, TestUtil.M31, TestUtil.getHD(5));
+            DateTime setBelowMinimumTime = imagingDay.GetSetBelowMinimumTime();
+            TestUtil.AssertTime(start, setBelowMinimumTime, 22, 16, 59);
+
+            start = new DateTime(2022, 3, 15, 20, 18, 37);
+            end = new DateTime(2022, 3, 16, 6, 31, 30);
+            imagingDay = new ImagingDay(start, end, TestUtil.TEST_LOCATION_1, TestUtil.IC1805, TestUtil.getHD(10));
+            setBelowMinimumTime = imagingDay.GetSetBelowMinimumTime();
+            TestUtil.AssertTime(end, setBelowMinimumTime, 2, 3, 26);
+        }
+
+        [Test]
         public void TestGetRiseAboveTimeCustomHorizon() {
             DateTime start = new DateTime(2022, 10, 15, 18, 0, 0);
             DateTime end = new DateTime(2022, 10, 16, 6, 0, 0);

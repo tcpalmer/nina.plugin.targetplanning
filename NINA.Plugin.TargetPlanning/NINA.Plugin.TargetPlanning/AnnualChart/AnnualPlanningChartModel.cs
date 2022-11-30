@@ -29,8 +29,9 @@ namespace TargetPlanning.NINAPlugin.AnnualChart {
             TargetAltitudes = new List<DataPoint>(366);
             MoonAltitudes = new List<DataPoint>(366);
 
+            int daysInYear = DateTime.IsLeapYear(startTime.Year) ? 366 : 365;
             DateTime dateTime = new DateTime(startTime.Year, 1, 1, 0, 0, 0, DateTimeKind.Local);
-            for (int i = 0; i < 365; i++) {
+            for (int i = 0; i < daysInYear; i++) {
 
                 if (token.IsCancellationRequested) {
                     throw new OperationCanceledException();
@@ -42,7 +43,7 @@ namespace TargetPlanning.NINAPlugin.AnnualChart {
             }
 
             dateTime = new DateTime(startTime.Year, 1, 1, 0, 0, 0, DateTimeKind.Local);
-            for (int i = 0; i < 365; i++) {
+            for (int i = 0; i < daysInYear; i++) {
 
                 if (token.IsCancellationRequested) {
                     throw new OperationCanceledException();

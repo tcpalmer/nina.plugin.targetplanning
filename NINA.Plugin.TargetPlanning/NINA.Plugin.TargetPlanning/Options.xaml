@@ -10,7 +10,8 @@
     xmlns:ninactrl="clr-namespace:NINACustomControlLibrary;assembly=NINACustomControlLibrary"
     xmlns:ns="clr-namespace:NINA.Core.Locale;assembly=NINA.Core"
     xmlns:rules="clr-namespace:NINA.Core.Utility.ValidationRules;assembly=NINA.Core"
-    xmlns:tp="clr-namespace:TargetPlanning.NINAPlugin.AnnualChart"
+    xmlns:tpac="clr-namespace:TargetPlanning.NINAPlugin.AnnualChart"
+    xmlns:tpis="clr-namespace:TargetPlanning.NINAPlugin.ImagingSeason"
     xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core">
 
     <!--  This data template will be displayed in N.I.N.A. on the options->plugin tab with the datacontext of the TestPlugin instance  -->
@@ -307,6 +308,20 @@
                     IsEnabled="{Binding DSOIsSelected}"
                     ToolTip="Display annual chart of target and moon altitude at local midnight"
                     Visibility="{Binding AnnualChartCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
+
+                <ninactrl:CancellableButton
+                    Width="250"
+                    Height="35"
+                    Margin="5"
+                    HorizontalAlignment="Left"
+                    ButtonText="Imaging Season"
+                    CancelButtonImage="{StaticResource CancelSVG}"
+                    CancelCommand="{Binding CancelImagingSeasonCommand}"
+                    CancelToolTip="Cancel"
+                    Command="{Binding ImagingSeasonCommand}"
+                    IsEnabled="{Binding DSOIsSelected}"
+                    ToolTip="Display entire imaging season for target, applying all filters (be patient)"
+                    Visibility="{Binding ImagingSeasonCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
             </StackPanel>
 
             <Grid>
@@ -327,9 +342,7 @@
                         Stretch="Uniform" />
 
                 </StackPanel>
-                <StackPanel
-                    Height="410"
-                    Orientation="Vertical">
+                <StackPanel Height="410" Orientation="Vertical">
                     <ninactrl:LoadingControl
                         Grid.Column="1"
                         MaxWidth="100"
@@ -674,7 +687,20 @@
                         <Grid.Resources>
                             <util:BindingProxy x:Key="annualChartModel" Data="{Binding AnnualPlanningChartModel}" />
                         </Grid.Resources>
-                        <tp:AnnualPlanningChart AnnualPlanningChartModel="{Binding Source={StaticResource annualChartModel}, Path=Data}" />
+                        <tpac:AnnualPlanningChart AnnualPlanningChartModel="{Binding Source={StaticResource annualChartModel}, Path=Data}" />
+                    </Grid>
+                </StackPanel>
+
+                <!--  Imaging Season Chart  -->
+                <StackPanel
+                    Height="410"
+                    Orientation="Vertical"
+                    Visibility="{Binding Path=ImagingSeasonEnabled, Converter={StaticResource BooleanToVisibilityCollapsedConverter}, FallbackValue=Collapsed}">
+                    <Grid>
+                        <Grid.Resources>
+                            <util:BindingProxy x:Key="imagingSeasonChartModel" Data="{Binding ImagingSeasonChartModel}" />
+                        </Grid.Resources>
+                        <tpis:ImagingSeasonChart ImagingSeasonChartModel="{Binding Source={StaticResource imagingSeasonChartModel}, Path=Data}" />
                     </Grid>
                 </StackPanel>
 

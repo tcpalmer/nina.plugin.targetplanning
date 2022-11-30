@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using TargetPlanning.NINAPlugin.ImagingSeason;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
@@ -10,31 +11,29 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         public OptimalImagingSeason() {
         }
 
-        // TODO: this will likely return the model for the chart
-        public string GetOptimalSeason(PlanParameters planParameters, CancellationToken token) {
+        public ImagingSeasonChartModel GetOptimalSeason(PlanParameters planParams, CancellationToken token) {
 
             // Be sure this object rises at this location at all
-            if (!AstrometryUtils.RisesAtLocation(planParameters.ObserverInfo, planParameters.Target.Coordinates)) {
+            if (!AstrometryUtils.RisesAtLocation(planParams.ObserverInfo, planParams.Target.Coordinates)) {
                 return null;
             }
 
-            int originalPlanDays = planParameters.PlanDays;
-            DateTime originalStartDate = planParameters.StartDate;
+            // TODO: if circumpolar, can't use heliacal rising/setting - assume all year?
 
             // We use heliacal rising/setting dates to determine the limits of the imaging season
-            DateTime transitMidnightDate = AstrometryUtils.GetMidnightTransitDate(planParameters.ObserverInfo, planParameters.Target.Coordinates, planParameters.StartDate.Year, token);
-            HeliacalSolver solver = new HeliacalSolver(planParameters.ObserverInfo, planParameters.Target.Coordinates, transitMidnightDate);
+            DateTime transitMidnightDate = AstrometryUtils.GetMidnightTransitDate(planParams.ObserverInfo, planParams.Target.Coordinates, planParams.StartDate.Year, token);
+            HeliacalSolver solver = new HeliacalSolver(planParams.ObserverInfo, planParams.Target.Coordinates, transitMidnightDate);
             DateTime heliacalRisingDate = solver.GetHeliacalRisingDate(token);
             DateTime heliacalSettingDate = solver.GetHeliacalSettingDate(token);
 
-            planParameters.PlanDays = Math.Abs((heliacalSettingDate - heliacalRisingDate).Days);
+            Logger.Trace($"midnight transit: {transitMidnightDate}");
+            Logger.Trace($"heliacal rising:  {heliacalRisingDate}");
+            Logger.Trace($"heliacal setting: {heliacalSettingDate}");
 
-            heliacalRisingDate = new DateTime(planParameters.StartDate.Year, heliacalRisingDate.Month, heliacalRisingDate.Day);
-            heliacalSettingDate = new DateTime(planParameters.StartDate.Year, heliacalSettingDate.Month, heliacalSettingDate.Day);
+            planParams.PlanDays = Math.Abs((heliacalSettingDate - heliacalRisingDate).Days);
+            planParams.StartDate = heliacalRisingDate;
 
-            planParameters.StartDate = heliacalRisingDate;
-
-            IEnumerable<ImagingDayPlan> results = new PlanGenerator(planParameters).Generate(token);
+            IEnumerable<ImagingDayPlan> results = new PlanGenerator(planParams).Generate(token);
             foreach (ImagingDayPlan plan in results) {
                 bool rejected = plan.StartLimitingFactor.Session;
                 Logger.Trace($"{plan.StartImagingTime}: {plan.GetImagingMinutes()} mins - {!rejected}");
@@ -42,11 +41,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             // TODO: trim rejected days off each end
 
-            planParameters.StartDate = originalStartDate;
-            planParameters.PlanDays = originalPlanDays;
+            // TODO: create a proper model
+            ImagingSeasonChartModel model = new ImagingSeasonChartModel(planParams.Target, results);
 
-            // TODO: this will likely return the model for the chart
-            return "FIX ME";
+            return model;
         }
     }
 
