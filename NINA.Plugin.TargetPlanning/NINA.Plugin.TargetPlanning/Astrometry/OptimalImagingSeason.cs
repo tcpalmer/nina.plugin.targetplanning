@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using TargetPlanning.NINAPlugin.ImagingSeason;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
@@ -11,7 +10,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         public OptimalImagingSeason() {
         }
 
-        public ImagingSeasonChartModel GetOptimalSeason(PlanParameters planParams, CancellationToken token) {
+        public IList<ImagingDayPlan> GetOptimalSeason(PlanParameters planParams, CancellationToken token) {
 
             // Be sure this object rises at this location at all
             if (!AstrometryUtils.RisesAtLocation(planParams.ObserverInfo, planParams.Target.Coordinates)) {
@@ -33,18 +32,14 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             planParams.PlanDays = Math.Abs((heliacalSettingDate - heliacalRisingDate).Days);
             planParams.StartDate = heliacalRisingDate;
 
-            IEnumerable<ImagingDayPlan> results = new PlanGenerator(planParams).Generate(token);
+            IList<ImagingDayPlan> results = new PlanGenerator(planParams).Generate(token);
+            /*
             foreach (ImagingDayPlan plan in results) {
                 bool rejected = plan.StartLimitingFactor.Session;
                 Logger.Trace($"{plan.StartImagingTime}: {plan.GetImagingMinutes()} mins - {!rejected}");
-            }
+            }*/
 
-            // TODO: trim rejected days off each end
-
-            // TODO: create a proper model
-            ImagingSeasonChartModel model = new ImagingSeasonChartModel(planParams.Target, results);
-
-            return model;
+            return results;
         }
     }
 

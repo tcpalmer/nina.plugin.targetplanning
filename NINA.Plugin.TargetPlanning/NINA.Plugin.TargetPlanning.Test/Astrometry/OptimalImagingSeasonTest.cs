@@ -22,9 +22,10 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             tokenSource.Dispose();
         }
 
-        [Test]
+        //[Test]
         public void testIt() {
             PlanParameters pp = new PlanParameters();
+            pp.MinimumMoonSeparation = 60;
             pp.StartDate = new DateTime(2022, 1, 1);
             pp.PlanDays = 3;
             pp.ObserverInfo = TestUtil.TEST_LOCATION_1;

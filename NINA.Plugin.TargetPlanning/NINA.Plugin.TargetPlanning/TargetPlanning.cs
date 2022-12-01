@@ -455,11 +455,11 @@ namespace TargetPlanning.NINAPlugin {
             }
         }
 
-        private ImagingSeasonChartModel _imagingSeasonChartModel;
-        public ImagingSeasonChartModel ImagingSeasonChartModel {
-            get => _imagingSeasonChartModel;
+        private ImagingSeasonPlotModel _imagingSeasonPlotModel;
+        public ImagingSeasonPlotModel ImagingSeasonPlotModel {
+            get => _imagingSeasonPlotModel;
             set {
-                _imagingSeasonChartModel = value;
+                _imagingSeasonPlotModel = value;
                 RaisePropertyChanged();
             }
         }
@@ -492,19 +492,23 @@ namespace TargetPlanning.NINAPlugin {
                 DailyDetailsEnabled = false;
                 ImagingSeasonEnabled = false;
 
+                //ImagingSeasonPlotModel = new ImagingSeasonPlotModel(profileService.ActiveProfile);
+                //ImagingSeasonEnabled = true;
+
                 PlanParameters planParams = GetCurrentPlanParameters();
 
                 try {
-                    ImagingSeasonChartModel = new OptimalImagingSeason().GetOptimalSeason(planParams, _imagingSeasonTokenSource.Token);
+                    IList<ImagingDayPlan> results = new OptimalImagingSeason().GetOptimalSeason(planParams, _imagingSeasonTokenSource.Token);
+                    ImagingSeasonPlotModel = new ImagingSeasonPlotModel(profileService.ActiveProfile, planParams, results);
                     EmptyReport = false;
                     ImagingSeasonEnabled = true;
                 }
                 catch (OperationCanceledException) {
-                    ImagingSeasonChartModel = null;
+                    ImagingSeasonPlotModel = null;
                 }
                 catch (Exception ex) {
                     Logger.Error($"imaging season exception: {ex.Message} {ex.StackTrace}");
-                    ImagingSeasonChartModel = null;
+                    ImagingSeasonPlotModel = null;
                 }
 
                 return true;

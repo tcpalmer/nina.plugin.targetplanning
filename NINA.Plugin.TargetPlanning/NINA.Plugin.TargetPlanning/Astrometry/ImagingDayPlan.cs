@@ -58,6 +58,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
         }
 
+        public bool IsAccepted() {
+            return !StartLimitingFactor.Session;
+        }
+
         public long GetImagingMinutes() {
             return (long)(NotVisible() ? 0 : EndImagingTime.Subtract(StartImagingTime).TotalMinutes);
         }

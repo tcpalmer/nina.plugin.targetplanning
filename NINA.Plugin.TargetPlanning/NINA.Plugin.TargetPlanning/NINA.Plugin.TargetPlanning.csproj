@@ -294,6 +294,7 @@
       <DependentUpon>ImagingSeasonChart.xaml</DependentUpon>
     </Compile>
     <Compile Include="ImagingSeason\ImagingSeasonChartModel.cs" />
+    <Compile Include="ImagingSeason\ImagingSeasonPlotModel.cs" />
     <Compile Include="TargetPlanning.cs" />
     <Compile Include="Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>

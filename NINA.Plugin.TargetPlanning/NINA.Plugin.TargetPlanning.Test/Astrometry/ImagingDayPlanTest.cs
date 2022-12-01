@@ -49,6 +49,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             plan.StartLimitingFactor.Equals(ImagingLimit.NotVisible).Should().BeTrue();
             plan.EndLimitingFactor.Equals(ImagingLimit.NotVisible).Should().BeTrue();
 
+            plan.IsAccepted().Should().BeFalse();
             plan.NotVisible().Should().BeTrue();
         }
 
@@ -59,6 +60,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             DateTime end = start.AddHours(8);
             ImagingDayPlan plan = new ImagingDayPlan(start, end, transit, ImagingLimit.MinimumTime,
                                                      ImagingLimit.MinimumTime, 0, 0, double.MinValue);
+            plan.IsAccepted().Should().BeFalse();
             plan.NotAboveMinimumImagingTime().Should().BeTrue();
         }
 
@@ -79,9 +81,11 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             DateTime end = start.AddHours(12);
 
             ImagingDayPlan plan = new ImagingDayPlan(start, end, transit, ImagingLimit.MoonIllumination, ImagingLimit.MoonIllumination, 0, 0, double.MinValue);
+            plan.IsAccepted().Should().BeFalse();
             plan.AboveMaximumMoonIllumination().Should().BeTrue();
 
             plan = new ImagingDayPlan(start, end, transit, ImagingLimit.Twilight, ImagingLimit.Twilight, 0, 0, double.MinValue);
+            plan.IsAccepted().Should().BeTrue();
             plan.AboveMaximumMoonIllumination().Should().BeFalse();
         }
 
@@ -92,9 +96,11 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             DateTime end = start.AddHours(12);
 
             ImagingDayPlan plan = new ImagingDayPlan(start, end, transit, ImagingLimit.MoonSeparation, ImagingLimit.MoonSeparation, 0, 0, double.MinValue);
+            plan.IsAccepted().Should().BeFalse();
             plan.BelowMinimumMoonSeparation().Should().BeTrue();
 
             plan = new ImagingDayPlan(start, end, transit, ImagingLimit.Twilight, ImagingLimit.Twilight, 0, 0, double.MinValue);
+            plan.IsAccepted().Should().BeTrue();
             plan.BelowMinimumMoonSeparation().Should().BeFalse();
         }
 

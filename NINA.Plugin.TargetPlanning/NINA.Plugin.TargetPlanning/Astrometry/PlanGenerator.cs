@@ -16,7 +16,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             this.PlanParameters = planParameters;
         }
 
-        public IEnumerable<ImagingDayPlan> Generate(CancellationToken token) {
+        public IList<ImagingDayPlan> Generate(CancellationToken token) {
 
             List<ImagingDayPlan> imagingDayList = new List<ImagingDayPlan>();
             ImagingDayPlanCache imagingDayPlanCache = new ImagingDayPlanCache();
