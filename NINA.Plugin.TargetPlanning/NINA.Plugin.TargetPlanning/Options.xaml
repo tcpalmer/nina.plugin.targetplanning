@@ -292,19 +292,6 @@
                     IsEnabled="{Binding DSOIsSelected}"
                     ToolTip="Display a table of daily imaging circumstances"
                     Visibility="{Binding DailyDetailsCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
-                <ninactrl:CancellableButton
-                    Width="250"
-                    Height="35"
-                    Margin="5"
-                    HorizontalAlignment="Left"
-                    ButtonText="Annual Chart"
-                    CancelButtonImage="{StaticResource CancelSVG}"
-                    CancelCommand="{Binding CancelAnnualCommand}"
-                    CancelToolTip="Cancel"
-                    Command="{Binding AnnualChartCommand}"
-                    IsEnabled="{Binding DSOIsSelected}"
-                    ToolTip="Display annual chart of target and moon altitude at local midnight"
-                    Visibility="{Binding AnnualChartCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
 
                 <ninactrl:CancellableButton
                     Width="250"
@@ -319,6 +306,20 @@
                     IsEnabled="{Binding DSOIsSelected}"
                     ToolTip="Display entire imaging season for target, applying all filters (be patient)"
                     Visibility="{Binding ImagingSeasonCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
+
+                <ninactrl:CancellableButton
+                    Width="250"
+                    Height="35"
+                    Margin="5"
+                    HorizontalAlignment="Left"
+                    ButtonText="Annual Chart"
+                    CancelButtonImage="{StaticResource CancelSVG}"
+                    CancelCommand="{Binding CancelAnnualCommand}"
+                    CancelToolTip="Cancel"
+                    Command="{Binding AnnualChartCommand}"
+                    IsEnabled="{Binding DSOIsSelected}"
+                    ToolTip="Display annual chart of target and moon altitude at local midnight"
+                    Visibility="{Binding AnnualChartCommand, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
             </StackPanel>
 
             <Grid>
@@ -699,7 +700,7 @@
                     </Grid>
                 </StackPanel>
 
-                <!--  Imaging Season Chart  -->
+                <!--  Imaging Season Charts  -->
                 <UserControl Visibility="{Binding Path=ImagingSeasonEnabled, Converter={StaticResource BooleanToVisibilityCollapsedConverter}, FallbackValue=Collapsed}">
                     <StackPanel Height="410">
                         <oxy:PlotView

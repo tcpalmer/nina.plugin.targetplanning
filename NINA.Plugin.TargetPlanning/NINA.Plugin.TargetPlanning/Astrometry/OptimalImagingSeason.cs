@@ -12,34 +12,41 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
         public IList<ImagingDayPlan> GetOptimalSeason(PlanParameters planParams, CancellationToken token) {
 
-            // Be sure this object rises at this location at all
+            // Be sure this target rises at this location at all
             if (!AstrometryUtils.RisesAtLocation(planParams.ObserverInfo, planParams.Target.Coordinates)) {
                 return null;
             }
 
-            // TODO: if circumpolar, can't use heliacal rising/setting - assume all year?
-
-            // We use heliacal rising/setting dates to determine the limits of the imaging season
+            // The date of midnight transit is taken to be the approximate middle of the imaging season
             DateTime transitMidnightDate = AstrometryUtils.GetMidnightTransitDate(planParams.ObserverInfo, planParams.Target.Coordinates, planParams.StartDate.Year, token);
-            HeliacalSolver solver = new HeliacalSolver(planParams.ObserverInfo, planParams.Target.Coordinates, transitMidnightDate);
-            DateTime heliacalRisingDate = solver.GetHeliacalRisingDate(token);
-            DateTime heliacalSettingDate = solver.GetHeliacalSettingDate(token);
+            Logger.Trace($"midnight transit date: {transitMidnightDate}");
 
-            Logger.Trace($"midnight transit: {transitMidnightDate}");
-            Logger.Trace($"heliacal rising:  {heliacalRisingDate}");
-            Logger.Trace($"heliacal setting: {heliacalSettingDate}");
+            // If the target is circumpolar, heliacal rising/setting are undefined - so assume whole year
+            if (AstrometryUtils.CircumpolarAtLocation(planParams.ObserverInfo, planParams.Target.Coordinates)) {
+                DateTime startDate = transitMidnightDate.AddDays(-183);
+                DateTime endDate = startDate.AddYears(1);
 
-            planParams.PlanDays = Math.Abs((heliacalSettingDate - heliacalRisingDate).Days);
-            planParams.StartDate = heliacalRisingDate;
+                Logger.Trace($"circumpolar start date: {startDate}");
+                Logger.Trace($"circumpolar end date:   {endDate}");
 
-            IList<ImagingDayPlan> results = new PlanGenerator(planParams).Generate(token);
-            /*
-            foreach (ImagingDayPlan plan in results) {
-                bool rejected = plan.StartLimitingFactor.Session;
-                Logger.Trace($"{plan.StartImagingTime}: {plan.GetImagingMinutes()} mins - {!rejected}");
-            }*/
+                planParams.PlanDays = Math.Abs((endDate - startDate).Days);
+                planParams.StartDate = startDate;
+            }
 
-            return results;
+            // Otherwise, we can use heliacal rising/setting dates to determine the limits of the imaging season
+            else {
+                HeliacalSolver solver = new HeliacalSolver(planParams.ObserverInfo, planParams.Target.Coordinates, transitMidnightDate);
+                DateTime heliacalRisingDate = solver.GetHeliacalRisingDate(token);
+                DateTime heliacalSettingDate = solver.GetHeliacalSettingDate(token);
+
+                Logger.Trace($"heliacal rising date:  {heliacalRisingDate}");
+                Logger.Trace($"heliacal setting date: {heliacalSettingDate}");
+
+                planParams.PlanDays = Math.Abs((heliacalSettingDate - heliacalRisingDate).Days);
+                planParams.StartDate = heliacalRisingDate;
+            }
+
+            return new PlanGenerator(planParams).Generate(token);
         }
     }
 

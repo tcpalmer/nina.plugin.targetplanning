@@ -492,9 +492,6 @@ namespace TargetPlanning.NINAPlugin {
                 DailyDetailsEnabled = false;
                 ImagingSeasonEnabled = false;
 
-                //ImagingSeasonPlotModel = new ImagingSeasonPlotModel(profileService.ActiveProfile);
-                //ImagingSeasonEnabled = true;
-
                 PlanParameters planParams = GetCurrentPlanParameters();
 
                 try {

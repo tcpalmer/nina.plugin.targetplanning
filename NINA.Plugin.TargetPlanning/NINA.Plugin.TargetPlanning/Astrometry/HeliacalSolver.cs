@@ -127,7 +127,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
          * 
          * The coefficients for the polynomials were determined by calculating heliacal rising/setting for values
          * of constant=latitude+declination from -90 to 90 by 10, yielding 19 polynomials for rising and another 19
-         * for setting.  Some code in HeliacalSolverTest was used to generate the data and  Excel was used to fit the
+         * for setting.  Some code in HeliacalSolverTest was used to generate the data and Excel was used to fit the
          * polynomials.
          * 
          * In practice, this yields guesses within a few days (for dec+lat values close to a calculated curve) to around

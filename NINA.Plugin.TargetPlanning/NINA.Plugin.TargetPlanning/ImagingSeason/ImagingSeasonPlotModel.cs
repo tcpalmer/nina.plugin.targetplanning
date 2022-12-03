@@ -3,28 +3,19 @@ using NINA.Profile.Interfaces;
 using OxyPlot;
 using OxyPlot.Annotations;
 using OxyPlot.Axes;
+using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using TargetPlanning.NINAPlugin.Astrometry;
-using AreaSeries = OxyPlot.Series.AreaSeries;
-using DateTimeAxis = OxyPlot.Axes.DateTimeAxis;
-using TimeSpanAxis = OxyPlot.Axes.TimeSpanAxis;
 
 namespace TargetPlanning.NINAPlugin.ImagingSeason {
 
-    public class ImagingSeasonPlotModel {
+    public class ImagingSeasonPlotModel : ImagingSeasonBaseModel {
 
-        public PlotModel PlotModel { get; private set; }
-        public PlotController PlotController { get; private set; }
-
-        public ImagingSeasonPlotModel(IProfile profile, PlanParameters planParams, IList<ImagingDayPlan> results) {
-            ColorSchema colorSchema = profile.ColorSchemaSettings.ColorSchema;
-            results = TrimStartEnd((List<ImagingDayPlan>)results);
-
-            PlotController = new PlotController();
+        public ImagingSeasonPlotModel(IProfile profile, PlanParameters planParams, IList<ImagingDayPlan> results) : base(profile, planParams, results) {
 
             PlotModel = new PlotModel {
                 Background = ConvertColor(colorSchema.BackgroundColor),
@@ -33,22 +24,14 @@ namespace TargetPlanning.NINAPlugin.ImagingSeason {
                 TextColor = ConvertColor(colorSchema.PrimaryColor),
             };
 
-            PlotModel.Axes.Add(new DateTimeAxis {
-                IntervalType = DateTimeIntervalType.Months,
-                IsPanEnabled = false,
-                IsZoomEnabled = false,
-                AxislineColor = ConvertColor(colorSchema.PrimaryColor),
-                MajorGridlineStyle = LineStyle.LongDash,
-                MajorGridlineColor = ConvertColor(colorSchema.PrimaryColor, 60),
-                MinorIntervalType = DateTimeIntervalType.Weeks,
-                Position = AxisPosition.Bottom,
-                StringFormat = "MMM",
-                TextColor = ConvertColor(colorSchema.PrimaryColor),
-                TicklineColor = ConvertColor(colorSchema.SecondaryColor),
-            });
+            PlotModel.Axes.Add(GetXAxis());
 
+            // Imaging Hours
             PlotModel.Axes.Add(new TimeSpanAxis {
                 Title = "Imaging Hours",
+                Key = "Imaging Hours",
+                StartPosition = 0.4,
+                EndPosition = 1,
                 AxisTitleDistance = 12,
                 IntervalLength = 30,
                 IsPanEnabled = false,
@@ -83,9 +66,67 @@ namespace TargetPlanning.NINAPlugin.ImagingSeason {
                 PlotModel.Series.Add(areaSeries);
             }
 
+            // Moon Separation and Illumination
+            PlotModel.Axes.Add(new LinearAxis {
+                Title = "Moon Illumination",
+                Key = "Moon Illumination",
+                StartPosition = 0,
+                EndPosition = 0.35,
+                AxisTitleDistance = 12,
+                IsPanEnabled = false,
+                IsZoomEnabled = false,
+                AxislineColor = ConvertColor(colorSchema.PrimaryColor),
+                Minimum = 0,
+                Maximum = 100,
+                MaximumPadding = 0.07,
+                MinorStep = 10,
+                Position = AxisPosition.Left,
+                TextColor = ConvertColor(colorSchema.PrimaryColor),
+                TicklineColor = ConvertColor(colorSchema.SecondaryColor),
+            });
+
+            PlotModel.Axes.Add(new LinearAxis {
+                Title = "Moon Separation",
+                Key = "Moon Separation",
+                StartPosition = 0,
+                EndPosition = 0.35,
+                AxisTitleDistance = 12,
+                IsPanEnabled = false,
+                IsZoomEnabled = false,
+                AxislineColor = ConvertColor(colorSchema.PrimaryColor),
+                Minimum = 0,
+                Maximum = 180,
+                MinorStep = 10,
+                Position = AxisPosition.Right,
+                TextColor = ConvertColor(colorSchema.PrimaryColor),
+                TicklineColor = ConvertColor(colorSchema.SecondaryColor),
+            });
+
+            LineSeries illumSeries = new LineSeries {
+                Title = "Moon Illumination",
+                Color = ConvertColor(Colors.Gold, 90),
+                YAxisKey = "Moon Illumination",
+            };
+
+            LineSeries separationSeries = new LineSeries {
+                Title = "Moon Separation",
+                Color = ConvertColor(Colors.IndianRed, 90),
+                YAxisKey = "Moon Separation",
+            };
+
+            foreach (ImagingDayPlan plan in results) {
+                illumSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(plan.StartDay), plan.MoonIllumination * 100));
+                separationSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(plan.StartDay), plan.MoonSeparation));
+            }
+
+            PlotModel.Series.Add(illumSeries);
+            PlotModel.Series.Add(separationSeries);
+
+            // Title annotation box
             int startYear = results.First().StartDay.Year;
             StringBuilder sb = new StringBuilder();
-            sb.Append($"{planParams.Target.Name}\n");
+            string name = planParams.Target.Name != null ? planParams.Target.Name : "User coords";
+            sb.Append($"{name}\n");
             sb.Append(startYear.ToString());
             int endYear = results.Last().StartDay.Year;
             if (startYear != endYear) {
@@ -94,61 +135,15 @@ namespace TargetPlanning.NINAPlugin.ImagingSeason {
 
             TextAnnotation textAnnotation = new TextAnnotation {
                 Text = sb.ToString(),
-                FontSize = 13,
-                FontWeight = FontWeights.Bold,
+                Background = ConvertColor(colorSchema.BackgroundColor),
+                Stroke = ConvertColor(colorSchema.BorderColor),
+                StrokeThickness = 2,
                 TextColor = ConvertColor(colorSchema.PrimaryColor),
                 TextPosition = new DataPoint(DateTimeAxis.ToDouble(results.First().StartDay.AddDays(15)),
                                              TimeSpanAxis.ToDouble(TimeSpan.FromMinutes(MaxImagingMinutes * .87))),
             };
 
             PlotModel.Annotations.Add(textAnnotation);
-
-            /* TODO: Add proper Moon markers.  Can scan plan.MoonIllumination for maximums.
-            LineAnnotation lineAnnotation = new LineAnnotation {
-                Text = "Full Moon",
-                TextColor = ConvertColor(colorSchema.NotificationErrorColor),
-                LineStyle = LineStyle.Solid,
-                StrokeThickness = 2,
-                X = DateTimeAxis.ToDouble(new DateTime(2022, 5, 16)),
-                Type = LineAnnotationType.Vertical,
-                Color = ConvertColor(colorSchema.NotificationErrorColor),
-            };
-
-            PlotModel.Annotations.Add(lineAnnotation);
-            */
-        }
-
-        private OxyColor ConvertColor(Color color, byte alpha) {
-            return OxyColor.FromArgb(alpha, color.R, color.G, color.B);
-        }
-
-        private OxyColor ConvertColor(Color color) {
-            return OxyColor.FromRgb(color.R, color.G, color.B);
-        }
-
-        public static IList<ImagingDayPlan> TrimStartEnd(List<ImagingDayPlan> list) {
-            int firstAccepted = 0, lastAccepted = 0;
-
-            for (int i = 0; i < list.Count; i++) {
-                if (list[i].IsAccepted()) {
-                    firstAccepted = i;
-                    break;
-                }
-            }
-
-            for (int i = list.Count - 1; i >= 0; i--) {
-                if (list[i].IsAccepted()) {
-                    lastAccepted = i;
-                    break;
-                }
-            }
-
-            if (lastAccepted == 0) {
-                list.Clear();
-                return list;
-            }
-
-            return list.GetRange(firstAccepted, lastAccepted - firstAccepted + 1);
         }
 
         public static List<ImagingSpan> GetImagingSpans(List<ImagingDayPlan> list) {
@@ -183,14 +178,14 @@ namespace TargetPlanning.NINAPlugin.ImagingSeason {
                 return new AreaSeries {
                     Color = ConvertColor(colorSchema.SecondaryColor),
                     Color2 = ConvertColor(colorSchema.PrimaryColor),
-                    TextColor = ConvertColor(colorSchema.PrimaryColor),
+                    YAxisKey = "Imaging Hours"
                 };
             }
             else {
                 return new AreaSeries {
                     Color = ConvertColor(colorSchema.NotificationErrorColor),
                     Color2 = ConvertColor(colorSchema.NotificationErrorTextColor),
-                    TextColor = ConvertColor(colorSchema.NotificationErrorTextColor),
+                    YAxisKey = "Imaging Hours"
                 };
             }
         }
