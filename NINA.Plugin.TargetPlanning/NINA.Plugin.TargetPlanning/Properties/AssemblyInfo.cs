@@ -25,12 +25,12 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("ScreenshotURL", "https://raw.githubusercontent.com/tcpalmer/nina.plugin.targetplanning/main/NINA.Plugin.TargetPlanning/assets/screenshot1.png?raw=true")]
 [assembly: AssemblyMetadata("AltScreenshotURL", "https://raw.githubusercontent.com/tcpalmer/nina.plugin.targetplanning/main/NINA.Plugin.TargetPlanning/assets/screenshot2.png?raw=true")]
 
-[assembly: AssemblyMetadata("LongDescription", @"Target Planning is the converse of the NINA Sky Atlas.  Rather than searching for multiple targets for one particular day, Target Planning takes your desired target and shows imaging options across multiple days.  Various filters let you establish criteria to restrict the available imaging time based on your imaging needs and local circumstances.
+[assembly: AssemblyMetadata("LongDescription", @"Target Planning is the converse of the NINA Sky Atlas.  Rather than searching for multiple targets for one particular day, Target Planning takes your desired target and shows imaging options across multiple days.  It can also display charts of the entire imaging season as well as annual target and moon altitude.  Various filters let you establish criteria to restrict the available imaging time based on your imaging needs and local circumstances.
 
 There are no sequence instructions or other behaviors associated with this plugin.  All interaction takes place on this plugin page.
 
 ## Target Options ##
-Select a target to get started.  Once you do, the Daily Details and Annual Chart buttons will activate.
+Select a target to get started.  Once you do, the Daily Details, Imaging Season, and Annual Chart buttons will activate.
 * Target: select your target.  This behaves identially to the Coordinates Name field in the Framing assistant and supports incremental search.
 * RA/Dec: view/change target coordinates.  These fields will reflect the selected Target but also support manual entry.
 
@@ -87,7 +87,7 @@ The parameters used on the ACP site (distance = 120, width = 14) are very conser
 * ACP and BAIT teams for the [Moon avoidance](http://bobdenny.com/ar/RefDocs/HelpFiles/ACPScheduler81Help/Constraints.htm) formula
 
 # Getting Help #
-* Ask for help in the #plugin-discussions channel on the NINA project [Discord server](https://discord.com/invite/rWRbVbw).
+* Ask for help (tag @tcpalmer) in the #plugin-discussions channel on the NINA project [Discord server](https://discord.com/invite/rWRbVbw).
 * [Plugin source code](https://github.com/tcpalmer/nina.plugin.targetplanning)
 * [Change log](https://github.com/tcpalmer/nina.plugin.targetplanning/blob/main/CHANGELOG.md)
 
