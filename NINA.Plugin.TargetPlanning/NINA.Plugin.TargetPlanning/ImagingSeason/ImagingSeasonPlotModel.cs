@@ -48,14 +48,14 @@ namespace TargetPlanning.NINAPlugin.ImagingSeason {
                 TicklineColor = ConvertColor(colorSchema.SecondaryColor),
             });
 
-            List<ImagingSpan> spans = GetImagingSpans((List<ImagingDayPlan>)results);
+            List<ImagingSpan> spans = GetImagingSpans((List<ImagingDayPlan>)TrimmedResults);
             long MaxImagingMinutes = long.MinValue;
             foreach (ImagingSpan span in spans) {
                 AreaSeries areaSeries = GetAreaSeries(colorSchema, span.Accepted);
 
-                int end = span.End < results.Count - 1 ? span.End + 1 : results.Count - 2;
+                int end = span.End < TrimmedResults.Count - 1 ? span.End + 1 : TrimmedResults.Count - 2;
                 for (int i = span.Start; i <= end; i++) {
-                    ImagingDayPlan plan = results[i];
+                    ImagingDayPlan plan = TrimmedResults[i];
                     areaSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(plan.StartDay), TimeSpanAxis.ToDouble(TimeSpan.FromMinutes(plan.GetImagingMinutes()))));
                     long imagingMinutes = plan.GetImagingMinutes();
                     if (imagingMinutes > MaxImagingMinutes) {
@@ -105,16 +105,18 @@ namespace TargetPlanning.NINAPlugin.ImagingSeason {
             LineSeries illumSeries = new LineSeries {
                 Title = "Moon Illumination",
                 Color = ConvertColor(Colors.Gold, 90),
+                TrackerFormatString = "Illumination\n{2:MM/dd/yyyy}\n{4:0}%",
                 YAxisKey = "Moon Illumination",
             };
 
             LineSeries separationSeries = new LineSeries {
                 Title = "Moon Separation",
                 Color = ConvertColor(Colors.IndianRed, 90),
+                TrackerFormatString = "Separation\n{2:MM/dd/yyyy}\n{4:0}°",
                 YAxisKey = "Moon Separation",
             };
 
-            foreach (ImagingDayPlan plan in results) {
+            foreach (ImagingDayPlan plan in TrimmedResults) {
                 illumSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(plan.StartDay), plan.MoonIllumination * 100));
                 separationSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(plan.StartDay), plan.MoonSeparation));
             }
@@ -123,12 +125,12 @@ namespace TargetPlanning.NINAPlugin.ImagingSeason {
             PlotModel.Series.Add(separationSeries);
 
             // Title annotation box
-            int startYear = results.First().StartDay.Year;
+            int startYear = TrimmedResults.First().StartDay.Year;
             StringBuilder sb = new StringBuilder();
             string name = planParams.Target.Name != null ? planParams.Target.Name : "User coords";
             sb.Append($"{name}\n");
             sb.Append(startYear.ToString());
-            int endYear = results.Last().StartDay.Year;
+            int endYear = TrimmedResults.Last().StartDay.Year;
             if (startYear != endYear) {
                 sb.Append("-").Append(endYear.ToString());
             }
@@ -139,7 +141,7 @@ namespace TargetPlanning.NINAPlugin.ImagingSeason {
                 Stroke = ConvertColor(colorSchema.BorderColor),
                 StrokeThickness = 2,
                 TextColor = ConvertColor(colorSchema.PrimaryColor),
-                TextPosition = new DataPoint(DateTimeAxis.ToDouble(results.First().StartDay.AddDays(15)),
+                TextPosition = new DataPoint(DateTimeAxis.ToDouble(TrimmedResults.First().StartDay.AddDays(15)),
                                              TimeSpanAxis.ToDouble(TimeSpan.FromMinutes(MaxImagingMinutes * .87))),
             };
 
@@ -178,6 +180,7 @@ namespace TargetPlanning.NINAPlugin.ImagingSeason {
                 return new AreaSeries {
                     Color = ConvertColor(colorSchema.SecondaryColor),
                     Color2 = ConvertColor(colorSchema.PrimaryColor),
+                    TrackerFormatString = "{2:MM/dd/yyyy}\n{4}",
                     YAxisKey = "Imaging Hours"
                 };
             }
@@ -185,6 +188,7 @@ namespace TargetPlanning.NINAPlugin.ImagingSeason {
                 return new AreaSeries {
                     Color = ConvertColor(colorSchema.NotificationErrorColor),
                     Color2 = ConvertColor(colorSchema.NotificationErrorTextColor),
+                    TrackerFormatString = "{2:MM/dd/yyyy}\n{4}",
                     YAxisKey = "Imaging Hours"
                 };
             }

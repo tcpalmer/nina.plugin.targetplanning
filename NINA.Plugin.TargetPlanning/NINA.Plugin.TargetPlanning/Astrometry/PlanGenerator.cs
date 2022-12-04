@@ -164,7 +164,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
         }
 
-        private List<RiseAndSetEvent> getTwiLightTimesList(DateTime StartDate, int PlanDays, ObserverInfo location, CancellationToken token) {
+        public List<RiseAndSetEvent> getTwiLightTimesList(DateTime StartDate, int PlanDays, ObserverInfo location, CancellationToken token) {
 
             List<RiseAndSetEvent> list = new List<RiseAndSetEvent>(PlanDays + 1);
             DateTime date = StartDate;

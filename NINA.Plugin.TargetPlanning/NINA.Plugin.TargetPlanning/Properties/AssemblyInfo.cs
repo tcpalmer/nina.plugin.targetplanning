@@ -12,8 +12,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("1.0.0.1")]
-[assembly: AssemblyFileVersion("1.0.0.1")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
 
 // The minimum Version of N.I.N.A. that this plugin is compatible with
 [assembly: AssemblyMetadata("MinimumApplicationVersion", "2.0.0.9001")]
@@ -56,6 +56,13 @@ The following options act as filters for the report so you can tailor the calcul
 * Minimum Moon Separation: set the minimum acceptable angle between the moon and the target.  If Moon Avoidance is enabled, this is the *distance* parameter to the Moon Avoidance formula - see below.
 * Moon Avoidance: enable/disable moon avoidance - see below.
 * Moon Avoidance Width: set the width parameter for moon avoidance - see below.
+
+## Imaging Season ##
+The Imaging Season chart calculates the available imaging hours for the target across a whole year, using all the same filters used for the Daily Details Report.  The year used is taken from the Start Date field.  The chart should be approximately centered on the date of maximum altitude at midnight for the year in the Start Date field.  Obviously, any rejected dates will vary by year if you have any of the moon filters enabled.
+
+The upper part plots available imaging hours by date showing time spans that are acceptable or rejected (red).  The lower part plots the moon illumination and the angular separation between moon and target.
+
+Be patient - this can take some time to generate.
 
 ## Annual Chart ##
 The Annual Chart shows a yearly chart plotting the altitude of your target and the moon at local midnight for each day.  The year used is taken from the Start Date field.

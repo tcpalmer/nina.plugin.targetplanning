@@ -12,12 +12,13 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         private static readonly MemoryCache _cache = new MemoryCache("Target Planning Twilight Times");
 
         public static RiseAndSetEvent Get(DateTime dateTime, double latitude, double longitude) {
-            string key = GetCacheKey(dateTime, latitude, longitude);
+            DateTime checkDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0);
+            string key = GetCacheKey(checkDate, latitude, longitude);
             RiseAndSetEvent riseAndSetEvent = (RiseAndSetEvent)_cache.Get(key);
 
             if (riseAndSetEvent == null) {
                 //Logger.Trace($"twilight time cache miss: {key}");
-                riseAndSetEvent = AstroUtil.GetNauticalNightTimes(dateTime, latitude, longitude);
+                riseAndSetEvent = AstroUtil.GetNauticalNightTimes(checkDate, latitude, longitude);
                 _cache.Add(key, riseAndSetEvent, DateTime.Now.Add(ITEM_TIMEOUT));
             }
             else {

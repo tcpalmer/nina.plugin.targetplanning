@@ -1,4 +1,6 @@
-﻿using NINA.Core.Utility;
+﻿using NINA.Astrometry;
+using NINA.Astrometry.RiseAndSet;
+using NINA.Core.Utility;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -23,16 +25,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             tokenSource.Dispose();
         }
 
-        /* TODO: another weirdness for M31
-         * 4/8: detects 3m at start
-         * 4/9: skipped altogether??
-         * 4/10: detects 62m at end
-         * It's maybe not great that on 4/8 you would have had a larger imaging time at the end
-         * BUT why is 4/9 skipped altogether?  It's OK - it's the shift from starting at dusk on day 1
-         * to starting after midnight - which effectively skips a day.
-         */
-
-        [Test]
+        //[Test]
         public void testSkipDayBug() {
             PlanParameters pp = new PlanParameters();
             pp.Target = new NINA.Astrometry.DeepSkyObject("", TestUtil.M31, null, null);
@@ -44,7 +37,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             pp.MaximumMoonIllumination = 0;
             pp.MoonAvoidanceEnabled = false;
             pp.MoonAvoidanceWidth = 0;
-            pp.StartDate = new System.DateTime(2022, 4, 8);
+            pp.StartDate = new DateTime(2022, 4, 8);
             pp.PlanDays = 3;
 
             IEnumerable<ImagingDayPlan> results = new PlanGenerator(pp).Generate(tokenSource.Token);
@@ -56,6 +49,27 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
 
             throw new Exception("oops");
 
+        }
+
+        //[Test]
+        public void testSkipDayBug2() {
+
+            /*
+                This skips a day between these two set/rise times (time likely varies based on location).  Earlier, no skip.
+                    12/3/2022 6:08:12 AM: 12/3/2022 6:03:20 PM 12/3/2022 6:08:12 AM
+                    12/3/2022 6:08:13 AM: 12/3/2022 6:03:20 PM 12/4/2022 6:08:59 AM
+             */
+
+            ObserverInfo location = TestUtil.TEST_LOCATION_1;
+            DateTime dt = new DateTime(2022, 12, 3, 6, 8, 0);
+
+            for (int i = 0; i < 60; i++) {
+                RiseAndSetEvent day1 = AstroUtil.GetNauticalNightTimes(dt, location.Latitude, location.Longitude);
+                TestContext.WriteLine($"{dt}: {day1.Set} {day1.Rise}");
+                dt = dt.AddSeconds(1);
+            }
+
+            throw new Exception("oops");
         }
 
         //[Test]

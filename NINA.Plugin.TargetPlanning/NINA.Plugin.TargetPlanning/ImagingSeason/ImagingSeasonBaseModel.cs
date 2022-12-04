@@ -13,12 +13,12 @@ namespace TargetPlanning.NINAPlugin.ImagingSeason {
         public PlotModel PlotModel { get; set; }
         public PlotController PlotController { get; private set; }
 
-        protected IList<ImagingDayPlan> results { get; private set; }
+        protected IList<ImagingDayPlan> TrimmedResults { get; private set; }
         protected ColorSchema colorSchema { get; private set; }
 
         public ImagingSeasonBaseModel(IProfile profile, PlanParameters planParams, IList<ImagingDayPlan> results) {
             this.colorSchema = profile.ColorSchemaSettings.ColorSchema;
-            this.results = TrimStartEnd((List<ImagingDayPlan>)results);
+            this.TrimmedResults = TrimStartEnd((List<ImagingDayPlan>)results);
 
             PlotController = new PlotController();
         }

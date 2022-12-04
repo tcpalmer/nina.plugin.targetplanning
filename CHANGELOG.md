@@ -1,5 +1,6 @@
 # Target Planning
 
-## 1.0.0.X - 2022-xx-xx
+## 1.1.0.0 - 2022-12-xx
+* Added Imaging Season chart
+* Fixed bug that caused >24h imaging session in some cases
 * Added annotations to the Annual Chart
-

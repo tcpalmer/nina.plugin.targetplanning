@@ -68,12 +68,12 @@
                     <oxy:LineSeries
                         Title="{Binding Source={StaticResource proxy}, Path=Data.TargetName}"
                         ItemsSource="{Binding Source={StaticResource proxy}, Path=Data.TargetAltitudes}"
-                        TrackerFormatString="X: {2:MM/dd/yyyy}&#x0a;Y: {4:0.00}&#176;"
+                        TrackerFormatString="Target: {2:MM/dd/yyyy}&#x0a;Alt: {4:0.00}&#176;"
                         Color="{Binding Path=Color, Source={StaticResource PrimaryBrush}}" />
                     <oxy:LineSeries
                         Title="Moon"
                         ItemsSource="{Binding Source={StaticResource proxy}, Path=Data.MoonAltitudes}"
-                        TrackerFormatString="X: {2:MM/dd/yyyy}&#x0a;Y: {4:0.00}&#176;"
+                        TrackerFormatString="Moon: {2:MM/dd/yyyy}&#x0a;Alt: {4:0.00}&#176;"
                         Color="{Binding Source={StaticResource proxy}, Path=Data.MoonColor, Converter={StaticResource SetAlphaToColorConverter}, ConverterParameter=90}" />
                 </oxy:Plot.Series>
                 <oxy:Plot.Annotations>
