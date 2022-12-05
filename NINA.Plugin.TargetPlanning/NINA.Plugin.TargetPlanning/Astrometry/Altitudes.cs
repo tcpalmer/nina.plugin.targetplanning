@@ -27,6 +27,43 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
         }
 
+        public bool IsRisingAtEnd() {
+            int lastPos = AltitudeList.Count - 1;
+            return AltitudeList[lastPos].Altitude > AltitudeList[lastPos - 1].Altitude;
+        }
+
+        public Tuple<int, AltitudeAtTime> FindMaximumAltitude() {
+            double alt = double.MinValue;
+            AltitudeAtTime max = null;
+            int pos = -1;
+
+            for (int i = 0; i < AltitudeList.Count; i++) {
+                if (AltitudeList[i].Altitude > alt) {
+                    max = AltitudeList[i];
+                    alt = AltitudeList[i].Altitude;
+                    pos = i;
+                }
+            }
+
+            return Tuple.Create(pos, max);
+        }
+
+        public Tuple<int, AltitudeAtTime> FindMinimumAltitude() {
+            double alt = double.MaxValue;
+            AltitudeAtTime min = null;
+            int pos = -1;
+
+            for (int i = 0; i < AltitudeList.Count; i++) {
+                if (AltitudeList[i].Altitude < alt) {
+                    min = AltitudeList[i];
+                    alt = AltitudeList[i].Altitude;
+                    pos = i;
+                }
+            }
+
+            return Tuple.Create(pos, min);
+        }
+
         public override string ToString() {
             StringBuilder sb = new StringBuilder();
 

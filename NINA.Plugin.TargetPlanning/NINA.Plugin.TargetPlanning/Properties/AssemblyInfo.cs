@@ -12,8 +12,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("1.0.0.1")]
-[assembly: AssemblyFileVersion("1.0.0.1")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
 
 // The minimum Version of N.I.N.A. that this plugin is compatible with
 [assembly: AssemblyMetadata("MinimumApplicationVersion", "2.0.0.9001")]
@@ -25,12 +25,12 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("ScreenshotURL", "https://raw.githubusercontent.com/tcpalmer/nina.plugin.targetplanning/main/NINA.Plugin.TargetPlanning/assets/screenshot1.png?raw=true")]
 [assembly: AssemblyMetadata("AltScreenshotURL", "https://raw.githubusercontent.com/tcpalmer/nina.plugin.targetplanning/main/NINA.Plugin.TargetPlanning/assets/screenshot2.png?raw=true")]
 
-[assembly: AssemblyMetadata("LongDescription", @"Target Planning is the converse of the NINA Sky Atlas.  Rather than searching for multiple targets for one particular day, Target Planning takes your desired target and shows imaging options across multiple days.  Various filters let you establish criteria to restrict the available imaging time based on your imaging needs and local circumstances.
+[assembly: AssemblyMetadata("LongDescription", @"Target Planning is the converse of the NINA Sky Atlas.  Rather than searching for multiple targets for one particular day, Target Planning takes your desired target and shows imaging options across multiple days.  It can also display charts of the entire imaging season as well as annual target and moon altitude.  Various filters let you establish criteria to restrict the available imaging time based on your imaging needs and local circumstances.
 
 There are no sequence instructions or other behaviors associated with this plugin.  All interaction takes place on this plugin page.
 
 ## Target Options ##
-Select a target to get started.  Once you do, the Daily Details and Annual Chart buttons will activate.
+Select a target to get started.  Once you do, the Daily Details, Imaging Season, and Annual Chart buttons will activate.
 * Target: select your target.  This behaves identially to the Coordinates Name field in the Framing assistant and supports incremental search.
 * RA/Dec: view/change target coordinates.  These fields will reflect the selected Target but also support manual entry.
 
@@ -57,6 +57,13 @@ The following options act as filters for the report so you can tailor the calcul
 * Moon Avoidance: enable/disable moon avoidance - see below.
 * Moon Avoidance Width: set the width parameter for moon avoidance - see below.
 
+## Imaging Season ##
+The Imaging Season chart calculates the available imaging hours for the target across a whole year, using all the same filters used for the Daily Details Report.  The year used is taken from the Start Date field.  The chart should be approximately centered on the date of maximum altitude at midnight for the year in the Start Date field.  Obviously, any rejected dates will vary by year if you have any of the moon filters enabled.
+
+The upper part plots available imaging hours by date showing time spans that are acceptable or rejected (red).  The lower part plots the moon illumination and the angular separation between moon and target.
+
+Be patient - this can take some time to generate.
+
 ## Annual Chart ##
 The Annual Chart shows a yearly chart plotting the altitude of your target and the moon at local midnight for each day.  The year used is taken from the Start Date field.
 
@@ -80,7 +87,7 @@ The parameters used on the ACP site (distance = 120, width = 14) are very conser
 * ACP and BAIT teams for the [Moon avoidance](http://bobdenny.com/ar/RefDocs/HelpFiles/ACPScheduler81Help/Constraints.htm) formula
 
 # Getting Help #
-* Ask for help in the #plugin-discussions channel on the NINA project [Discord server](https://discord.com/invite/rWRbVbw).
+* Ask for help (tag @tcpalmer) in the #plugin-discussions channel on the NINA project [Discord server](https://discord.com/invite/rWRbVbw).
 * [Plugin source code](https://github.com/tcpalmer/nina.plugin.targetplanning)
 * [Change log](https://github.com/tcpalmer/nina.plugin.targetplanning/blob/main/CHANGELOG.md)
 

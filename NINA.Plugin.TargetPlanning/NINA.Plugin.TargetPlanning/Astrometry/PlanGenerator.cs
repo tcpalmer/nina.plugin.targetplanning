@@ -3,6 +3,8 @@ using NINA.Astrometry.RiseAndSet;
 using NINA.Core.Utility;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 using System.Threading;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
@@ -14,9 +16,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             this.PlanParameters = planParameters;
         }
 
-        public IEnumerable<ImagingDayPlan> Generate(CancellationToken token) {
+        public IList<ImagingDayPlan> Generate(CancellationToken token) {
 
             List<ImagingDayPlan> imagingDayList = new List<ImagingDayPlan>();
+            ImagingDayPlanCache imagingDayPlanCache = new ImagingDayPlanCache();
 
             DeepSkyObject target = PlanParameters.Target;
             ObserverInfo location = PlanParameters.ObserverInfo;
@@ -36,6 +39,13 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                     // Get the presumptive start and end times for this 'imaging day'
                     DateTime startTime = (DateTime)day1.Set;
                     DateTime endTime = (DateTime)day2.Rise;
+
+                    // Check the cache
+                    ImagingDayPlan plan = imagingDayPlanCache.Get(startTime, endTime, PlanParameters);
+                    if (plan != null) {
+                        imagingDayList.Add(plan);
+                        continue;
+                    }
 
                     TargetImagingCircumstances circumstances = new TargetImagingCircumstances(location,
                                                                                               target.Coordinates,
@@ -57,8 +67,11 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                         moonIllumination = AstrometryUtils.GetMoonIllumination(midPointTime);
                         moonSeparation = AstrometryUtils.GetMoonSeparationAngle(location, midPointTime, target.Coordinates);
 
-                        imagingDayList.Add(new ImagingDayPlan(startTime, endTime, startTime.AddMinutes(1), ImagingLimit.NotVisible, ImagingLimit.NotVisible,
-                            moonIllumination, moonSeparation, moonAvoidanceSeparation));
+                        plan = new ImagingDayPlan(startTime, endTime, startTime.AddMinutes(1), ImagingLimit.NotVisible, ImagingLimit.NotVisible,
+                            moonIllumination, moonSeparation, moonAvoidanceSeparation);
+                        imagingDayPlanCache.Put(plan, startTime, endTime, PlanParameters);
+
+                        imagingDayList.Add(plan);
                         continue;
                     }
 
@@ -86,7 +99,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
                     // Stop if already rejected
                     if (analyzer.SessionIsRejected()) {
-                        imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation));
+                        plan = GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation);
+                        imagingDayPlanCache.Put(plan, startTime, endTime, PlanParameters);
+
+                        imagingDayList.Add(plan);
                         continue;
                     }
 
@@ -96,7 +112,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
                         // Stop if already rejected
                         if (analyzer.SessionIsRejected()) {
-                            imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation));
+                            plan = GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation);
+                            imagingDayPlanCache.Put(plan, startTime, endTime, PlanParameters);
+
+                            imagingDayList.Add(plan);
                             continue;
                         }
                     }
@@ -107,7 +126,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
                         // Stop if already rejected
                         if (analyzer.SessionIsRejected()) {
-                            imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation));
+                            plan = GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation);
+                            imagingDayPlanCache.Put(plan, startTime, endTime, PlanParameters);
+
+                            imagingDayList.Add(plan);
                             continue;
                         }
                     }
@@ -119,7 +141,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
                         // Stop if already rejected
                         if (analyzer.SessionIsRejected()) {
-                            imagingDayList.Add(GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation));
+                            plan = GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation);
+                            imagingDayPlanCache.Put(plan, startTime, endTime, PlanParameters);
+
+                            imagingDayList.Add(plan);
                             continue;
                         }
                     }
@@ -129,7 +154,9 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                         analyzer.AdjustForMinimumImagingTime(PlanParameters.MinimumImagingTime);
                     }
 
-                    ImagingDayPlan plan = GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation);
+                    plan = GetPlan(analyzer, transitTime, moonIllumination, moonSeparation, moonAvoidanceSeparation);
+                    imagingDayPlanCache.Put(plan, startTime, endTime, PlanParameters);
+
                     imagingDayList.Add(plan);
                 }
 
@@ -137,7 +164,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
         }
 
-        private List<RiseAndSetEvent> getTwiLightTimesList(DateTime StartDate, int PlanDays, ObserverInfo location, CancellationToken token) {
+        public List<RiseAndSetEvent> getTwiLightTimesList(DateTime StartDate, int PlanDays, ObserverInfo location, CancellationToken token) {
 
             List<RiseAndSetEvent> list = new List<RiseAndSetEvent>(PlanDays + 1);
             DateTime date = StartDate;
@@ -178,6 +205,21 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         public double MaximumMoonIllumination { get; set; }
         public bool MoonAvoidanceEnabled { get; set; }
         public int MoonAvoidanceWidth { get; set; }
+
+        public string GetCacheKey() {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(Target.Coordinates.ToString()).Append("_");
+            sb.Append($"{ObserverInfo.Latitude.ToString("0.000000", CultureInfo.InvariantCulture)}_");
+            sb.Append($"{ObserverInfo.Longitude.ToString("0.000000", CultureInfo.InvariantCulture)}_");
+            sb.Append(HorizonDefinition.GetCacheKey()).Append("_");
+            sb.Append(MinimumImagingTime.ToString()).Append("_");
+            sb.Append(MeridianTimeSpan.ToString()).Append("_");
+            sb.Append(MinimumMoonSeparation.ToString()).Append("_");
+            sb.Append(MaximumMoonIllumination.ToString()).Append("_");
+            sb.Append(MoonAvoidanceEnabled.ToString()).Append("_");
+            sb.Append(MoonAvoidanceWidth.ToString());
+            return sb.ToString();
+        }
     }
 
 }

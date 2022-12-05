@@ -56,7 +56,7 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         private bool GetStatus() {
-            return !plan.StartLimitingFactor.Session;
+            return plan.IsAccepted();
         }
 
         private string GetTimeHM() {

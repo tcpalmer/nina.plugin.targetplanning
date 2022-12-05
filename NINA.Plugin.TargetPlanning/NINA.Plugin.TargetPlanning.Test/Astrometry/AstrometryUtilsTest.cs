@@ -1,22 +1,15 @@
 ﻿using FluentAssertions;
 using NINA.Astrometry;
+using NINA.Core.Utility;
 using NINA.Plugin.TargetPlanning.Test.Astrometry;
 using NUnit.Framework;
 using System;
+using System.Threading;
 using TargetPlanning.NINAPlugin.Astrometry;
 
 namespace TargetPlanning.NINAPlugin.Test.Astrometry {
 
     public class AstrometryUtilsTest {
-
-        [Test]
-        public void TestAirmass() {
-            for (int i = 0; i <= 90; i += 5) {
-                double airmass = AstroUtil.Airmass(i);
-                // TODO: ...
-                //TestContext.WriteLine(String.Format("{0,2:F0} {1,9:F2}", i, airmass));
-            }
-        }
 
         [Test]
         [TestCase("5:55:11", "7:24:30", 2022, 10, 27, 22, 25, 0, 0.0792, 80.9998)] // Betelgeuse rise
@@ -109,12 +102,30 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
         }
 
         [Test]
+        [TestCase(0, -40, true)]
+        [TestCase(0, -46, false)]
+        [TestCase(0, 70, true)]
+        public void TestRisesAtLocationNorthHemisphereMinAlt(double ra, double dec, bool expected) {
+            Coordinates coordinates = new Coordinates(ra, dec, Epoch.J2000, Coordinates.RAType.Degrees);
+            AstrometryUtils.RisesAtLocationWithMinimumAltitude(TestUtil.TEST_LOCATION_1, coordinates, 10).Should().Be(expected);
+        }
+
+        [Test]
         [TestCase(0, -50, true)]
         [TestCase(0, 56, false)]
         [TestCase(0, -80, true)]
         public void TestRisesAtLocationSouthHemisphere(double ra, double dec, bool expected) {
             Coordinates coordinates = new Coordinates(ra, dec, Epoch.J2000, Coordinates.RAType.Degrees);
             AstrometryUtils.RisesAtLocation(TestUtil.TEST_LOCATION_2, coordinates).Should().Be(expected);
+        }
+
+        [Test]
+        [TestCase(0, -40, true)]
+        [TestCase(0, 46, false)]
+        [TestCase(0, -70, true)]
+        public void TestRisesAtLocationSouthHemisphereMinAlt(double ra, double dec, bool expected) {
+            Coordinates coordinates = new Coordinates(ra, dec, Epoch.J2000, Coordinates.RAType.Degrees);
+            AstrometryUtils.RisesAtLocationWithMinimumAltitude(TestUtil.TEST_LOCATION_2, coordinates, 10).Should().Be(expected);
         }
 
         [Test]
@@ -153,6 +164,27 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
         public void TestIsAbovePolarCircle() {
             AstrometryUtils.IsAbovePolarCircle(TestUtil.TEST_LOCATION_1).Should().BeFalse();
             AstrometryUtils.IsAbovePolarCircle(TestUtil.TEST_LOCATION_3).Should().BeTrue();
+        }
+
+        [Test]
+        [TestCase(2022, 88.7958, 12, 24)] // Betelgeuse
+        [TestCase(2024, 88.7958, 12, 24)] // Betelgeuse, leap year
+        [TestCase(2022, 201.608, 5, 3)] // Spica
+        [TestCase(2024, 201.608, 5, 2)] // Spica, leap year
+        public void TestGetMidnightTransitDate(int year, double ra, int month, int day) {
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
+            Logger.SetLogLevel(NINA.Core.Enum.LogLevelEnum.TRACE);
+
+            try {
+                Coordinates c = new Coordinates(ra, 0, Epoch.J2000, Coordinates.RAType.Degrees);
+                DateTime dt = AstrometryUtils.GetMidnightTransitDate(TestUtil.TEST_LOCATION_1, c, year, tokenSource.Token);
+                dt.Year.Should().Be(year);
+                dt.Month.Should().Be(month);
+                dt.Day.Should().Be(day);
+            }
+            finally {
+                tokenSource.Dispose();
+            }
         }
 
         [Test]

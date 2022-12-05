@@ -6,7 +6,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
     xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core"
-    xmlns:wpfutil="clr-namespace:NINA.WPF.Base.Utility"
     x:Name="UC"
     d:DesignHeight="300"
     d:DesignWidth="300"
@@ -69,15 +68,13 @@
                     <oxy:LineSeries
                         Title="{Binding Source={StaticResource proxy}, Path=Data.TargetName}"
                         ItemsSource="{Binding Source={StaticResource proxy}, Path=Data.TargetAltitudes}"
-                        TrackerFormatString="X: {2:MM/dd/yyyy}&#x0a;Y: {4:0.00}&#176;"
-                        Color="{Binding Path=Color, Source={StaticResource SecondaryBrush}}" />
+                        TrackerFormatString="Target: {2:MM/dd/yyyy}&#x0a;Alt: {4:0.00}&#176;"
+                        Color="{Binding Path=Color, Source={StaticResource PrimaryBrush}}" />
                     <oxy:LineSeries
                         Title="Moon"
-                        Width="1"
                         ItemsSource="{Binding Source={StaticResource proxy}, Path=Data.MoonAltitudes}"
-                        LineStyle="DashDashDotDot"
-                        TrackerFormatString="X: {2:MM/dd/yyyy}&#x0a;Y: {4:0.00}&#176;"
-                        Color="{Binding Path=Color, Source={StaticResource NotificationErrorBrush}}" />
+                        TrackerFormatString="Moon: {2:MM/dd/yyyy}&#x0a;Alt: {4:0.00}&#176;"
+                        Color="{Binding Source={StaticResource proxy}, Path=Data.MoonColor, Converter={StaticResource SetAlphaToColorConverter}, ConverterParameter=90}" />
                 </oxy:Plot.Series>
                 <oxy:Plot.Annotations>
                     <oxy:LineAnnotation
@@ -87,14 +84,13 @@
                         Type="Vertical"
                         X="{Binding Source={StaticResource proxy}, Path=Data.StartDate}"
                         Color="{Binding Path=Color, Source={StaticResource PrimaryBrush}}" />
-                    <oxy:PointAnnotation
-                        FontSize="16"
-                        Shape="None"
+                    <oxy:TextAnnotation
+                        Background="{Binding Path=Color, Source={StaticResource BackgroundBrush}}"
+                        Stroke="{Binding Path=Color, Source={StaticResource BorderBrush}}"
+                        StrokeThickness="2"
                         Text="{Binding Source={StaticResource proxy}, Path=Data.AnnoText}"
                         TextColor="{Binding Path=Color, Source={StaticResource PrimaryBrush}}"
-                        Visibility="Visible"
-                        X="{Binding Source={StaticResource proxy}, Path=Data.AnnoPoint.X}"
-                        Y="{Binding Source={StaticResource proxy}, Path=Data.AnnoPoint.Y}" />
+                        TextPosition="{Binding Source={StaticResource proxy}, Path=Data.AnnoPoint}" />
                 </oxy:Plot.Annotations>
 
             </oxy:Plot>
