@@ -120,23 +120,6 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
             timeWithHorizon.Should().BeSameDateAs(timeWithMinAlt);
         }
 
-        /*
-        [Test]
-        public void TestCustomHorizon() {
-            DateTime start = new DateTime(2022, 11, 4, 18, 0, 0);
-            DateTime end = new DateTime(2022, 11, 5, 6, 40, 0);
-            HorizonDefinition hd = new HorizonDefinition(TestUtil.GetTestHorizon(3), 0);
-
-            ImagingDay imagingDay = new ImagingDay(start, end, oi, TestUtil.M42, hd);
-            DateTime riseAbove = imagingDay.GetRiseAboveMinimumTime();
-            riseAbove.Should().BeCloseTo(new DateTime(2022, 11, 4, 23, 46, 6), new TimeSpan(0, 0, 1));
-
-            DateTime setBelow = imagingDay.GetSetBelowMinimumTime();
-            setBelow.Should().BeSameDateAs(DateTime.MinValue); // this is correct because M42 is in the horizon 'gap' at ~220 az at 6am
-
-            // TODO: additional edge cases here, also a good setbelow and a null riseabove
-        }*/
-
         [Test]
         public void TestGetSetBelowMinimumTime() {
             DateTime start = new DateTime(2022, 3, 15, 18, 0, 0);

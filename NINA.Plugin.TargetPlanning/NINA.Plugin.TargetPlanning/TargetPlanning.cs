@@ -160,7 +160,7 @@ namespace TargetPlanning.NINAPlugin {
         public IDeepSkyObjectSearchVM DeepSkyObjectSearchVM { get; private set; }
 
         public DateTime StartDate {
-            get => pluginSettings.GetValueDateTime(nameof(StartDate), DateTime.Now);
+            get => pluginSettings.GetValueDateTime(nameof(StartDate), DateTime.Now.Date);
             set {
                 pluginSettings.SetValueDateTime(nameof(StartDate), value);
                 RaisePropertyChanged();

@@ -12,7 +12,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         private static readonly MemoryCache _cache = new MemoryCache("Target Planning Twilight Times");
 
         public static RiseAndSetEvent Get(DateTime dateTime, double latitude, double longitude) {
-            DateTime checkDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0);
+            DateTime checkDate = dateTime.Date;
             string key = GetCacheKey(checkDate, latitude, longitude);
             RiseAndSetEvent riseAndSetEvent = (RiseAndSetEvent)_cache.Get(key);
 
