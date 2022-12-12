@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using TargetPlanning.NINAPlugin.AnnualChart;
 using TargetPlanning.NINAPlugin.Astrometry;
+using TargetPlanning.NINAPlugin.HTMLOutput;
 using TargetPlanning.NINAPlugin.ImagingSeason;
 
 namespace TargetPlanning.NINAPlugin {
@@ -56,12 +57,14 @@ namespace TargetPlanning.NINAPlugin {
 
             DailyDetailsCommand = new AsyncCommand<bool>(() => ShowDailyDetails());
             CancelDailyDetailsCommand = new RelayCommand(CancelDaily);
+            DailyDetailsHTMLReportCommand = new RelayCommand(DailyDetailsHTMLReport);
 
             AnnualChartCommand = new AsyncCommand<bool>(() => ShowAnnualChart());
             CancelAnnualCommand = new RelayCommand(CancelAnnual);
 
             ImagingSeasonCommand = new AsyncCommand<bool>(() => ShowImagingSeason());
             CancelImagingSeasonCommand = new RelayCommand(CancelImagingSeason);
+            ImagingSeasonHTMLReportCommand = new RelayCommand(ImagingSeasonHTMLReport);
 
             InitializeCriteria();
         }
@@ -295,6 +298,17 @@ namespace TargetPlanning.NINAPlugin {
             }
         }
 
+        public ICommand DailyDetailsHTMLReportCommand { get; private set; }
+
+        private void DailyDetailsHTMLReport(object obj) {
+            try {
+                System.Diagnostics.Process.Start(HTMLReport.GetDailyDetailsHTMLReportPath());
+            }
+            catch (Exception ex) {
+                Logger.Error($"DailyDetails HTML report exception: {ex.Message} {ex.StackTrace}");
+            }
+        }
+
         private async Task<bool> ShowDailyDetails() {
             AnnualChartEnabled = false;
             DailyDetailsEnabled = false;
@@ -309,6 +323,7 @@ namespace TargetPlanning.NINAPlugin {
                 try {
                     DailyDetailsResults = null;
                     IEnumerable<ImagingDayPlan> results = new PlanGenerator(planParams).Generate(_dailyDetailsCommandTokenSource.Token);
+                    new HTMLReport(planParams).CreateDailyDetailsHTMLReport(results);
 
                     List<ImagingDayPlanViewAdapter> wrappedResults = new List<ImagingDayPlanViewAdapter>(results.Count());
                     foreach (ImagingDayPlan plan in results) {
@@ -483,6 +498,17 @@ namespace TargetPlanning.NINAPlugin {
 
         public ICommand ImagingSeasonCommand { get; private set; }
 
+        public ICommand ImagingSeasonHTMLReportCommand { get; private set; }
+
+        private void ImagingSeasonHTMLReport(object obj) {
+            try {
+                System.Diagnostics.Process.Start(HTMLReport.GetImagingSeasonHTMLReportPath());
+            }
+            catch (Exception ex) {
+                Logger.Error($"ImagingSeason HTML report exception: {ex.Message} {ex.StackTrace}");
+            }
+        }
+
         private async Task<bool> ShowImagingSeason() {
             _imagingSeasonTokenSource?.Dispose();
             _imagingSeasonTokenSource = new CancellationTokenSource();
@@ -497,6 +523,7 @@ namespace TargetPlanning.NINAPlugin {
                 try {
                     IList<ImagingDayPlan> results = new OptimalImagingSeason().GetOptimalSeason(planParams, _imagingSeasonTokenSource.Token);
                     ImagingSeasonPlotModel = new ImagingSeasonPlotModel(profileService.ActiveProfile, planParams, results);
+                    new HTMLReport(planParams).CreateImagingSeasonHTMLReport(results, ImagingSeasonPlotModel.GetPlotModel());
                     EmptyReport = false;
                     ImagingSeasonEnabled = true;
                 }

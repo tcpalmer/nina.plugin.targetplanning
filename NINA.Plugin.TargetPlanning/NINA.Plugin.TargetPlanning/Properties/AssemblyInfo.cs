@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("ScreenshotURL", "https://raw.githubusercontent.com/tcpalmer/nina.plugin.targetplanning/main/NINA.Plugin.TargetPlanning/assets/screenshot1.png?raw=true")]
 [assembly: AssemblyMetadata("AltScreenshotURL", "https://raw.githubusercontent.com/tcpalmer/nina.plugin.targetplanning/main/NINA.Plugin.TargetPlanning/assets/screenshot2.png?raw=true")]
 
-[assembly: AssemblyMetadata("LongDescription", @"Target Planning is the converse of the NINA Sky Atlas.  Rather than searching for multiple targets for one particular day, Target Planning takes your desired target and shows imaging options across multiple days.  It can also display charts of the entire imaging season as well as annual target and moon altitude.  Various filters let you establish criteria to restrict the available imaging time based on your imaging needs and local circumstances.
+[assembly: AssemblyMetadata("LongDescription", @"Target Planning is the converse of the NINA Sky Atlas.  Rather than searching for multiple targets for one particular day, Target Planning takes your desired target and shows imaging options across multiple days.  It can also display charts of the entire imaging season as well as annual target and moon altitude.  Various filters let you establish criteria to restrict the available imaging time based on your imaging needs and local circumstances.  Reports can be opened in your browser so you can view, save, print, or convert to PDF.
 
 There are no sequence instructions or other behaviors associated with this plugin.  All interaction takes place on this plugin page.
 
@@ -35,7 +35,7 @@ Select a target to get started.  Once you do, the Daily Details, Imaging Season,
 * RA/Dec: view/change target coordinates.  These fields will reflect the selected Target but also support manual entry.
 
 ## Daily Details Report ##
-The Daily Details Report displays a table showing available imaging times and details for each day, starting from Start Date.  The report uses the currently selected target/coordinates as well as the settings for the altitude, time, and moon filter options.  Select a row in the table to see more details for that day.
+The Daily Details Report displays a table showing available imaging times and details for each day, starting from Start Date.  The report uses the currently selected target/coordinates as well as the settings for the altitude, time, and moon filter options.  Select a row in the table to see more details for that day.  Click 'HTML Report' in the upper right of the report area to open the report in a browser.
 
 *Notes*
 * Some filter settings will simply adjust the available start/end imaging times appropriately, without rejecting the entire day.  Others will reject the day outright.
@@ -58,7 +58,7 @@ The following options act as filters for the report so you can tailor the calcul
 * Moon Avoidance Width: set the width parameter for moon avoidance - see below.
 
 ## Imaging Season ##
-The Imaging Season chart calculates the available imaging hours for the target across a whole year, using all the same filters used for the Daily Details Report.  The year used is taken from the Start Date field.  The chart should be approximately centered on the date of maximum altitude at midnight for the year in the Start Date field.  Obviously, any rejected dates will vary by year if you have any of the moon filters enabled.
+The Imaging Season chart calculates the available imaging hours for the target across a whole year, using all the same filters used for the Daily Details Report.  Click 'HTML Report' in the upper right of the report area to open the report in a browser.  The year used is taken from the Start Date field.  The chart should be approximately centered on the date of maximum altitude at midnight for the year in the Start Date field.  Obviously, any rejected dates will vary by year if you have any of the moon filters enabled.
 
 The upper part plots available imaging hours by date showing time spans that are acceptable or rejected (red).  The lower part plots the moon illumination and the angular separation between moon and target.
 
@@ -80,6 +80,7 @@ The parameters used on the ACP site (distance = 120, width = 14) are very conser
 * Fixing the moon's position and illumination for the entire night is an obvious approximation.  This may be improved in a future version, possibly also discounting moon impact altogether if it is below the horizon by some distance.
 * When using a custom local horizon, be aware that the tool will use the target/horizon crossing closest to the rise or set event for the target (altitude = 0).  For example, if you have a tree in the southwest but then a lower horizon to the west of that, your target may first disappear behind the tree but then reappear later.  The NINA 'Loop while Altitude Above Horizon' instruction would stop you just east of the tree while the plugin wouldn't stop the session until the horizon closest to target setting.
 * There is no ability to specify an offset when using a custom horizon.  Again, the plugin provides guidelines, not precise timings.
+* If you click 'HTML Report' to open in a browser, you can then save, print, convert to PDF, etc.  Use the available print options to customize the output.
 
 ## Acknowledgements ##
 * James Lamb for his planning tool ([YouTube](https://www.youtube.com/watch?v=kM8Jy1Kwhr8&t=1s))

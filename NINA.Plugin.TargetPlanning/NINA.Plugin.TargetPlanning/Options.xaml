@@ -372,6 +372,19 @@
 
                 <!--  Daily Details Table  -->
                 <StackPanel Orientation="Vertical" Visibility="{Binding Path=DailyDetailsEnabled, Converter={StaticResource BooleanToVisibilityCollapsedConverter}}">
+
+                    <Button
+                        Width="76"
+                        Height="20"
+                        Margin="0,1,0,1"
+                        HorizontalAlignment="Right"
+                        Command="{Binding DailyDetailsHTMLReportCommand}">
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{StaticResource ButtonForegroundBrush}"
+                            Text="HTML Report" />
+                    </Button>
+
                     <Grid DataContext="{Binding DailyDetailsResults}">
 
                         <Grid.RowDefinitions>
@@ -701,15 +714,30 @@
                 </StackPanel>
 
                 <!--  Imaging Season Charts  -->
-                <UserControl Visibility="{Binding Path=ImagingSeasonEnabled, Converter={StaticResource BooleanToVisibilityCollapsedConverter}, FallbackValue=Collapsed}">
-                    <StackPanel Height="410">
-                        <oxy:PlotView
-                            Height="410"
-                            HorizontalAlignment="Stretch"
-                            Controller="{Binding ImagingSeasonPlotModel.PlotController}"
-                            Model="{Binding ImagingSeasonPlotModel.PlotModel}" />
-                    </StackPanel>
-                </UserControl>
+
+                <StackPanel Orientation="Vertical" Visibility="{Binding Path=ImagingSeasonEnabled, Converter={StaticResource BooleanToVisibilityCollapsedConverter}}">
+                    <Button
+                        Width="76"
+                        Height="20"
+                        Margin="0,1,0,1"
+                        HorizontalAlignment="Right"
+                        Command="{Binding ImagingSeasonHTMLReportCommand}">
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{StaticResource ButtonForegroundBrush}"
+                            Text="HTML Report" />
+                    </Button>
+
+                    <UserControl Visibility="{Binding Path=ImagingSeasonEnabled, Converter={StaticResource BooleanToVisibilityCollapsedConverter}, FallbackValue=Collapsed}">
+                        <StackPanel Height="410">
+                            <oxy:PlotView
+                                Height="410"
+                                HorizontalAlignment="Stretch"
+                                Controller="{Binding ImagingSeasonPlotModel.PlotController}"
+                                Model="{Binding ImagingSeasonPlotModel.PlotModel}" />
+                        </StackPanel>
+                    </UserControl>
+                </StackPanel>
 
             </Grid>
         </StackPanel>
