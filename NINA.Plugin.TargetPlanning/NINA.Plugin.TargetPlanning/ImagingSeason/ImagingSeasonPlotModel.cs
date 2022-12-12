@@ -194,6 +194,9 @@ namespace TargetPlanning.NINAPlugin.ImagingSeason {
             }
         }
 
+        internal PlotModel GetPlotModel() {
+            return PlotModel;
+        }
     }
 
     public class ImagingSpan {
