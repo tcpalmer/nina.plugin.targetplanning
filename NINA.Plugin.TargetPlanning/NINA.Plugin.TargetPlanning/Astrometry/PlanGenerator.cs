@@ -24,7 +24,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             DeepSkyObject target = PlanParameters.Target;
             ObserverInfo location = PlanParameters.ObserverInfo;
 
-            List<RiseAndSetEvent> twilightTimes = getTwiLightTimesList(PlanParameters.StartDate, PlanParameters.PlanDays, PlanParameters.ObserverInfo, token);
+            List<RiseAndSetEvent> twilightTimes = getTwiLightTimesList(PlanParameters.StartDate, PlanParameters.PlanDays, PlanParameters.ObserverInfo, PlanParameters.TwilightInclude, token);
 
             using (MyStopWatch.Measure("planGenerate")) {
                 for (int i = 0; i < twilightTimes.Count - 1; i++) {
@@ -164,7 +164,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
         }
 
-        public List<RiseAndSetEvent> getTwiLightTimesList(DateTime StartDate, int PlanDays, ObserverInfo location, CancellationToken token) {
+        public List<RiseAndSetEvent> getTwiLightTimesList(DateTime StartDate, int PlanDays, ObserverInfo location, int twilightInclude, CancellationToken token) {
 
             List<RiseAndSetEvent> list = new List<RiseAndSetEvent>(PlanDays + 1);
             DateTime date = StartDate;
@@ -176,7 +176,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                         throw new OperationCanceledException();
                     }
 
-                    RiseAndSetEvent riseAndSetEvent = TwilightTimeCache.Get(date, location.Latitude, location.Longitude);
+                    RiseAndSetEvent riseAndSetEvent = TwilightTimeCache.Get(date, location.Latitude, location.Longitude, twilightInclude);
                     list.Add(riseAndSetEvent);
                     date = date.AddDays(1);
                 }
@@ -201,6 +201,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         public HorizonDefinition HorizonDefinition { get; set; }
         public int MinimumImagingTime { get; set; }
         public int MeridianTimeSpan { get; set; }
+        public int TwilightInclude { get; set; }
         public double MinimumMoonSeparation { get; set; }
         public double MaximumMoonIllumination { get; set; }
         public bool MoonAvoidanceEnabled { get; set; }
@@ -214,6 +215,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             sb.Append(HorizonDefinition.GetCacheKey()).Append("_");
             sb.Append(MinimumImagingTime.ToString()).Append("_");
             sb.Append(MeridianTimeSpan.ToString()).Append("_");
+            sb.Append(TwilightInclude.ToString()).Append("_");
             sb.Append(MinimumMoonSeparation.ToString()).Append("_");
             sb.Append(MaximumMoonIllumination.ToString()).Append("_");
             sb.Append(MoonAvoidanceEnabled.ToString()).Append("_");

@@ -211,6 +211,16 @@
                                 SelectedValuePath="Key" />
                             <TextBlock
                                 VerticalAlignment="Center"
+                                Text="Include Twilight"
+                                ToolTip="What class of twilight to include" />
+                            <ComboBox
+                                Margin="35,0,0,0"
+                                DisplayMemberPath="Value"
+                                ItemsSource="{Binding TwilightIncludeChoices}"
+                                SelectedValue="{Binding TwilightInclude}"
+                                SelectedValuePath="Key" />
+                            <TextBlock
+                                VerticalAlignment="Center"
                                 Text="Meridian Time Span"
                                 ToolTip="Set imaging time on either side of the meridian" />
                             <ComboBox

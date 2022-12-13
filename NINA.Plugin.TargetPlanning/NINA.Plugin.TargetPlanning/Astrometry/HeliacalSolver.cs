@@ -35,18 +35,20 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         private readonly ObserverInfo location;
         private readonly Coordinates target;
         private readonly DateTime transitMidnight;
+        private int twilightInclude;
 
-        public HeliacalSolver(ObserverInfo location, Coordinates target, DateTime transitMidnight) {
+        public HeliacalSolver(ObserverInfo location, Coordinates target, DateTime transitMidnight, int twilightInclude) {
             this.location = location;
             this.target = target;
             this.transitMidnight = transitMidnight;
+            this.twilightInclude = twilightInclude;
         }
 
         public DateTime GetHeliacalRisingDate(CancellationToken token) {
 
             DateTime startDate = GetHRInitialGuess();
 
-            DateTime rise = GetTwilightTimes(startDate).Item1;
+            DateTime rise = GetTwilightTimes(startDate, twilightInclude).Item1;
             double altitude = AstrometryUtils.GetHorizontalCoordinates(location, target, rise).Altitude;
             int dayDelta = altitude < TARGET_ALTITUDE ? 1 : -1;
 
@@ -57,7 +59,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                     throw new OperationCanceledException();
                 }
 
-                rise = GetTwilightTimes(dateTime).Item1;
+                rise = GetTwilightTimes(dateTime, twilightInclude).Item1;
                 altitude = AstrometryUtils.GetHorizontalCoordinates(location, target, rise).Altitude;
 
                 if (dayDelta > 0 && altitude > TARGET_ALTITUDE) {
@@ -79,7 +81,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             DateTime startDate = GetHSInitialGuess();
 
-            DateTime set = GetTwilightTimes(startDate).Item2;
+            DateTime set = GetTwilightTimes(startDate, twilightInclude).Item2;
             double altitude = AstrometryUtils.GetHorizontalCoordinates(location, target, set).Altitude;
             int dayDelta = altitude > TARGET_ALTITUDE ? 1 : -1;
 
@@ -90,7 +92,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                     throw new OperationCanceledException();
                 }
 
-                set = GetTwilightTimes(dateTime).Item2;
+                set = GetTwilightTimes(dateTime, twilightInclude).Item2;
                 altitude = AstrometryUtils.GetHorizontalCoordinates(location, target, set).Altitude;
 
                 if (dayDelta < 0 && altitude > TARGET_ALTITUDE) {
@@ -108,8 +110,8 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             throw new Exception($"failed to find heliacal setting after {MAX_TRIES} attempts (target: {target}, location: {location})");
         }
 
-        private Tuple<DateTime, DateTime> GetTwilightTimes(DateTime dateTime) {
-            RiseAndSetEvent riseAndSetEvent = TwilightTimeCache.Get(dateTime, location.Latitude, location.Longitude);
+        private Tuple<DateTime, DateTime> GetTwilightTimes(DateTime dateTime, int twilightInclude) {
+            RiseAndSetEvent riseAndSetEvent = TwilightTimeCache.Get(dateTime, location.Latitude, location.Longitude, twilightInclude);
             if (riseAndSetEvent.Rise == null || riseAndSetEvent.Set == null) {
                 throw new Exception($"no rise or set time for location ({location}) on date {dateTime}");
             }

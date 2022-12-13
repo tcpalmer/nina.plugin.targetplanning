@@ -1,4 +1,5 @@
 ﻿using NINA.Astrometry;
+using NINA.Astrometry.Body;
 using NINA.Astrometry.RiseAndSet;
 using System;
 using System.Globalization;
@@ -8,17 +9,36 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
     public class TwilightTimeCache {
 
+        public const int TWILIGHT_INCLUDE_NONE = 0;
+        public const int TWILIGHT_INCLUDE_ASTRO = 1;
+        public const int TWILIGHT_INCLUDE_NAUTICAL = 2;
+        public const int TWILIGHT_INCLUDE_CIVIL = 3;
+
         private static readonly TimeSpan ITEM_TIMEOUT = TimeSpan.FromHours(2);
         private static readonly MemoryCache _cache = new MemoryCache("Target Planning Twilight Times");
 
-        public static RiseAndSetEvent Get(DateTime dateTime, double latitude, double longitude) {
+        public static RiseAndSetEvent Get(DateTime dateTime, double latitude, double longitude, int twilightInclude) {
             DateTime checkDate = dateTime.Date;
-            string key = GetCacheKey(checkDate, latitude, longitude);
+            string key = GetCacheKey(checkDate, latitude, longitude, twilightInclude);
             RiseAndSetEvent riseAndSetEvent = (RiseAndSetEvent)_cache.Get(key);
 
             if (riseAndSetEvent == null) {
                 //Logger.Trace($"twilight time cache miss: {key}");
-                riseAndSetEvent = AstroUtil.GetNauticalNightTimes(checkDate, latitude, longitude);
+                switch (twilightInclude) {
+                    case TWILIGHT_INCLUDE_NONE:
+                        riseAndSetEvent = GetNight(checkDate, latitude, longitude);
+                        break;
+                    case TWILIGHT_INCLUDE_ASTRO:
+                        riseAndSetEvent = GetAstronomical(checkDate, latitude, longitude);
+                        break;
+                    case TWILIGHT_INCLUDE_NAUTICAL:
+                        riseAndSetEvent = GetNautical(checkDate, latitude, longitude);
+                        break;
+                    case TWILIGHT_INCLUDE_CIVIL:
+                        riseAndSetEvent = GetCivil(checkDate, latitude, longitude);
+                        break;
+                }
+
                 _cache.Add(key, riseAndSetEvent, DateTime.Now.Add(ITEM_TIMEOUT));
             }
             else {
@@ -28,8 +48,52 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             return riseAndSetEvent;
         }
 
-        private static string GetCacheKey(DateTime dateTime, double latitude, double longitude) {
-            return $"{dateTime:yyyy-MM-dd-HH-mm-ss}_{latitude.ToString("0.000000", CultureInfo.InvariantCulture)}_{longitude.ToString("0.000000", CultureInfo.InvariantCulture)}";
+        private static RiseAndSetEvent GetCivil(DateTime dateTime, double latitude, double longitude) {
+            return AstroUtil.GetSunRiseAndSet(dateTime, latitude, longitude);
+        }
+
+        private static RiseAndSetEvent GetNautical(DateTime dateTime, double latitude, double longitude) {
+            return CivilTwilightRiseAndSet.GetCivilTwilightTimes(dateTime, latitude, longitude);
+        }
+
+        private static RiseAndSetEvent GetAstronomical(DateTime dateTime, double latitude, double longitude) {
+            return AstroUtil.GetNauticalNightTimes(dateTime, latitude, longitude);
+        }
+
+        private static RiseAndSetEvent GetNight(DateTime dateTime, double latitude, double longitude) {
+            return AstroUtil.GetNightTimes(dateTime, latitude, longitude);
+        }
+
+        private static string GetCacheKey(DateTime dateTime, double latitude, double longitude, int twilightInclude) {
+            return $"{twilightInclude}{dateTime:yyyy-MM-dd-HH-mm-ss}_{latitude.ToString("0.000000", CultureInfo.InvariantCulture)}_{longitude.ToString("0.000000", CultureInfo.InvariantCulture)}";
+        }
+    }
+
+    // Following other NINA usage ...
+    public class CivilTwilightRiseAndSet : RiseAndSetEvent {
+
+        public CivilTwilightRiseAndSet(DateTime date, double latitude, double longitude) : base(date, latitude, longitude) {
+        }
+
+        public static RiseAndSetEvent GetCivilTwilightTimes(DateTime date, double latitude, double longitude) {
+            var riseAndSet = new CivilTwilightRiseAndSet(date, latitude, longitude);
+            var t = riseAndSet.Calculate().Result;
+
+            return riseAndSet;
+        }
+
+        private double CivilTwilightDegree {
+            get {
+                return -6;
+            }
+        }
+
+        protected override double AdjustAltitude(BasicBody body) {
+            return body.Altitude - CivilTwilightDegree;
+        }
+
+        protected override BasicBody GetBody(DateTime date) {
+            return new Sun(date, Latitude, Longitude);
         }
     }
 

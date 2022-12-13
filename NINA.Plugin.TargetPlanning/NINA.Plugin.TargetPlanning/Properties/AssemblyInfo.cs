@@ -12,8 +12,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.2.0.0")]
+[assembly: AssemblyFileVersion("1.2.0.0")]
 
 // The minimum Version of N.I.N.A. that this plugin is compatible with
 [assembly: AssemblyMetadata("MinimumApplicationVersion", "2.0.0.9001")]
@@ -39,7 +39,6 @@ The Daily Details Report displays a table showing available imaging times and de
 
 *Notes*
 * Some filter settings will simply adjust the available start/end imaging times appropriately, without rejecting the entire day.  Others will reject the day outright.
-* The calculation begins by assuming that the available imaging time on any given day includes astronomical twilight.  This is a reasonable assumption since many users do narrowband imaging during this time.  In addition, the report is intended as a guideline, not for exact timings.  This can't be changed in the current version.
 * Your latitude/longitude are taken from the currently active NINA profile.  If you want to plan for a different location, create a profile for it and make it active.
 
 *Daily Details Report Options*
@@ -50,6 +49,7 @@ The following options act as filters for the report so you can tailor the calcul
 * Days: set the number of days in the report.
 * Minimum Altitude: set the minimum altitude that the target must exceed, which restricts the start/end times.  Select 'Above Horizon' to use your custom local horizon.
 * Minimum Imaging Time: set the minimum acceptable imaging time.  Days when the available time is below this threshold are rejected.
+* Include Twilight: set the type of twilight to include in the available imaging time: None, Astronomical, Nautical, or Civil.
 * Meridian Time Span: set the time on either side of the target's meridian crossing that is acceptable for imaging.  The start/end times will be adjusted to reflect this (taking other criteria into account as well).
 
 * Maximum Moon Illumination: set the maximum acceptable moon illumination percentage.  Disabled if Moon Avoidance is used.
@@ -79,7 +79,7 @@ The parameters used on the ACP site (distance = 120, width = 14) are very conser
 * The time used for all moon calculations is taken to be the midpoint of the start/end imaging times for that day.  For this reason, the values displayed may differ from what you see in other NINA displays.
 * Fixing the moon's position and illumination for the entire night is an obvious approximation.  This may be improved in a future version, possibly also discounting moon impact altogether if it is below the horizon by some distance.
 * When using a custom local horizon, be aware that the tool will use the target/horizon crossing closest to the rise or set event for the target (altitude = 0).  For example, if you have a tree in the southwest but then a lower horizon to the west of that, your target may first disappear behind the tree but then reappear later.  The NINA 'Loop while Altitude Above Horizon' instruction would stop you just east of the tree while the plugin wouldn't stop the session until the horizon closest to target setting.
-* There is no ability to specify an offset when using a custom horizon.  Again, the plugin provides guidelines, not precise timings.
+* There is no ability to specify an offset when using a custom horizon.
 * If you click 'HTML Report' to open in a browser, you can then save, print, convert to PDF, etc.  Use the available print options to customize the output.
 
 ## Acknowledgements ##
