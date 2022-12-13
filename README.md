@@ -14,7 +14,7 @@ The Daily Details Report displays a table showing available imaging times and de
 
 *Notes*
 * Some filter settings will simply adjust the available start/end imaging times appropriately, without rejecting the entire day.  Others will reject the day outright.
-* The calculation begins by assuming that the available imaging time on any given day includes astronomical twilight.  This is a reasonable assumption since many users do narrowband imaging during this time.  In addition, the report is intended as a guideline, not for exact timings.  This can't be changed in the current version.
+* Your latitude/longitude are taken from the currently active NINA profile. If you want to plan for a different location, create a profile for it and make it active.
 
 *Daily Details Report Options*
 
@@ -24,6 +24,7 @@ The following options act as filters for the report so you can tailor the calcul
 * Days: set the number of days in the report.
 * Minimum Altitude: set the minimum altitude that the target must exceed, which restricts the start/end times.  Use 'Above Horizon' to use your custom local horizon.
 * Minimum Imaging Time: set the minimum acceptable imaging time.  Days when the available time is below this threshold are rejected.
+* Include Twilight: set the type of twilight to include in the available imaging time: None, Astronomical, Nautical, or Civil.
 * Meridian Time Span: set the time on either side of the target's meridian crossing that is acceptable for imaging.  The start/end times will be adjusted to reflect this (taking other criteria into account as well).
 
 * Maximum Moon Illumination: set the maximum acceptable moon illumination.  Disabled if Moon Avoidance is used.

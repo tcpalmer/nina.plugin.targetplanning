@@ -23,9 +23,9 @@ namespace TargetPlanning.NINAPlugin.HTMLOutput {
             s = Regex.Replace(s, "TARGET-DEC", planParameters.Target.Coordinates.DecString);
             s = Regex.Replace(s, "LATITUDE", planParameters.ObserverInfo.Latitude.ToString());
             s = Regex.Replace(s, "LONGITUDE", planParameters.ObserverInfo.Longitude.ToString());
-            string minAlt = planParameters.HorizonDefinition.IsCustom() ? "local horizon" : planParameters.HorizonDefinition.GetFixedMinimumAltitude().ToString();
-            s = Regex.Replace(s, "MINIMUM-ALTITUDE", minAlt);
+            s = Regex.Replace(s, "MINIMUM-ALTITUDE", GetMinAlt(planParameters.HorizonDefinition));
             s = Regex.Replace(s, "MINIMUM-IMAGING-TIME", MinutesZeroCheck(planParameters.MinimumImagingTime));
+            s = Regex.Replace(s, "TWILIGHT-INCLUDE", GetTwilightInclude(planParameters.TwilightInclude));
             s = Regex.Replace(s, "MERIDIAN-TIME-SPAN", MinutesZeroCheck(planParameters.MeridianTimeSpan));
             s = Regex.Replace(s, "MAXIMUM-MOON-ILLUMINATION", planParameters.MoonAvoidanceEnabled ? "n/a" : ValueZeroCheck(planParameters.MaximumMoonIllumination * 100, "%"));
             s = Regex.Replace(s, "MINIMUM-MOON-SEPARATION", ValueZeroCheck(planParameters.MinimumMoonSeparation, "&deg;"));
@@ -46,7 +46,7 @@ namespace TargetPlanning.NINAPlugin.HTMLOutput {
         }
 
         private static string GetTargetName(PlanParameters planParameters) {
-            return planParameters.Target.Name != null ? planParameters.Target.Name : "manual coords";
+            return planParameters.Target.Name != null ? planParameters.Target.Name : "manually entered";
         }
 
         private static string GetPluginVersion() {
@@ -55,12 +55,30 @@ namespace TargetPlanning.NINAPlugin.HTMLOutput {
             return fvi.FileVersion;
         }
 
+        private static string GetMinAlt(HorizonDefinition horizonDefinition) {
+            return horizonDefinition.IsCustom() ? "local horizon" : $"{horizonDefinition.GetFixedMinimumAltitude()}&deg;";
+        }
+
         private static string MinutesZeroCheck(int value) {
-            return value == 0 ? "any" : Utils.MtoHM(value);
+            return value == 0 ? "Any" : Utils.MtoHM(value);
         }
 
         private static string ValueZeroCheck(double value, string metric) {
-            return value == 0 ? "any" : value.ToString() + metric;
+            return value == 0 ? "Any" : value.ToString() + metric;
+        }
+
+        private static string GetTwilightInclude(int twilightInclude) {
+            switch (twilightInclude) {
+                case TwilightTimeCache.TWILIGHT_INCLUDE_NONE:
+                    return "None";
+                case TwilightTimeCache.TWILIGHT_INCLUDE_ASTRO:
+                    return "Astronomical";
+                case TwilightTimeCache.TWILIGHT_INCLUDE_NAUTICAL:
+                    return "Nautical";
+                case TwilightTimeCache.TWILIGHT_INCLUDE_CIVIL:
+                    return "Civil";
+                default: return "?";
+            }
         }
 
         internal static string AddPlot(string plotSVG) {
@@ -318,6 +336,10 @@ namespace TargetPlanning.NINAPlugin.HTMLOutput {
                 <tr>
                     <td>Minimum Imaging Time</td>
                     <td>MINIMUM-IMAGING-TIME</td>
+                </tr>
+                <tr>
+                    <td>Include Twilight</td>
+                    <td>TWILIGHT-INCLUDE</td>
                 </tr>
                 <tr>
                     <td>Meridian Span</td>

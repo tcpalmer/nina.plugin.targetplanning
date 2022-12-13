@@ -33,6 +33,7 @@ namespace TargetPlanning.NINAPlugin {
         private AsyncObservableCollection<KeyValuePair<double, string>> _moonSeparationChoices;
         private AsyncObservableCollection<KeyValuePair<double, string>> _maximumMoonIlluminationChoices;
         private AsyncObservableCollection<KeyValuePair<int, string>> _meridianTimeSpanChoices;
+        private AsyncObservableCollection<KeyValuePair<int, string>> _twilightIncludeChoices;
 
         [ImportingConstructor]
         public TargetPlanningPlugin(IProfileService profileService, IDeepSkyObjectSearchVM deepSkyObjectSearchVM) {
@@ -104,6 +105,12 @@ namespace TargetPlanning.NINAPlugin {
             for (int i = 30; i <= 240; i += 30) {
                 MeridianTimeSpanChoices.Add(new KeyValuePair<int, string>(i, Utils.MtoHM(i)));
             }
+
+            TwilightIncludeChoices = new AsyncObservableCollection<KeyValuePair<int, string>>();
+            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(TwilightTimeCache.TWILIGHT_INCLUDE_NONE, "None"));
+            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(TwilightTimeCache.TWILIGHT_INCLUDE_ASTRO, "Astronomical"));
+            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(TwilightTimeCache.TWILIGHT_INCLUDE_NAUTICAL, "Nautical"));
+            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(TwilightTimeCache.TWILIGHT_INCLUDE_CIVIL, "Civil"));
         }
 
         public override Task Teardown() {
@@ -128,6 +135,7 @@ namespace TargetPlanning.NINAPlugin {
             RaisePropertyChanged(nameof(MinimumMoonSeparation));
             RaisePropertyChanged(nameof(MaximumMoonIllumination));
             RaisePropertyChanged(nameof(MeridianTimeSpan));
+            RaisePropertyChanged(nameof(TwilightInclude));
             RaisePropertyChanged(nameof(MoonAvoidanceEnabled));
             RaisePropertyChanged(nameof(MoonAvoidanceWidth));
 
@@ -263,6 +271,23 @@ namespace TargetPlanning.NINAPlugin {
             }
         }
 
+        public int TwilightInclude {
+            get => pluginSettings.GetValueInt32(nameof(TwilightInclude), TwilightTimeCache.TWILIGHT_INCLUDE_ASTRO);
+            set {
+                pluginSettings.SetValueInt32(nameof(TwilightInclude), value);
+                RaisePropertyChanged();
+            }
+        }
+
+        public AsyncObservableCollection<KeyValuePair<int, string>> TwilightIncludeChoices {
+            get {
+                return _twilightIncludeChoices;
+            }
+            set {
+                _twilightIncludeChoices = value;
+            }
+        }
+
         public bool MoonAvoidanceEnabled {
             get => pluginSettings.GetValueBoolean(nameof(MoonAvoidanceEnabled), false);
             set {
@@ -361,6 +386,7 @@ namespace TargetPlanning.NINAPlugin {
                     new HorizonDefinition(profileService.ActiveProfile.AstrometrySettings.Horizon, 0);
             planParams.MinimumImagingTime = MinimumTime;
             planParams.MeridianTimeSpan = MeridianTimeSpan;
+            planParams.TwilightInclude = TwilightInclude;
             planParams.MinimumMoonSeparation = MinimumMoonSeparation;
             planParams.MaximumMoonIllumination = MaximumMoonIllumination;
             planParams.MoonAvoidanceEnabled = MoonAvoidanceEnabled;
@@ -380,6 +406,7 @@ namespace TargetPlanning.NINAPlugin {
             }
 
             Logger.Debug($"        Min time: {planParams.MinimumImagingTime}");
+            Logger.Debug($"Twilight include: {planParams.TwilightInclude}");
             Logger.Debug($"   Meridian span: {planParams.MeridianTimeSpan}\n");
             Logger.Debug($"  Max moon illum: {planParams.MaximumMoonIllumination}");
             Logger.Debug($"    Min moon sep: {planParams.MinimumMoonSeparation}");

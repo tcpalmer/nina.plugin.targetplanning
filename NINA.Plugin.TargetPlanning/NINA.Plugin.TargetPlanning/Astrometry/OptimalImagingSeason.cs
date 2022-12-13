@@ -35,7 +35,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             // Otherwise, we can use heliacal rising/setting dates to determine the limits of the imaging season
             else {
-                HeliacalSolver solver = new HeliacalSolver(planParams.ObserverInfo, planParams.Target.Coordinates, transitMidnightDate);
+                HeliacalSolver solver = new HeliacalSolver(planParams.ObserverInfo, planParams.Target.Coordinates, transitMidnightDate, planParams.TwilightInclude);
                 DateTime heliacalRisingDate = solver.GetHeliacalRisingDate(token);
                 DateTime heliacalSettingDate = solver.GetHeliacalSettingDate(token);
 
