@@ -1,0 +1,1586 @@
+﻿{
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Dependency Analysis",
+          "semanticVersion": "0.4.355802",
+          "informationUri": "https://docs.microsoft.com/en-us/dotnet/core/porting/upgrade-assistant-overview",
+          "rules": [
+            {
+              "id": "UA103",
+              "name": "ReferenceToBeDeleted",
+              "fullDescription": {
+                "text": "References that need to be deleted in order to upgrade the project to chosen TFM"
+              },
+              "helpUri": "https://docs.microsoft.com/en-us/dotnet/core/porting/upgrade-assistant-overview"
+            },
+            {
+              "id": "UA105",
+              "name": "PackageToBeDeleted",
+              "fullDescription": {
+                "text": "Packages that need to be deleted in order to upgrade the project to chosen TFM"
+              },
+              "helpUri": "https://docs.microsoft.com/en-us/dotnet/core/porting/upgrade-assistant-overview"
+            },
+            {
+              "id": "UA106",
+              "name": "PackageToBeAdded",
+              "fullDescription": {
+                "text": "Packages that need to be added in order to upgrade the project to chosen TFM"
+              },
+              "helpUri": "https://docs.microsoft.com/en-us/dotnet/core/porting/upgrade-assistant-overview"
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "UA103",
+          "message": {
+            "text": "Reference to System.Configuration needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Accord, Version=3.8.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Accord.Imaging, Version=3.8.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Accord.Math, Version=3.8.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Accord.Statistics, Version=3.8.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package AsyncEnumerator, Version=4.0.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Castle.Core, Version=4.4.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Castle.Core.AsyncInterceptor, Version=2.0.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package CSharpFITS, Version=1.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package CsvHelper, Version=27.2.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package DotNetProjects.Extended.Wpf.Toolkit, Version=5.0.100 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package EntityFramework, Version=6.4.4 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Fastenshtein, Version=1.0.0.8 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Google.Protobuf, Version=3.18.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Google.Protobuf.Tools, Version=3.18.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Grpc.Core.Api, Version=2.41.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package GrpcDotNetNamedPipes, Version=1.4.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package K4os.Compression.LZ4, Version=1.2.16 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Microsoft.Bcl.AsyncInterfaces, Version=6.0.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Microsoft.Bcl.HashCode, Version=1.1.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Microsoft.CSharp, Version=4.7.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Microsoft.Xaml.Behaviors.Wpf, Version=1.1.39 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Namotion.Reflection, Version=2.0.10 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Newtonsoft.Json, Version=13.0.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package NINA.Astrometry, Version=2.0.0.9001 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package NINA.Core, Version=2.0.0.9001 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package NINA.Equipment, Version=2.0.0.9001 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package NINA.Image, Version=2.0.0.9001 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package NINA.MGEN, Version=2.0.0.9001 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package NINA.PlateSolving, Version=2.0.0.9001 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package NINA.Profile, Version=2.0.0.9001 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package NINA.Sequencer, Version=2.0.0.9001 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package NINA.WPF.Base, Version=2.0.0.9001 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package NINACustomControlLibrary, Version=2.0.0.9001 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.AsyncEx, Version=5.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.AsyncEx.Context, Version=5.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.AsyncEx.Coordination, Version=5.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.AsyncEx.Interop.WaitHandles, Version=5.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.AsyncEx.Oop, Version=5.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.AsyncEx.Tasks, Version=5.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.Cancellation, Version=1.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.Collections.Deque, Version=1.1.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.Disposables, Version=2.3.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.Mvvm.Async, Version=1.0.0-pre-03 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.Mvvm.Core, Version=1.3.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package NJsonSchema, Version=10.6.10 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package OxyPlot.Core, Version=2.0.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package OxyPlot.Wpf, Version=2.0.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package SHA3, Version=0.9.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package SharpGIS.NmeaParser, Version=2.2.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Collections.Immutable, Version=6.0.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Data.SQLite, Version=1.0.115.5 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Data.SQLite.Core, Version=1.0.115.5 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Data.SQLite.EF6, Version=1.0.115.5 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Memory, Version=4.5.4 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Numerics.Vectors, Version=4.5.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Runtime, Version=4.3.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Runtime.CompilerServices.Unsafe, Version=6.0.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Threading.Tasks.Extensions, Version=4.5.4 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package ToggleSwitch, Version=1.2.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Trinet.Core.IO.Ntfs, Version=4.1.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package VVVV.FreeImage, Version=3.15.1.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Zlib.Portable.Signed, Version=1.11.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA106",
+          "message": {
+            "text": "Package System.Configuration.ConfigurationManager, Version=5.0.0 needs to be added."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA106",
+          "message": {
+            "text": "Package Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, Version=0.4.355802 needs to be added."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA106",
+          "message": {
+            "text": "Package Microsoft.Windows.Compatibility, Version=7.0.0 needs to be added."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA103",
+          "message": {
+            "text": "Reference to System.Configuration needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Accord, Version=3.8.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Accord.Math, Version=3.8.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Accord.Statistics, Version=3.8.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Castle.Core, Version=5.1.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package EntityFramework, Version=6.4.4 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Microsoft.CSharp, Version=4.7.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.AsyncEx.Context, Version=5.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.AsyncEx.Coordination, Version=5.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.AsyncEx.Interop.WaitHandles, Version=5.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.AsyncEx.Oop, Version=5.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.AsyncEx.Tasks, Version=5.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.Cancellation, Version=1.1.2 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.Collections.Deque, Version=1.1.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Nito.Mvvm.Core, Version=1.3.1 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package OxyPlot.Core, Version=2.0.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package Serilog, Version=2.10.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Data.SQLite.Core, Version=1.0.115.5 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Data.SQLite.EF6, Version=1.0.115.5 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.IO, Version=4.3.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Memory, Version=4.5.4 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Runtime.CompilerServices.Unsafe, Version=6.0.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Security.Cryptography.Algorithms, Version=4.3.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Security.Cryptography.Encoding, Version=4.3.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Security.Cryptography.Primitives, Version=4.3.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA105",
+          "message": {
+            "text": "Package System.Security.Cryptography.X509Certificates, Version=4.3.0 needs to be deleted."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA106",
+          "message": {
+            "text": "Package System.Configuration.ConfigurationManager, Version=5.0.0 needs to be added."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA106",
+          "message": {
+            "text": "Package Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, Version=0.4.355802 needs to be added."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UA106",
+          "message": {
+            "text": "Package Microsoft.Windows.Compatibility, Version=7.0.0 needs to be added."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/Tom/source/repos/nina.plugin.targetplanning/NINA.Plugin.TargetPlanning/NINA.Plugin.TargetPlanning.Test/NINA.Plugin.TargetPlanning.Test.csproj"
+                },
+                "region": {}
+              }
+            }
+          ]
+        }
+      ],
+      "columnKind": "utf16CodeUnits"
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "API Upgradability",
+          "semanticVersion": "0.4.355802",
+          "informationUri": "https://docs.microsoft.com/en-us/dotnet/core/porting/upgrade-assistant-overview"
+        }
+      },
+      "results": [],
+      "columnKind": "utf16CodeUnits"
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Component Analysis",
+          "semanticVersion": "0.4.355802",
+          "informationUri": "https://docs.microsoft.com/en-us/dotnet/core/porting/upgrade-assistant-overview"
+        }
+      },
+      "results": [],
+      "columnKind": "utf16CodeUnits"
+    }
+  ]
+}
