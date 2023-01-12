@@ -9,6 +9,18 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
     public class AltitudesTest {
 
         [Test]
+        public void TestGetInterval() {
+            List<AltitudeAtTime> alts = new List<AltitudeAtTime>();
+            DateTime dt = DateTime.Now;
+            alts.Add(new AltitudeAtTime(1, 180, dt));
+            alts.Add(new AltitudeAtTime(2, 180, dt.AddSeconds(1)));
+            alts.Add(new AltitudeAtTime(3, 180, dt.AddSeconds(2)));
+            alts.Add(new AltitudeAtTime(2, 180, dt.AddSeconds(3)));
+            Altitudes sut = new Altitudes(alts);
+            sut.GetIntervalSeconds().Should().Be(3);
+        }
+
+        [Test]
         public void TestFindMax() {
             List<AltitudeAtTime> alts = new List<AltitudeAtTime>();
             DateTime dt = DateTime.Now;
@@ -86,6 +98,87 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
             min.Item2.Altitude.Should().BeApproximately(1, 0.001);
             min.Item2.AtTime.Should().BeSameDateAs(dt.AddMinutes(3));
             min.Item1.Should().Be(3);
+        }
+
+        [Test]
+        public void TestClipAscendingStart() {
+            DateTime now = DateTime.Now;
+            List<AltitudeAtTime> alts = new List<AltitudeAtTime>();
+
+            alts.Add(new AltitudeAtTime(50, 0, now));
+            alts.Add(new AltitudeAtTime(60, 0, now.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(70, 0, now.AddMinutes(2)));
+            alts.Add(new AltitudeAtTime(60, 0, now.AddMinutes(3)));
+            Altitudes altitudes = new Altitudes(alts);
+
+            Altitudes sut = altitudes.ClipAscendingStart();
+            sut.AltitudeList.Count.Should().Be(2);
+            sut.AltitudeList[0].Altitude.Should().BeApproximately(70, 0.0001);
+            sut.AltitudeList[1].Altitude.Should().BeApproximately(60, 0.0001);
+
+            alts.Clear();
+            alts.Add(new AltitudeAtTime(70, 0, now));
+            alts.Add(new AltitudeAtTime(60, 0, now.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(50, 0, now.AddMinutes(2)));
+            altitudes = new Altitudes(alts);
+
+            sut = altitudes.ClipAscendingStart();
+            sut.AltitudeList.Count.Should().Be(3);
+            sut.AltitudeList[0].Altitude.Should().BeApproximately(70, 0.0001);
+            sut.AltitudeList[1].Altitude.Should().BeApproximately(60, 0.0001);
+
+            alts.Clear();
+            alts.Add(new AltitudeAtTime(50, 0, now));
+            alts.Add(new AltitudeAtTime(60, 0, now.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(70, 0, now.AddMinutes(2)));
+            altitudes = new Altitudes(alts);
+
+            var ex = Assert.Throws<ArgumentException>(() => altitudes.ClipAscendingStart());
+            Assert.AreEqual("altitude list is unexpectedly always ascending", ex.Message);
+        }
+
+        [Test]
+        public void TestFindSpan() {
+            DateTime now = DateTime.Now;
+            List<AltitudeAtTime> alts = new List<AltitudeAtTime>();
+
+            alts.Add(new AltitudeAtTime(2, 0, now));
+            alts.Add(new AltitudeAtTime(1, 0, now.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(0, 0, now.AddMinutes(2)));
+            alts.Add(new AltitudeAtTime(-1, 0, now.AddMinutes(3)));
+            alts.Add(new AltitudeAtTime(-2, 0, now.AddMinutes(4)));
+            Altitudes altitudes = new Altitudes(alts);
+
+            Altitudes sut = altitudes.FindSpan(-0.5, true);
+            sut.AltitudeList.Count.Should().Be(2);
+            sut.AltitudeList[0].Altitude.Should().BeApproximately(0, 0.0001);
+            sut.AltitudeList[1].Altitude.Should().BeApproximately(-1, 0.0001);
+
+            alts.Clear();
+            alts.Add(new AltitudeAtTime(-2, 0, now));
+            alts.Add(new AltitudeAtTime(-1, 0, now.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(0, 0, now.AddMinutes(2)));
+            alts.Add(new AltitudeAtTime(1, 0, now.AddMinutes(3)));
+            alts.Add(new AltitudeAtTime(2, 0, now.AddMinutes(4)));
+            altitudes = new Altitudes(alts);
+
+            sut = altitudes.FindSpan(0.5, false);
+            sut.AltitudeList.Count.Should().Be(2);
+            sut.AltitudeList[0].Altitude.Should().BeApproximately(0, 0.0001);
+            sut.AltitudeList[1].Altitude.Should().BeApproximately(1, 0.0001);
+
+            alts.Clear();
+            alts.Add(new AltitudeAtTime(-2, 0, now));
+            alts.Add(new AltitudeAtTime(-3, 0, now.AddMinutes(1)));
+            alts.Add(new AltitudeAtTime(-4, 0, now.AddMinutes(2)));
+            alts.Add(new AltitudeAtTime(-3, 0, now.AddMinutes(3)));
+            alts.Add(new AltitudeAtTime(-2, 0, now.AddMinutes(4)));
+            altitudes = new Altitudes(alts);
+
+            sut = altitudes.FindSpan(-5, true);
+            sut.Should().BeNull();
+            sut = altitudes.FindSpan(-5, false);
+            sut.Should().BeNull();
         }
 
         [Test]

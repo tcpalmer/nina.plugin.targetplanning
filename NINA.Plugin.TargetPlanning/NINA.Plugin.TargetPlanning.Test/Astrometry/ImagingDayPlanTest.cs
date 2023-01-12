@@ -27,6 +27,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             plan.MoonSeparation.Should().BeApproximately(10, 0.001);
 
             plan.NotVisible().Should().BeFalse();
+            plan.NoTwilight().Should().BeFalse();
             plan.NotAboveMinimumImagingTime().Should().BeFalse();
 
             plan.StartDay.Should().Be(start.Date);

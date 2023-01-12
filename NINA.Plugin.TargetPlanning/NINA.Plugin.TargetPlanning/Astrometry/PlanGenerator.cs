@@ -1,5 +1,4 @@
 ﻿using NINA.Astrometry;
-using NINA.Astrometry.RiseAndSet;
 using NINA.Core.Utility;
 using System;
 using System.Collections.Generic;
@@ -24,24 +23,43 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             DeepSkyObject target = PlanParameters.Target;
             ObserverInfo location = PlanParameters.ObserverInfo;
 
-            List<RiseAndSetEvent> twilightTimes = getTwiLightTimesList(PlanParameters.StartDate, PlanParameters.PlanDays, PlanParameters.ObserverInfo, PlanParameters.TwilightInclude, token);
+            List<NighttimeCircumstances> nighttimeCircumstancesList = GetNighttimeCircumstances(PlanParameters.StartDate, PlanParameters.PlanDays, PlanParameters.ObserverInfo, PlanParameters.TwilightInclude, token);
 
             using (MyStopWatch.Measure("planGenerate")) {
-                for (int i = 0; i < twilightTimes.Count - 1; i++) {
+                for (int i = 0; i < nighttimeCircumstancesList.Count - 1; i++) {
 
                     if (token.IsCancellationRequested) {
                         throw new OperationCanceledException();
                     }
 
-                    RiseAndSetEvent day1 = twilightTimes[i];
-                    RiseAndSetEvent day2 = twilightTimes[i + 1];
-
                     // Get the presumptive start and end times for this 'imaging day'
-                    DateTime startTime = (DateTime)day1.Set;
-                    DateTime endTime = (DateTime)day2.Rise;
+                    Tuple<DateTime, DateTime> twilightSpan = nighttimeCircumstancesList[i].GetTwilightSpan(PlanParameters.TwilightInclude);
+                    ImagingDayPlan plan;
+                    DateTime midPointTime;
+                    double moonIllumination;
+                    double moonSeparation;
+                    double moonAvoidanceSeparation = double.MinValue;
+
+                    // If the desired twilight span doesn't apply on this day (e.g. very high latitudes near summer solstice),
+                    // then set time limits to sun set/rise and bail out.
+                    if (twilightSpan == null) {
+                        Tuple<DateTime, DateTime> daylightSpan = nighttimeCircumstancesList[i].GetTwilightSpan(NighttimeCircumstances.TWILIGHT_INCLUDE_CIVIL);
+                        midPointTime = Utils.GetMidpointTime(daylightSpan.Item1, daylightSpan.Item2);
+                        moonIllumination = AstrometryUtils.GetMoonIllumination(midPointTime);
+                        moonSeparation = AstrometryUtils.GetMoonSeparationAngle(location, midPointTime, target.Coordinates);
+
+                        plan = new ImagingDayPlan(daylightSpan.Item1, daylightSpan.Item2, DateTime.MinValue, ImagingLimit.NoTwilight, ImagingLimit.NoTwilight,
+                            moonIllumination, moonSeparation, moonAvoidanceSeparation);
+                        imagingDayPlanCache.Put(plan, daylightSpan.Item1, daylightSpan.Item2, PlanParameters);
+                        imagingDayList.Add(plan);
+                        continue;
+                    }
+
+                    DateTime startTime = twilightSpan.Item1;
+                    DateTime endTime = twilightSpan.Item2;
 
                     // Check the cache
-                    ImagingDayPlan plan = imagingDayPlanCache.Get(startTime, endTime, PlanParameters);
+                    plan = imagingDayPlanCache.Get(startTime, endTime, PlanParameters);
                     if (plan != null) {
                         imagingDayList.Add(plan);
                         continue;
@@ -52,12 +70,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                                                                                               startTime, endTime,
                                                                                               PlanParameters.HorizonDefinition);
                     int status = circumstances.Analyze();
-
                     ImagingCriteriaAnalyzer analyzer;
-                    DateTime midPointTime;
-                    double moonIllumination;
-                    double moonSeparation;
-                    double moonAvoidanceSeparation = double.MinValue;
 
                     // Check if the target is visible at all
                     if (status != TargetImagingCircumstances.STATUS_POTENTIALLY_VISIBLE) {
@@ -164,20 +177,17 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
         }
 
-        public List<RiseAndSetEvent> getTwiLightTimesList(DateTime StartDate, int PlanDays, ObserverInfo location, int twilightInclude, CancellationToken token) {
+        private List<NighttimeCircumstances> GetNighttimeCircumstances(DateTime startDate, int planDays, ObserverInfo observerInfo, int twilightInclude, CancellationToken token) {
+            List<NighttimeCircumstances> list = new List<NighttimeCircumstances>(planDays);
+            DateTime date = startDate;
 
-            List<RiseAndSetEvent> list = new List<RiseAndSetEvent>(PlanDays + 1);
-            DateTime date = StartDate;
-
-            using (MyStopWatch.Measure("getTwiLightTimesList")) {
-
-                for (int i = 0; i <= PlanDays; i++) {
+            using (MyStopWatch.Measure("getNighttimeCircumstances")) {
+                for (int i = 0; i < planDays; i++) {
                     if (token.IsCancellationRequested) {
                         throw new OperationCanceledException();
                     }
 
-                    RiseAndSetEvent riseAndSetEvent = TwilightTimeCache.Get(date, location.Latitude, location.Longitude, twilightInclude);
-                    list.Add(riseAndSetEvent);
+                    list.Add(new NighttimeCircumstances(observerInfo, date, twilightInclude));
                     date = date.AddDays(1);
                 }
             }

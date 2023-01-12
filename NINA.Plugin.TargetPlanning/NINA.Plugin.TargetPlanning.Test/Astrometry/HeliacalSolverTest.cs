@@ -30,7 +30,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             ObserverInfo location = TestUtil.TEST_LOCATION_1;
             Coordinates target = TestUtil.SPICA;
             DateTime transitMidnight = AstrometryUtils.GetMidnightTransitDate(location, target, 2022, tokenSource.Token);
-            HeliacalSolver solver = new HeliacalSolver(location, target, transitMidnight, TwilightTimeCache.TWILIGHT_INCLUDE_ASTRO);
+            HeliacalSolver solver = new HeliacalSolver(location, target, transitMidnight, NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO);
 
             DateTime hr = solver.GetHeliacalRisingDate(tokenSource.Token);
             hr.Month.Should().Be(11);
@@ -42,7 +42,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
 
             target = TestUtil.BETELGEUSE;
             transitMidnight = AstrometryUtils.GetMidnightTransitDate(location, target, 2022, tokenSource.Token);
-            solver = new HeliacalSolver(location, target, transitMidnight, TwilightTimeCache.TWILIGHT_INCLUDE_ASTRO);
+            solver = new HeliacalSolver(location, target, transitMidnight, NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO);
 
             hr = solver.GetHeliacalRisingDate(tokenSource.Token);
             hr.Month.Should().Be(7);
@@ -54,7 +54,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
 
             target = TestUtil.M42;
             transitMidnight = AstrometryUtils.GetMidnightTransitDate(location, target, 2022, tokenSource.Token);
-            solver = new HeliacalSolver(location, target, transitMidnight, TwilightTimeCache.TWILIGHT_INCLUDE_ASTRO);
+            solver = new HeliacalSolver(location, target, transitMidnight, NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO);
 
             hr = solver.GetHeliacalRisingDate(tokenSource.Token);
             hr.Month.Should().Be(7);
@@ -83,7 +83,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             Coordinates target = new Coordinates(0, dec, Epoch.J2000, Coordinates.RAType.Degrees);
 
             DateTime transitMidnight = AstrometryUtils.GetMidnightTransitDate(location, target, 2022, tokenSource.Token);
-            HeliacalSolver solver = new HeliacalSolver(location, target, transitMidnight, TwilightTimeCache.TWILIGHT_INCLUDE_ASTRO);
+            HeliacalSolver solver = new HeliacalSolver(location, target, transitMidnight, NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO);
             solver.GetMappedConstant().Should().Be(expected);
         }
 

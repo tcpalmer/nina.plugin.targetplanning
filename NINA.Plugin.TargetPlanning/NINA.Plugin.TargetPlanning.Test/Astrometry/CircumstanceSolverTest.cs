@@ -67,7 +67,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
         }
 
         [Test]
-        public void TestFindTransit() {
+        public void TestFindTransit1() {
 
             // Note that you can't test transit with the test refiner since it can't refine a wrapped interval properly
 
@@ -81,6 +81,27 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             DateTime at = aat.AtTime;
             DateTime actual = new DateTime(at.Year, at.Month, at.Day, at.Hour, at.Minute, 0);
             DateTime expected = new DateTime(2022, 10, 12, 5, 47, 0);
+            actual.Should().Be(expected);
+
+            var ex = Assert.Throws<ArgumentException>(() => new CircumstanceSolver(new TestAltitudeRefiner(), 1).FindTransit(null));
+            ex.Message.Should().Be("altitudes cannot be null");
+        }
+
+        [Test]
+        public void TestFindTransit2() {
+
+            // Note that you can't test transit with the test refiner since it can't refine a wrapped interval properly
+
+            DSORefiner refiner = new DSORefiner(TestUtil.TEST_LOCATION_4, TestUtil.IC1805);
+            DateTime day = new DateTime(2023, 5, 1).Date;
+
+            Altitudes generated = refiner.GetHourlyAltitudesForDay(day);
+            AltitudeAtTime aat = new CircumstanceSolver(refiner, 1).FindTransit(generated);
+            aat.Altitude.Should().BeApproximately(64.27, 0.001);
+
+            DateTime at = aat.AtTime;
+            DateTime actual = new DateTime(at.Year, at.Month, at.Day, at.Hour, at.Minute, 0);
+            DateTime expected = new DateTime(2023, 5, 1, 13, 11, 0);
             actual.Should().Be(expected);
 
             var ex = Assert.Throws<ArgumentException>(() => new CircumstanceSolver(new TestAltitudeRefiner(), 1).FindTransit(null));
