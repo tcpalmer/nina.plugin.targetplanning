@@ -10,7 +10,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
 
     public class TestUtil {
 
-        public static readonly ObserverInfo TEST_LOCATION_1, TEST_LOCATION_2, TEST_LOCATION_3;
+        public static readonly ObserverInfo TEST_LOCATION_1, TEST_LOCATION_2, TEST_LOCATION_3, TEST_LOCATION_4, TEST_LOCATION_5, TEST_LOCATION_6;
 
         public static readonly Coordinates BETELGEUSE = new Coordinates(AstroUtil.HMSToDegrees("5:55:11"), AstroUtil.DMSToDegrees("7:24:30"), Epoch.J2000, Coordinates.RAType.Degrees);
 
@@ -45,6 +45,26 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             TEST_LOCATION_3.Latitude = 67;
             TEST_LOCATION_3.Longitude = -80;
             TEST_LOCATION_3.Elevation = 165;
+
+            // Northern hemisphere, Pittsboro
+            TEST_LOCATION_4 = new ObserverInfo();
+            TEST_LOCATION_4.Latitude = 35.72027778;
+            TEST_LOCATION_4.Longitude = -79.17638889;
+            TEST_LOCATION_4.Elevation = 0;
+
+            // Northern hemisphere, high latitude (Waskaganish, Que, ET)
+            // 
+            TEST_LOCATION_5 = new ObserverInfo();
+            TEST_LOCATION_5.Latitude = 51.48;
+            TEST_LOCATION_5.Longitude = -78.75;
+            TEST_LOCATION_5.Elevation = 0;
+
+            // Northern hemisphere, high latitude (Sanikiluaq, Nunavut, ET)
+            // https://www.timeanddate.com/sun/canada/sanikiluaq
+            TEST_LOCATION_6 = new ObserverInfo();
+            TEST_LOCATION_6.Latitude = 56.54277778;
+            TEST_LOCATION_6.Longitude = -79.225;
+            TEST_LOCATION_6.Elevation = 0;
         }
 
         public static CustomHorizon GetTestHorizon(int num) {
@@ -114,9 +134,12 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             return new HorizonDefinition(minimumAltitude);
         }
 
-        public static void AssertTime(DateTime expected, DateTime actual, int hours, int minutes, int seconds) {
+        public static void AssertTime(DateTime expected, DateTime? actual, int hours, int minutes, int seconds) {
+            actual.Should().NotBeNull();
+
             DateTime edt = expected.Date.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
-            DateTime adt = new DateTime(actual.Year, actual.Month, actual.Day, actual.Hour, actual.Minute, actual.Second);
+            DateTime adt = new DateTime(((DateTime)actual).Year, ((DateTime)actual).Month, ((DateTime)actual).Day,
+                ((DateTime)actual).Hour, ((DateTime)actual).Minute, ((DateTime)actual).Second);
 
             bool cond = (edt == adt);
             if (!cond) {

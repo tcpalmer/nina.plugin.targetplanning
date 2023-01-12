@@ -30,7 +30,7 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
             TargetImagingCircumstances tic = new TargetImagingCircumstances(TestUtil.TEST_LOCATION_1, TestUtil.BETELGEUSE, start, end, TestUtil.getHD(20));
             tic.Analyze();
 
-            TestUtil.AssertTime(start, tic.RiseAboveMinimumTime, 19, 18, 11);
+            TestUtil.AssertTime(start, tic.RiseAboveMinimumTime, 19, 18, 12);
             TestUtil.AssertTime(end, tic.TransitTime, 0, 0, 21);
             TestUtil.AssertTime(end, tic.SetBelowMinimumTime, 4, 42, 29);
         }

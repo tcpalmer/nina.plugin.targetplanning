@@ -69,13 +69,13 @@ namespace TargetPlanning.NINAPlugin.HTMLOutput {
 
         private static string GetTwilightInclude(int twilightInclude) {
             switch (twilightInclude) {
-                case TwilightTimeCache.TWILIGHT_INCLUDE_NONE:
+                case NighttimeCircumstances.TWILIGHT_INCLUDE_NONE:
                     return "None";
-                case TwilightTimeCache.TWILIGHT_INCLUDE_ASTRO:
+                case NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO:
                     return "Astronomical";
-                case TwilightTimeCache.TWILIGHT_INCLUDE_NAUTICAL:
+                case NighttimeCircumstances.TWILIGHT_INCLUDE_NAUTICAL:
                     return "Nautical";
-                case TwilightTimeCache.TWILIGHT_INCLUDE_CIVIL:
+                case NighttimeCircumstances.TWILIGHT_INCLUDE_CIVIL:
                     return "Civil";
                 default: return "?";
             }
@@ -133,6 +133,10 @@ namespace TargetPlanning.NINAPlugin.HTMLOutput {
 
             if (limit.Equals(ImagingLimit.NotVisible)) {
                 return "not visible";
+            }
+
+            if (limit.Equals(ImagingLimit.NoTwilight)) {
+                return "darkness";
             }
 
             if (limit.Equals(ImagingLimit.MinimumTime)) {

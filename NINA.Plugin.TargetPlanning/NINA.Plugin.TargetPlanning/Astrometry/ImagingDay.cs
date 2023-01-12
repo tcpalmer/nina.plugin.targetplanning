@@ -1,5 +1,4 @@
 ﻿using NINA.Astrometry;
-using NINA.Core.Model;
 using System;
 using System.Collections.Generic;
 using TargetPlanning.NINAPlugin.Astrometry;
@@ -91,6 +90,8 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         private Altitudes GetInitialSamplePositions() {
+            return GetSamplePositions(StartDate, EndDate);
+            /*
             List<AltitudeAtTime> alts = new List<AltitudeAtTime>(2);
 
             HorizontalCoordinate hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, StartDate);
@@ -102,17 +103,41 @@ namespace TargetPlanning.NINAPlugin {
             // Sample every 5 minutes
             int numPoints = (int)(EndDate.Subtract(StartDate).TotalMinutes / 5);
             return refiner.Refine(new Altitudes(alts), numPoints);
+            */
         }
 
         private Altitudes GetInitialTransitSpan() {
-            List<AltitudeAtTime> alts = new List<AltitudeAtTime>(3);
-            int size = SamplePositions.AltitudeList.Count;
+            DateTime noon = StartDate.Date.AddHours(12);
+            return GetSamplePositions(noon, noon.AddDays(1));
+            /*
+            DateTime noon = StartDate.Date.AddHours(12);
+            DateTime next = noon.AddDays(1);
+            List<AltitudeAtTime> alts = new List<AltitudeAtTime>(2);
 
-            alts.Add(SamplePositions.AltitudeList[0]);
-            alts.Add(SamplePositions.AltitudeList[size / 2]);
-            alts.Add(SamplePositions.AltitudeList[size - 1]);
+            HorizontalCoordinate hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, noon);
+            alts.Add(new AltitudeAtTime(hz.Altitude, hz.Azimuth, noon));
 
-            return new Altitudes(alts);
+            hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, next);
+            alts.Add(new AltitudeAtTime(hz.Altitude, hz.Azimuth, next));
+
+            // Sample every 5 minutes
+            int numPoints = (int)(next.Subtract(noon).TotalMinutes / 5);
+            return refiner.Refine(new Altitudes(alts), numPoints);
+            */
+        }
+
+        private Altitudes GetSamplePositions(DateTime start, DateTime end) {
+            List<AltitudeAtTime> alts = new List<AltitudeAtTime>(2);
+
+            HorizontalCoordinate hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, start);
+            alts.Add(new AltitudeAtTime(hz.Altitude, hz.Azimuth, start));
+
+            hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, end);
+            alts.Add(new AltitudeAtTime(hz.Altitude, hz.Azimuth, end));
+
+            // Sample every 10 minutes
+            int numPoints = (int)(end.Subtract(start).TotalMinutes / 10);
+            return refiner.Refine(new Altitudes(alts), numPoints);
         }
     }
 

@@ -107,10 +107,10 @@ namespace TargetPlanning.NINAPlugin {
             }
 
             TwilightIncludeChoices = new AsyncObservableCollection<KeyValuePair<int, string>>();
-            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(TwilightTimeCache.TWILIGHT_INCLUDE_NONE, "None"));
-            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(TwilightTimeCache.TWILIGHT_INCLUDE_ASTRO, "Astronomical"));
-            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(TwilightTimeCache.TWILIGHT_INCLUDE_NAUTICAL, "Nautical"));
-            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(TwilightTimeCache.TWILIGHT_INCLUDE_CIVIL, "Civil"));
+            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(NighttimeCircumstances.TWILIGHT_INCLUDE_NONE, "None"));
+            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO, "Astronomical"));
+            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(NighttimeCircumstances.TWILIGHT_INCLUDE_NAUTICAL, "Nautical"));
+            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(NighttimeCircumstances.TWILIGHT_INCLUDE_CIVIL, "Civil"));
         }
 
         public override Task Teardown() {
@@ -173,6 +173,7 @@ namespace TargetPlanning.NINAPlugin {
         public DateTime StartDate {
             get => pluginSettings.GetValueDateTime(nameof(StartDate), DateTime.Now.Date);
             set {
+                value = DateTime.SpecifyKind(value, DateTimeKind.Local);
                 pluginSettings.SetValueDateTime(nameof(StartDate), value);
                 RaisePropertyChanged();
             }
@@ -272,7 +273,7 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         public int TwilightInclude {
-            get => pluginSettings.GetValueInt32(nameof(TwilightInclude), TwilightTimeCache.TWILIGHT_INCLUDE_ASTRO);
+            get => pluginSettings.GetValueInt32(nameof(TwilightInclude), NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO);
             set {
                 pluginSettings.SetValueInt32(nameof(TwilightInclude), value);
                 RaisePropertyChanged();
@@ -549,10 +550,15 @@ namespace TargetPlanning.NINAPlugin {
 
                 try {
                     IList<ImagingDayPlan> results = new OptimalImagingSeason().GetOptimalSeason(planParams, _imagingSeasonTokenSource.Token);
-                    ImagingSeasonPlotModel = new ImagingSeasonPlotModel(profileService.ActiveProfile, planParams, results);
-                    new HTMLReport(planParams).CreateImagingSeasonHTMLReport(results, ImagingSeasonPlotModel.GetPlotModel());
-                    EmptyReport = false;
-                    ImagingSeasonEnabled = true;
+                    if (results != null) {
+                        ImagingSeasonPlotModel = new ImagingSeasonPlotModel(profileService.ActiveProfile, planParams, results);
+                        new HTMLReport(planParams).CreateImagingSeasonHTMLReport(results, ImagingSeasonPlotModel.GetPlotModel());
+                        EmptyReport = false;
+                        ImagingSeasonEnabled = true;
+                    }
+                    else {
+                        Logger.Warning("no results for Imaging Season - is the target even visible at this latitude?");
+                    }
                 }
                 catch (OperationCanceledException) {
                     ImagingSeasonPlotModel = null;

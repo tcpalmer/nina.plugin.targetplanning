@@ -1,5 +1,4 @@
 ﻿using NINA.Astrometry;
-using NINA.Astrometry.RiseAndSet;
 using NINA.Core.Utility;
 using System;
 using System.Collections.Generic;
@@ -48,7 +47,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             DateTime startDate = GetHRInitialGuess();
 
-            DateTime rise = GetTwilightTimes(startDate, twilightInclude).Item1;
+            DateTime rise = GetTwilightTimes(startDate, twilightInclude).Item2;
             double altitude = AstrometryUtils.GetHorizontalCoordinates(location, target, rise).Altitude;
             int dayDelta = altitude < TARGET_ALTITUDE ? 1 : -1;
 
@@ -59,7 +58,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                     throw new OperationCanceledException();
                 }
 
-                rise = GetTwilightTimes(dateTime, twilightInclude).Item1;
+                rise = GetTwilightTimes(dateTime, twilightInclude).Item2;
                 altitude = AstrometryUtils.GetHorizontalCoordinates(location, target, rise).Altitude;
 
                 if (dayDelta > 0 && altitude > TARGET_ALTITUDE) {
@@ -81,7 +80,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             DateTime startDate = GetHSInitialGuess();
 
-            DateTime set = GetTwilightTimes(startDate, twilightInclude).Item2;
+            DateTime set = GetTwilightTimes(startDate, twilightInclude).Item1;
             double altitude = AstrometryUtils.GetHorizontalCoordinates(location, target, set).Altitude;
             int dayDelta = altitude > TARGET_ALTITUDE ? 1 : -1;
 
@@ -92,7 +91,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                     throw new OperationCanceledException();
                 }
 
-                set = GetTwilightTimes(dateTime, twilightInclude).Item2;
+                set = GetTwilightTimes(dateTime, twilightInclude).Item1;
                 altitude = AstrometryUtils.GetHorizontalCoordinates(location, target, set).Altitude;
 
                 if (dayDelta < 0 && altitude > TARGET_ALTITUDE) {
@@ -111,12 +110,8 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         }
 
         private Tuple<DateTime, DateTime> GetTwilightTimes(DateTime dateTime, int twilightInclude) {
-            RiseAndSetEvent riseAndSetEvent = TwilightTimeCache.Get(dateTime, location.Latitude, location.Longitude, twilightInclude);
-            if (riseAndSetEvent.Rise == null || riseAndSetEvent.Set == null) {
-                throw new Exception($"no rise or set time for location ({location}) on date {dateTime}");
-            }
-
-            return Tuple.Create((DateTime)riseAndSetEvent.Rise, (DateTime)riseAndSetEvent.Set);
+            NighttimeCircumstances nighttimeCircumstances = new NighttimeCircumstances(location, dateTime, twilightInclude);
+            return nighttimeCircumstances.GetTwilightSpan(twilightInclude);
         }
 
         /*

@@ -63,11 +63,15 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         }
 
         public long GetImagingMinutes() {
-            return (long)(NotVisible() ? 0 : EndImagingTime.Subtract(StartImagingTime).TotalMinutes);
+            return (long)(NotVisible() || NoTwilight() ? 0 : EndImagingTime.Subtract(StartImagingTime).TotalMinutes);
         }
 
         public bool NotVisible() {
             return StartLimitingFactor.Equals(ImagingLimit.NotVisible) && EndLimitingFactor.Equals(ImagingLimit.NotVisible);
+        }
+
+        public bool NoTwilight() {
+            return StartLimitingFactor.Equals(ImagingLimit.NoTwilight) && EndLimitingFactor.Equals(ImagingLimit.NoTwilight);
         }
 
         public bool NotAboveMinimumImagingTime() {
@@ -105,6 +109,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         public string Name { get; private set; }
 
         public static ImagingLimit NotVisible { get { return new ImagingLimit(true, "not visible"); } }
+        public static ImagingLimit NoTwilight { get { return new ImagingLimit(true, "darkness"); } }
         public static ImagingLimit MinimumTime { get { return new ImagingLimit(true, "not enough time"); } }
         public static ImagingLimit MoonIllumination { get { return new ImagingLimit(true, "moon illum"); } }
         public static ImagingLimit MoonSeparation { get { return new ImagingLimit(true, "moon angle"); } }

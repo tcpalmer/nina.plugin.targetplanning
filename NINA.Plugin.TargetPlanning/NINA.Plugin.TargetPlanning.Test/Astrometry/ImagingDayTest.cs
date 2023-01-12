@@ -19,7 +19,7 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
 
             Altitudes samplePositions = imagingDay.SamplePositions;
             samplePositions.Should().NotBeNull();
-            samplePositions.AltitudeList.Count.Should().Be(146);
+            samplePositions.AltitudeList.Count.Should().Be(74);
 
             // Betelgeuse is up in mid Oct - but not above 63
             imagingDay.IsEverAboveMinimumAltitude().Should().BeTrue();
@@ -162,7 +162,7 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
             ImagingDay imagingDay = new ImagingDay(start, end, TestUtil.TEST_LOCATION_2, TestUtil.STAR_SOUTH_CIRCP, hd);
 
             imagingDay.GetRiseAboveMinimumTime().Should().Be(DateTime.MinValue);
-            TestUtil.AssertTime(start, imagingDay.GetTransitTime(), 23, 41, 25);
+            TestUtil.AssertTime(start, imagingDay.GetTransitTime(), 23, 41, 26);
             imagingDay.GetSetBelowMinimumTime().Should().Be(DateTime.MinValue);
         }
 
@@ -200,7 +200,7 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
 
             ImagingDay imagingDay = new ImagingDay(start, end, TestUtil.TEST_LOCATION_1, TestUtil.BETELGEUSE, hd);
 
-            TestUtil.AssertTime(start, imagingDay.GetRiseAboveMinimumTime(), 19, 18, 11);
+            TestUtil.AssertTime(start, imagingDay.GetRiseAboveMinimumTime(), 19, 18, 12);
             TestUtil.AssertTime(end, imagingDay.GetTransitTime(), 0, 0, 21);
             TestUtil.AssertTime(end, imagingDay.GetSetBelowMinimumTime(), 4, 42, 29);
         }
