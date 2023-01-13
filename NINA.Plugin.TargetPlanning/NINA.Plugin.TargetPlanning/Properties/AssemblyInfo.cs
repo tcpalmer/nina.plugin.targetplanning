@@ -31,8 +31,9 @@ There are no sequence instructions or other behaviors associated with this plugi
 
 ## Target Options ##
 Select a target to get started.  Once you do, the Daily Details, Imaging Season, and Annual Chart buttons will activate.
-* Target: select your target.  This behaves identially to the Coordinates Name field in the Framing assistant and supports incremental search.
+* Target: select your target.  This behaves identically to the Coordinates Name field in the Framing wizard and supports incremental search.
 * RA/Dec: view/change target coordinates.  These fields will reflect the selected Target but also support manual entry.
+* Click the button to the right of the target field to send the coordinates to the Framing wizard.  This will work whether they were loaded from the database or manually entered.
 
 ## Daily Details Report ##
 The Daily Details Report displays a table showing available imaging times and details for each day, starting from Start Date.  The report uses the currently selected target/coordinates as well as the settings for the altitude, time, and moon filter options.  Select a row in the table to see more details for that day.  Click 'HTML Report' in the upper right of the report area to open the report in a browser.

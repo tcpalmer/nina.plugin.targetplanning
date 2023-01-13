@@ -91,39 +91,11 @@ namespace TargetPlanning.NINAPlugin {
 
         private Altitudes GetInitialSamplePositions() {
             return GetSamplePositions(StartDate, EndDate);
-            /*
-            List<AltitudeAtTime> alts = new List<AltitudeAtTime>(2);
-
-            HorizontalCoordinate hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, StartDate);
-            alts.Add(new AltitudeAtTime(hz.Altitude, hz.Azimuth, StartDate));
-
-            hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, EndDate);
-            alts.Add(new AltitudeAtTime(hz.Altitude, hz.Azimuth, EndDate));
-
-            // Sample every 5 minutes
-            int numPoints = (int)(EndDate.Subtract(StartDate).TotalMinutes / 5);
-            return refiner.Refine(new Altitudes(alts), numPoints);
-            */
         }
 
         private Altitudes GetInitialTransitSpan() {
             DateTime noon = StartDate.Date.AddHours(12);
             return GetSamplePositions(noon, noon.AddDays(1));
-            /*
-            DateTime noon = StartDate.Date.AddHours(12);
-            DateTime next = noon.AddDays(1);
-            List<AltitudeAtTime> alts = new List<AltitudeAtTime>(2);
-
-            HorizontalCoordinate hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, noon);
-            alts.Add(new AltitudeAtTime(hz.Altitude, hz.Azimuth, noon));
-
-            hz = AstrometryUtils.GetHorizontalCoordinates(Location, Target, next);
-            alts.Add(new AltitudeAtTime(hz.Altitude, hz.Azimuth, next));
-
-            // Sample every 5 minutes
-            int numPoints = (int)(next.Subtract(noon).TotalMinutes / 5);
-            return refiner.Refine(new Altitudes(alts), numPoints);
-            */
         }
 
         private Altitudes GetSamplePositions(DateTime start, DateTime end) {

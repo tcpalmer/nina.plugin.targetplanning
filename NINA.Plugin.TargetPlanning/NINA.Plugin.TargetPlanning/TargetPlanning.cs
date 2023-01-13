@@ -1,4 +1,5 @@
 ﻿using NINA.Astrometry;
+using NINA.Core.Enum;
 using NINA.Core.Locale;
 using NINA.Core.Model;
 using NINA.Core.Utility;
@@ -6,6 +7,7 @@ using NINA.Plugin;
 using NINA.Plugin.Interfaces;
 using NINA.Profile;
 using NINA.Profile.Interfaces;
+using NINA.WPF.Base.Interfaces.Mediator;
 using NINA.WPF.Base.Interfaces.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -36,7 +38,7 @@ namespace TargetPlanning.NINAPlugin {
         private AsyncObservableCollection<KeyValuePair<int, string>> _twilightIncludeChoices;
 
         [ImportingConstructor]
-        public TargetPlanningPlugin(IProfileService profileService, IDeepSkyObjectSearchVM deepSkyObjectSearchVM) {
+        public TargetPlanningPlugin(IProfileService profileService, IDeepSkyObjectSearchVM deepSkyObjectSearchVM, IApplicationMediator applicationMediator, IFramingAssistantVM framingAssistantVM) {
             if (Properties.Settings.Default.UpdateSettings) {
                 Properties.Settings.Default.Upgrade();
                 Properties.Settings.Default.UpdateSettings = false;
@@ -66,6 +68,11 @@ namespace TargetPlanning.NINAPlugin {
             ImagingSeasonCommand = new AsyncCommand<bool>(() => ShowImagingSeason());
             CancelImagingSeasonCommand = new RelayCommand(CancelImagingSeason);
             ImagingSeasonHTMLReportCommand = new RelayCommand(ImagingSeasonHTMLReport);
+
+            SetFramingAssistantCoordinatesCommand = new AsyncCommand<bool>(async () => {
+                applicationMediator.ChangeTab(ApplicationTab.FRAMINGASSISTANT);
+                return await framingAssistantVM.SetCoordinates(FramingAssistantDSO);
+            });
 
             InitializeCriteria();
         }
@@ -304,6 +311,8 @@ namespace TargetPlanning.NINAPlugin {
                 RaisePropertyChanged();
             }
         }
+
+        public ICommand SetFramingAssistantCoordinatesCommand { get; private set; }
 
         public ICommand CancelDailyDetailsCommand { get; private set; }
 
@@ -728,6 +737,16 @@ namespace TargetPlanning.NINAPlugin {
             set {
                 _emptyReport = value;
                 RaisePropertyChanged();
+            }
+        }
+
+        public DeepSkyObject FramingAssistantDSO {
+            get {
+                if (string.IsNullOrEmpty(DSO.Name)) {
+                    string name = $"{DSO.Coordinates.RAString} {DSO.Coordinates.DecString}";
+                    return new DeepSkyObject(name, DSO.Coordinates, null, null);
+                }
+                return DSO;
             }
         }
 
