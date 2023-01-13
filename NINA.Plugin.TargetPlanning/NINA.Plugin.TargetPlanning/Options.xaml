@@ -35,30 +35,55 @@
                 <Border Grid.Column="0">
                     <StackPanel>
                         <UniformGrid
-                            Width="320"
+                            Width="360"
                             Margin="0,6,0,6"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Columns="2">
                             <TextBlock VerticalAlignment="Center" Text="Target" />
-                            <ninactrl:AutoCompleteBox
-                                Margin="5,0,0,0"
-                                VerticalAlignment="Center"
-                                VerticalContentAlignment="Center"
-                                Foreground="{StaticResource PrimaryBrush}"
-                                HintText="{ns:Loc LblObjectNameHint}"
-                                PopupBackground="{StaticResource TertiaryBackgroundBrush}"
-                                SearchResult="{Binding DeepSkyObjectSearchVM.TargetSearchResult.Result}"
-                                SelectedSearchResult="{Binding DeepSkyObjectSearchVM.SelectedTargetSearchResult, Mode=TwoWay}"
-                                ShowPopup="{Binding DeepSkyObjectSearchVM.ShowPopup, Mode=TwoWay}"
-                                Text="{Binding DeepSkyObjectSearchVM.TargetName, UpdateSourceTrigger=PropertyChanged}">
-                                <ninactrl:AutoCompleteBox.Background>
-                                    <SolidColorBrush Opacity="0.05" Color="{Binding Color, Source={StaticResource PrimaryBrush}}" />
-                                </ninactrl:AutoCompleteBox.Background>
-                            </ninactrl:AutoCompleteBox>
+                            <StackPanel Orientation="Horizontal">
+                                <ninactrl:AutoCompleteBox
+                                    Margin="5,0,0,0"
+                                    Width="140"
+                                    VerticalAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    Foreground="{StaticResource PrimaryBrush}"
+                                    HintText="{ns:Loc LblObjectNameHint}"
+                                    PopupBackground="{StaticResource TertiaryBackgroundBrush}"
+                                    SearchResult="{Binding DeepSkyObjectSearchVM.TargetSearchResult.Result}"
+                                    SelectedSearchResult="{Binding DeepSkyObjectSearchVM.SelectedTargetSearchResult, Mode=TwoWay}"
+                                    ShowPopup="{Binding DeepSkyObjectSearchVM.ShowPopup, Mode=TwoWay}"
+                                    Text="{Binding DeepSkyObjectSearchVM.TargetName, UpdateSourceTrigger=PropertyChanged}">
+                                    <ninactrl:AutoCompleteBox.Background>
+                                        <SolidColorBrush Opacity="0.05" Color="{Binding Color, Source={StaticResource PrimaryBrush}}" />
+                                    </ninactrl:AutoCompleteBox.Background>
+                                </ninactrl:AutoCompleteBox>
+                                <Button
+                                    Width="25"
+                                    Height="25"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Right"
+                                    Command="{Binding SetFramingAssistantCoordinatesCommand}"
+                                    IsEnabled="{Binding DSOIsSelected}"
+                                    Style="{StaticResource TertiaryBackgroundButton}">
+                                    <Button.ToolTip>
+                                        <ToolTip ToolTipService.ShowOnDisabled="False">
+                                            <TextBlock Text="Send coordinates to the Framing Wizard" />
+                                        </ToolTip>
+                                    </Button.ToolTip>
+                                    <Grid>
+                                        <Path
+                                            Margin="5"
+                                            Data="{StaticResource FocusAssistantSVG}"
+                                            Fill="{StaticResource ButtonForegroundBrush}"
+                                            Stretch="Uniform" />
+                                    </Grid>
+                                </Button>
+                            </StackPanel>
                         </UniformGrid>
                         <UniformGrid
-                            Width="320"
+                            Width="360"
                             Margin="0,0,0,6"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -107,7 +132,7 @@
                             </StackPanel>
                         </UniformGrid>
                         <UniformGrid
-                            Width="320"
+                            Width="360"
                             Margin="0,0,0,6"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -158,7 +183,6 @@
                                 <TextBlock VerticalAlignment="Center">s</TextBlock>
                             </StackPanel>
                         </UniformGrid>
-
                         <UniformGrid
                             Width="320"
                             Margin="0,15,0,6"
@@ -169,13 +193,13 @@
                                 VerticalAlignment="Center"
                                 Text="Start Date"
                                 ToolTip="Set the start date of the plan" />
-                            <DatePicker Margin="20,0,0,0" SelectedDate="{Binding StartDate}" />
+                            <DatePicker Margin="25,0,0,0" SelectedDate="{Binding StartDate}" />
                             <TextBlock
                                 VerticalAlignment="Center"
                                 Text="Days"
                                 ToolTip="Set the number of days in the plan" />
                             <TextBox
-                                Margin="20,0,0,0"
+                                Margin="25,0,0,0"
                                 VerticalAlignment="Center"
                                 Text="{Binding PlanDays}" />
                         </UniformGrid>

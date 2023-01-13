@@ -1,6 +1,10 @@
 # Target Planning
 
-## 1.2.0.0 - 2022-12-XX
+## 1.2.1.0 - 2023-01-13
+* Fixed problem with twilight time calculations for high latitudes
+* Added 'Send coordinates to Framing Wizard' button
+
+## 1.2.0.0 - 2022-12-13
 * Added HTML Report option for Daily Details and Imaging Season
 * You can now select which level of twilight to include: none, astronomical, nautical, or civil
 
