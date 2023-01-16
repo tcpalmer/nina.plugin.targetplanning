@@ -31,6 +31,7 @@ namespace TargetPlanning.NINAPlugin {
         private IProfileService profileService;
 
         private AsyncObservableCollection<KeyValuePair<double, string>> _minimumAltitudeChoices;
+        private AsyncObservableCollection<KeyValuePair<double, string>> _maximumMoonAltitudeChoices;
         private AsyncObservableCollection<KeyValuePair<int, string>> _minimumTimeChoices;
         private AsyncObservableCollection<KeyValuePair<double, string>> _moonSeparationChoices;
         private AsyncObservableCollection<KeyValuePair<double, string>> _maximumMoonIlluminationChoices;
@@ -84,6 +85,11 @@ namespace TargetPlanning.NINAPlugin {
             MinimumAltitudeChoices = new AsyncObservableCollection<KeyValuePair<double, string>>();
             for (int i = 0; i <= 60; i += 5) {
                 MinimumAltitudeChoices.Add(new KeyValuePair<double, string>(i, i + "°"));
+            }
+
+            MaximumMoonAltitudeChoices = new AsyncObservableCollection<KeyValuePair<double, string>>();
+            for (int i = 0; i <= 60; i += 5) {
+                MaximumMoonAltitudeChoices.Add(new KeyValuePair<double, string>(i, i + "°"));
             }
 
             // Add 'Above Horizon' to altitude choices to trigger use of custom horizon (if available)
@@ -208,6 +214,15 @@ namespace TargetPlanning.NINAPlugin {
             }
             set {
                 _minimumAltitudeChoices = value;
+            }
+        }
+
+        public AsyncObservableCollection<KeyValuePair<double, string>> MaximumMoonAltitudeChoices {
+            get {
+                return _maximumMoonAltitudeChoices;
+            }
+            set {
+                _maximumMoonAltitudeChoices = value;
             }
         }
 

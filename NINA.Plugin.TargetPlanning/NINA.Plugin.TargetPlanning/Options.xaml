@@ -225,6 +225,16 @@
                                 SelectedValuePath="Key" />
                             <TextBlock
                                 VerticalAlignment="Center"
+                                Text="Maximum Moon Altitude"
+                                ToolTip="Set the maximum acceptable moon altitude" />
+                            <ComboBox
+                                Margin="35,0,0,0"
+                                DisplayMemberPath="Value"
+                                ItemsSource="{Binding MaximumMoonAltitudeChoices}"
+                                SelectedValue="{Binding MaximumMoonAltitude}"
+                                SelectedValuePath="Key" />
+                            <TextBlock
+                                VerticalAlignment="Center"
                                 Text="Minimum Imaging Time"
                                 ToolTip="Set the minimum acceptable imaging time" />
                             <ComboBox
