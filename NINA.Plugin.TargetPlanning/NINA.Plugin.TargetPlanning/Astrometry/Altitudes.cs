@@ -105,7 +105,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             // If descending, start from beginning
             if (descending) {
-                for (int i = 0; i < alts.Count; i++) {
+                for (int i = 1; i < alts.Count; i++) {
                     if (alts[i].Altitude < targetAltitude) {
                         List<AltitudeAtTime> span = new List<AltitudeAtTime>(2) {
                             alts[i-1],
