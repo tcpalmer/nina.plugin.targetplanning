@@ -84,16 +84,15 @@ The parameters used on the ACP site (distance = 120, width = 14) are very conser
 * If you click 'HTML Report' to open in a browser, you can then save, print, convert to PDF, etc.  Use the available print options to customize the output.
 
 ## Acknowledgements ##
-* James Lamb for his planning tool ([YouTube](https://www.youtube.com/watch?v=kM8Jy1Kwhr8&t=1s))
+* James Lamb for his planning tool ([YouTube](https://www.youtube.com/watch?v=kM8Jy1Kwhr8&t=1s)).
 * PatriotAstro for pointing me to [airmass.org](https://airmass.org/) and for reviewing an early release
 * ACP and BAIT teams for the [Moon avoidance](http://bobdenny.com/ar/RefDocs/HelpFiles/ACPScheduler81Help/Constraints.htm) formula
 
 # Getting Help #
 * Ask for help (tag @tcpalmer) in the #plugin-discussions channel on the NINA project [Discord server](https://discord.com/invite/rWRbVbw).
-* [Plugin source code](https://github.com/tcpalmer/nina.plugin.targetplanning)
-* [Change log](https://github.com/tcpalmer/nina.plugin.targetplanning/blob/main/CHANGELOG.md)
+* [Plugin source code](https://github.com/tcpalmer/nina.plugin.targetplanning).
+* [Change log](https://github.com/tcpalmer/nina.plugin.targetplanning/blob/main/CHANGELOG.md).
 
-The Target Planning plugin is provided 'as is' under the terms of the [Mozilla Public License 2.0](https://github.com/tcpalmer/nina.plugin.targetplanning/blob/main/LICENSE.txt)
-")]
+The Target Planning plugin is provided 'as is' under the terms of the [Mozilla Public License 2.0](https://github.com/tcpalmer/nina.plugin.targetplanning/blob/main/LICENSE.txt)")]
 
 [assembly: ComVisible(false)]
