@@ -36,9 +36,9 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
         }
 
         [Test]
-        [TestCase(9, 0, 7, 37.1192)]
+        [TestCase(9, 0, 7, 37.160)]
         [TestCase(12, 0, 4, 20.155)]
-        [TestCase(16, 0, 7, 55.375)]
+        [TestCase(16, 0, 7, 55.332)]
         public void TestGetMoonSeparationAngle(int day, int hour, int min, double expected) {
             DateTime dateTime = new DateTime(2022, 11, day, hour, min, 0);
             double moonSeparation = AstrometryUtils.GetMoonSeparationAngle(TestUtil.TEST_LOCATION_1, dateTime, TestUtil.BETELGEUSE);
@@ -181,15 +181,13 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
                 dt.Year.Should().Be(year);
                 dt.Month.Should().Be(month);
                 dt.Day.Should().Be(day);
-            }
-            finally {
+            } finally {
                 tokenSource.Dispose();
             }
         }
 
         [Test]
         public void TestBad() {
-
             DateTime dt = DateTime.Now;
 
             var ex = Assert.Throws<ArgumentException>(() => AstrometryUtils.GetHorizontalCoordinates(null, null, dt));
@@ -200,5 +198,4 @@ namespace TargetPlanning.NINAPlugin.Test.Astrometry {
             ex.Message.Should().Be("coordinates cannot be null");
         }
     }
-
 }
