@@ -7,7 +7,6 @@ using TargetPlanning.NINAPlugin.Astrometry;
 namespace TargetPlanning.NINAPlugin {
 
     public class ImagingDayPlanViewAdapter {
-
         public string StatusMessage { get => plan.GetStatusMessage(); }
         public bool Status { get => GetStatus(); }
 
@@ -49,7 +48,7 @@ namespace TargetPlanning.NINAPlugin {
             this.context = context;
 
             DeepSkyObject dso = context.PlanParameters.Target;
-            this.target = new DeepSkyObject(dso.Id, dso.Coordinates, null, GetCustomHorizon());
+            this.target = new DeepSkyObject(dso.Id, dso.Coordinates, GetCustomHorizon());
 
             primaryColor = context.Profile.ActiveProfile.ColorSchemaSettings.ColorSchema.PrimaryColor.ToString();
             errorColor = context.Profile.ActiveProfile.ColorSchemaSettings.ColorSchema.NotificationWarningColor.ToString();
@@ -82,8 +81,7 @@ namespace TargetPlanning.NINAPlugin {
 
             if (context.PlanParameters.MoonAvoidanceEnabled) {
                 return (plan.MoonSeparation < plan.MoonAvoidanceSeparation) ? errorColor : primaryColor;
-            }
-            else {
+            } else {
                 return (plan.MoonSeparation < context.PlanParameters.MinimumMoonSeparation) ? errorColor : primaryColor;
             }
         }
@@ -135,5 +133,4 @@ namespace TargetPlanning.NINAPlugin {
             }
         }
     }
-
 }

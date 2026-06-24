@@ -81,7 +81,6 @@ namespace TargetPlanning.NINAPlugin {
         public static readonly double HORIZON_VALUE = double.MinValue;
 
         private void InitializeCriteria() {
-
             MinimumAltitudeChoices = new AsyncObservableCollection<KeyValuePair<double, string>>();
             for (int i = 0; i <= 60; i += 5) {
                 MinimumAltitudeChoices.Add(new KeyValuePair<double, string>(i, i + "°"));
@@ -170,8 +169,7 @@ namespace TargetPlanning.NINAPlugin {
             if (e.PropertyName == nameof(DeepSkyObjectSearchVM.Coordinates) && DeepSkyObjectSearchVM.Coordinates != null) {
                 DSO = new DeepSkyObject(DeepSkyObjectSearchVM.TargetName, DeepSkyObjectSearchVM.Coordinates, profileService.ActiveProfile.ApplicationSettings.SkyAtlasImageRepository, profileService.ActiveProfile.AstrometrySettings.Horizon);
                 RaiseCoordinatesChanged(false);
-            }
-            else if (e.PropertyName == nameof(DeepSkyObjectSearchVM.TargetName) && DSO != null) {
+            } else if (e.PropertyName == nameof(DeepSkyObjectSearchVM.TargetName) && DSO != null) {
                 DSO.Name = DeepSkyObjectSearchVM.TargetName;
             }
         }
@@ -326,6 +324,7 @@ namespace TargetPlanning.NINAPlugin {
         public ICommand DailyDetailsCommand { get; private set; }
 
         private bool _dailyDetailsEnabled = false;
+
         public bool DailyDetailsEnabled {
             get => _dailyDetailsEnabled;
             set {
@@ -342,8 +341,7 @@ namespace TargetPlanning.NINAPlugin {
                 p.StartInfo.UseShellExecute = true;
                 p.StartInfo.FileName = HTMLReport.GetDailyDetailsHTMLReportPath();
                 p.Start();
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 Logger.Error($"DailyDetails HTML report exception: {ex.Message} {ex.StackTrace}");
             }
         }
@@ -356,7 +354,6 @@ namespace TargetPlanning.NINAPlugin {
             _dailyDetailsCommandTokenSource = new CancellationTokenSource();
 
             return await Task.Run(() => {
-
                 PlanParameters planParams = GetCurrentPlanParameters();
 
                 try {
@@ -376,11 +373,9 @@ namespace TargetPlanning.NINAPlugin {
                     AnnualChartEnabled = false;
                     DailyDetailsEnabled = true;
                     ImagingSeasonEnabled = false;
-                }
-                catch (OperationCanceledException) {
+                } catch (OperationCanceledException) {
                     DailyDetailsResults = null;
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     Logger.Error($"daily details exception: {ex.Message} {ex.StackTrace}");
                     DailyDetailsResults = null;
                 }
@@ -413,8 +408,7 @@ namespace TargetPlanning.NINAPlugin {
             if (MinimumAltitude == HORIZON_VALUE) {
                 Logger.Debug($"         Min alt: n/a");
                 Logger.Debug($"  Custom horizon: applies\n");
-            }
-            else {
+            } else {
                 Logger.Debug($"         Min alt: {MinimumAltitude}");
                 Logger.Debug($"  Custom horizon: n/a\n");
             }
@@ -431,6 +425,7 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         private AnnualPlanningChartModel _annualPlanningChartModel;
+
         public AnnualPlanningChartModel AnnualPlanningChartModel {
             get => _annualPlanningChartModel;
             set {
@@ -440,6 +435,7 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         private bool _annualChartEnabled = false;
+
         public bool AnnualChartEnabled {
             get => _annualChartEnabled;
             set {
@@ -473,11 +469,9 @@ namespace TargetPlanning.NINAPlugin {
                     DailyDetailsEnabled = false;
                     AnnualChartEnabled = true;
                     ImagingSeasonEnabled = false;
-                }
-                catch (OperationCanceledException) {
+                } catch (OperationCanceledException) {
                     AnnualPlanningChartModel = null;
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     Logger.Error($"annual chart exception: {ex.Message} {ex.StackTrace}");
                     AnnualPlanningChartModel = null;
                 }
@@ -504,14 +498,14 @@ namespace TargetPlanning.NINAPlugin {
 
                 if (planParams.MoonAvoidanceEnabled) {
                     Logger.Trace($"   avoid sep: {plan.MoonAvoidanceSeparation}\n");
-                }
-                else {
+                } else {
                     Logger.Trace($"   avoid sep: n/a\n");
                 }
             }
         }
 
         private ImagingSeasonPlotModel _imagingSeasonPlotModel;
+
         public ImagingSeasonPlotModel ImagingSeasonPlotModel {
             get => _imagingSeasonPlotModel;
             set {
@@ -521,6 +515,7 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         private bool _imagingSeasonEnabled = false;
+
         public bool ImagingSeasonEnabled {
             get => _imagingSeasonEnabled;
             set {
@@ -547,9 +542,7 @@ namespace TargetPlanning.NINAPlugin {
                 p.StartInfo.UseShellExecute = true;
                 p.StartInfo.FileName = HTMLReport.GetImagingSeasonHTMLReportPath();
                 p.Start();
-
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 Logger.Error($"ImagingSeason HTML report exception: {ex.Message} {ex.StackTrace}");
             }
         }
@@ -572,22 +565,18 @@ namespace TargetPlanning.NINAPlugin {
                         new HTMLReport(planParams).CreateImagingSeasonHTMLReport(results, ImagingSeasonPlotModel.GetPlotModel());
                         EmptyReport = false;
                         ImagingSeasonEnabled = true;
-                    }
-                    else {
+                    } else {
                         Logger.Warning("no results for Imaging Season - is the target even visible at this latitude?");
                     }
-                }
-                catch (OperationCanceledException) {
+                } catch (OperationCanceledException) {
                     ImagingSeasonPlotModel = null;
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     Logger.Error($"imaging season exception: {ex.Message} {ex.StackTrace}");
                     ImagingSeasonPlotModel = null;
                 }
 
                 return true;
             });
-
         }
 
         private ObserverInfo getObserverInfo(IAstrometrySettings astrometrySettings) {
@@ -680,8 +669,7 @@ namespace TargetPlanning.NINAPlugin {
             set {
                 if (NegativeDec) {
                     DSO.Coordinates.Dec = value - DecMinutes / 60.0d - DecSeconds / (60.0d * 60.0d);
-                }
-                else {
+                } else {
                     DSO.Coordinates.Dec = value + DecMinutes / 60.0d + DecSeconds / (60.0d * 60.0d);
                 }
                 RaiseCoordinatesChanged(true);
@@ -701,8 +689,7 @@ namespace TargetPlanning.NINAPlugin {
             set {
                 if (NegativeDec) {
                     DSO.Coordinates.Dec = DSO.Coordinates.Dec + DecMinutes / 60.0d - value / 60.0d;
-                }
-                else {
+                } else {
                     DSO.Coordinates.Dec = DSO.Coordinates.Dec - DecMinutes / 60.0d + value / 60.0d;
                 }
 
@@ -721,8 +708,7 @@ namespace TargetPlanning.NINAPlugin {
             set {
                 if (NegativeDec) {
                     DSO.Coordinates.Dec = DSO.Coordinates.Dec + DecSeconds / (60.0d * 60.0d) - value / (60.0d * 60.0d);
-                }
-                else {
+                } else {
                     DSO.Coordinates.Dec = DSO.Coordinates.Dec - DecSeconds / (60.0d * 60.0d) + value / (60.0d * 60.0d);
                 }
 
@@ -731,6 +717,7 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         private bool _dsoIsSelected = false;
+
         public bool DSOIsSelected {
             get => _dsoIsSelected;
             set {
@@ -740,6 +727,7 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         private bool _emptyReport = true;
+
         public bool EmptyReport {
             get => _emptyReport;
             set {
@@ -752,7 +740,7 @@ namespace TargetPlanning.NINAPlugin {
             get {
                 if (string.IsNullOrEmpty(DSO.Name)) {
                     string name = $"{DSO.Coordinates.RAString} {DSO.Coordinates.DecString}";
-                    return new DeepSkyObject(name, DSO.Coordinates, null, null);
+                    return new DeepSkyObject(name, DSO.Coordinates, null);
                 }
                 return DSO;
             }
@@ -777,5 +765,4 @@ namespace TargetPlanning.NINAPlugin {
             }
         }
     }
-
 }
