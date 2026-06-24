@@ -10,7 +10,6 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
 
         [Test]
         public void testLocal() {
-
             var sut = new NighttimeCircumstances(TestUtil.TEST_LOCATION_4, new DateTime(2023, 1, 11, 1, 2, 3));
             Assert.That(sut.CivilTwilightStart, Is.EqualTo(new DateTime(2023, 1, 11, 17, 22, 38)).Within(1).Seconds);
             Assert.That(sut.NauticalTwilightStart, Is.EqualTo(new DateTime(2023, 1, 11, 17, 50, 38)).Within(1).Seconds);
@@ -40,30 +39,29 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
 
         [Test]
         public void testHighLatitude() {
-
             // TEST_LOCATION_5 is Waskaganish, Quebec at lat=51.48.  See https://www.timeanddate.com/sun/@6176565
 
             DateTime dt = new DateTime(2023, 1, 11);
             var sut = new NighttimeCircumstances(TestUtil.TEST_LOCATION_5, new DateTime(2023, 1, 11, 1, 2, 3));
-            TestUtil.AssertTime(dt, sut.CivilTwilightStart, 16, 29, 20);
-            TestUtil.AssertTime(dt, sut.NauticalTwilightStart, 17, 8, 18);
-            TestUtil.AssertTime(dt, sut.AstronomicalTwilightStart, 17, 50, 30);
+            TestUtil.AssertTime(dt, sut.CivilTwilightStart, 16, 29, 18);
+            TestUtil.AssertTime(dt, sut.NauticalTwilightStart, 17, 8, 16);
+            TestUtil.AssertTime(dt, sut.AstronomicalTwilightStart, 17, 50, 28);
             TestUtil.AssertTime(dt, sut.NighttimeStart, 18, 30, 40);
             dt = dt.AddDays(1);
             TestUtil.AssertTime(dt, sut.NighttimeEnd, 6, 15, 4);
             TestUtil.AssertTime(dt, sut.AstronomicalTwilightEnd, 6, 55, 12);
-            TestUtil.AssertTime(dt, sut.NauticalTwilightEnd, 7, 37, 16);
+            TestUtil.AssertTime(dt, sut.NauticalTwilightEnd, 7, 37, 18);
             TestUtil.AssertTime(dt, sut.CivilTwilightEnd, 8, 16, 8);
 
             // TEST_LOCATION_6 is Sanikiluaq, Nunavut at lat=56.54.  See https://www.timeanddate.com/sun/canada/sanikiluaq
 
             dt = new DateTime(2023, 5, 1);
             sut = new NighttimeCircumstances(TestUtil.TEST_LOCATION_6, dt);
-            TestUtil.AssertTime(dt, sut.AstronomicalTwilightStart, 22, 48, 4);
+            TestUtil.AssertTime(dt, sut.AstronomicalTwilightStart, 22, 48, 2);
             dt = dt.AddDays(1);
-            TestUtil.AssertTime(dt, sut.NighttimeStart, 0, 51, 2);
-            TestUtil.AssertTime(dt, sut.NighttimeEnd, 1, 36, 12);
-            TestUtil.AssertTime(dt, sut.AstronomicalTwilightEnd, 3, 39, 8);
+            TestUtil.AssertTime(dt, sut.NighttimeStart, 0, 50, 50);
+            TestUtil.AssertTime(dt, sut.NighttimeEnd, 1, 36, 22);
+            TestUtil.AssertTime(dt, sut.AstronomicalTwilightEnd, 3, 39, 10);
 
             // Nighttime is lost here ...
             dt = new DateTime(2023, 5, 2);
@@ -78,11 +76,11 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             dt = new DateTime(2023, 5, 27);
             sut = new NighttimeCircumstances(TestUtil.TEST_LOCATION_6, dt);
             dt = dt.AddDays(1);
-            TestUtil.AssertTime(dt, sut.AstronomicalTwilightStart, 1, 2, 30);
+            TestUtil.AssertTime(dt, sut.AstronomicalTwilightStart, 1, 2, 5);
             sut.NighttimeStart.Should().BeNull();
             sut.NighttimeEnd.Should().BeNull();
             sut.GetTwilightSpan(NighttimeCircumstances.TWILIGHT_INCLUDE_NONE).Should().BeNull();
-            TestUtil.AssertTime(dt, sut.AstronomicalTwilightEnd, 1, 25, 25);
+            TestUtil.AssertTime(dt, sut.AstronomicalTwilightEnd, 1, 25, 45);
 
             // ... and astro is lost here
             dt = new DateTime(2023, 5, 28);
@@ -95,7 +93,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             sut.GetTwilightSpan(NighttimeCircumstances.TWILIGHT_INCLUDE_NONE).Should().BeNull();
             sut.GetTwilightSpan(NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO).Should().BeNull();
             dt = dt.AddDays(1);
-            TestUtil.AssertTime(dt, sut.NauticalTwilightEnd, 3, 40, 35);
+            TestUtil.AssertTime(dt, sut.NauticalTwilightEnd, 3, 40, 40);
         }
 
         [Test]

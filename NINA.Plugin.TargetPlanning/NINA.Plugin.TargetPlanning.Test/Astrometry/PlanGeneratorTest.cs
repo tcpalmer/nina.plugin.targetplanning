@@ -28,7 +28,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
         //[Test]
         public void testSkipDayBug() {
             PlanParameters pp = new PlanParameters();
-            pp.Target = new NINA.Astrometry.DeepSkyObject("", TestUtil.M31, null, null);
+            pp.Target = new DeepSkyObject("", TestUtil.M31, null);
             pp.ObserverInfo = TestUtil.TEST_LOCATION_1;
             pp.HorizonDefinition = new HorizonDefinition(5);
             pp.MinimumImagingTime = 0;
@@ -76,7 +76,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
         public void testLowAltitudeBug() {
 
             PlanParameters pp = new PlanParameters();
-            pp.Target = new NINA.Astrometry.DeepSkyObject("", TestUtil.M31, null, null);
+            pp.Target = new DeepSkyObject("", TestUtil.M31, null);
             pp.ObserverInfo = TestUtil.TEST_LOCATION_1;
             pp.HorizonDefinition = new HorizonDefinition(5);
             pp.MinimumImagingTime = 0;

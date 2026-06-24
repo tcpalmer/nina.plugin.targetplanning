@@ -1,4 +1,5 @@
-﻿using NINA.Core.Utility;
+﻿using NINA.Astrometry;
+using NINA.Core.Utility;
 using NUnit.Framework;
 using System;
 using System.Threading;
@@ -29,7 +30,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             pp.StartDate = new DateTime(2022, 1, 1);
             pp.PlanDays = 3;
             pp.ObserverInfo = TestUtil.TEST_LOCATION_1;
-            pp.Target = new NINA.Astrometry.DeepSkyObject("", TestUtil.M31, null, null);
+            pp.Target = new DeepSkyObject("", TestUtil.M31, null);
             pp.HorizonDefinition = new HorizonDefinition(20);
 
             OptimalImagingSeason sut = new OptimalImagingSeason();

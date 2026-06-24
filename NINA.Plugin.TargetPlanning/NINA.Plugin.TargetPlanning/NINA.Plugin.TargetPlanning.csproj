@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
     <OutputType>Library</OutputType>
     <RootNamespace>TargetPlanning.NINAPlugin</RootNamespace>
     <AssemblyName>TargetPlanning.NINAPlugin</AssemblyName>
