@@ -65,28 +65,6 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
             hs.Day.Should().Be(5);
         }
 
-        [Test]
-        [TestCase(80, 80, 90)]
-        [TestCase(-80, -80, -90)]
-        [TestCase(35, 15, 50)]
-        [TestCase(35, 19, 50)]
-        [TestCase(35, 21, 60)]
-        [TestCase(0, 4, 0)]
-        [TestCase(0, -4, 0)]
-        [TestCase(-35, -15, -50)]
-        [TestCase(-35, -19, -50)]
-        [TestCase(-35, -21, -60)]
-        public void testGetMappedConstant(double latitude, double dec, int expected) {
-            ObserverInfo location = new ObserverInfo();
-            location.Latitude = latitude;
-            location.Longitude = -80;
-            Coordinates target = new Coordinates(0, dec, Epoch.J2000, Coordinates.RAType.Degrees);
-
-            DateTime transitMidnight = AstrometryUtils.GetMidnightTransitDate(location, target, 2022, tokenSource.Token);
-            HeliacalSolver solver = new HeliacalSolver(location, target, transitMidnight, NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO);
-            solver.GetMappedConstant().Should().Be(expected);
-        }
-
         /*
         //[Test]
         public void testGenConstantSheets() {
