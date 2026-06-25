@@ -21,7 +21,7 @@
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.421302">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.28" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dirkster.AvalonDock" Version="4.74.1" />
@@ -30,6 +30,6 @@
     <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
   </ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="      if not exist &quot;%25localappdata%25\NINA\Plugins&quot; (&#xD;&#xA;      echo &quot;Creating $(PlatformName) Plugins folder&quot;&#xD;&#xA;      mkdir  &quot;%25localappdata%25\NINA\Plugins&quot;&#xD;&#xA;      )&#xD;&#xA;      if not exist &quot;%25localappdata%25\NINA\Plugins\$(TargetName)&quot; (&#xD;&#xA;      echo &quot;Creating $(PlatformName) Plugins $(TargetName) folder&quot;&#xD;&#xA;      mkdir  &quot;%25localappdata%25\NINA\Plugins\$(TargetName)&quot;&#xD;&#xA;      )&#xD;&#xA;&#xD;&#xA;      echo &quot;Copying $(PlatformName) $(TargetFileName)&quot;&#xD;&#xA;      xcopy &quot;$(TargetPath)&quot; &quot;%25localappdata%25\NINA\Plugins\$(TargetName)&quot; /h/i/c/k/e/r/y&#xD;&#xA;" />
+		<Exec Command="      if not exist &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot; (&#xD;&#xA;      echo &quot;Creating $(PlatformName) Plugins folder&quot;&#xD;&#xA;      mkdir  &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot;&#xD;&#xA;      )&#xD;&#xA;      if not exist &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot; (&#xD;&#xA;      echo &quot;Creating $(PlatformName) Plugins $(TargetName) folder&quot;&#xD;&#xA;      mkdir  &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot;&#xD;&#xA;      )&#xD;&#xA;&#xD;&#xA;      echo &quot;Copying $(PlatformName) $(TargetFileName)&quot;&#xD;&#xA;      xcopy &quot;$(TargetPath)&quot; &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot; /h/i/c/k/e/r/y&#xD;&#xA;" />
 	</Target>
 </Project>
