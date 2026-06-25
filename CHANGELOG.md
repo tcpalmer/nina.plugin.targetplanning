@@ -1,8 +1,9 @@
 # Target Planning
 
-## 3.2.2.0 - 2026-06-XX
-* Updated to latest NINA 3.2.
-* Updated other dependencies.
+## 3.2.2.0 - 2026-06-25
+* Refactored to use the visibility approach and astrometry code from Target Scheduler
+* Updated to latest NINA 3.2
+* Updated other dependencies
 
 ## 3.2.1.0 - 2023-08-02
 * Ported to NINA 3.  Future updates will only apply to the NINA 3 version.
