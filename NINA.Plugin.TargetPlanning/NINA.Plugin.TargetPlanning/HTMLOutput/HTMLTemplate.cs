@@ -69,13 +69,13 @@ namespace TargetPlanning.NINAPlugin.HTMLOutput {
 
         private static string GetTwilightInclude(int twilightInclude) {
             switch (twilightInclude) {
-                case NighttimeCircumstances.TWILIGHT_INCLUDE_NONE:
+                case TwilightInclude.NONE:
                     return "None";
-                case NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO:
+                case TwilightInclude.ASTRO:
                     return "Astronomical";
-                case NighttimeCircumstances.TWILIGHT_INCLUDE_NAUTICAL:
+                case TwilightInclude.NAUTICAL:
                     return "Nautical";
-                case NighttimeCircumstances.TWILIGHT_INCLUDE_CIVIL:
+                case TwilightInclude.CIVIL:
                     return "Civil";
                 default: return "?";
             }

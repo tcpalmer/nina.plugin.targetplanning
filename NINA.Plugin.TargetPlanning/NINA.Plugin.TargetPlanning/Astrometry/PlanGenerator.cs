@@ -1,4 +1,4 @@
-﻿using NINA.Astrometry;
+using NINA.Astrometry;
 using NINA.Core.Utility;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,10 @@ using System.Threading;
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
     public class PlanGenerator {
+
+        // Sampling interval (seconds) for the Target Scheduler sample-based visibility approach.
+        private const int SAMPLE_INTERVAL = 10;
+
         private PlanParameters PlanParameters;
 
         public PlanGenerator(PlanParameters planParameters) {
@@ -22,18 +26,20 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             DeepSkyObject target = PlanParameters.Target;
             ObserverInfo location = PlanParameters.ObserverInfo;
-
-            List<NighttimeCircumstances> nighttimeCircumstancesList = GetNighttimeCircumstances(PlanParameters.StartDate, PlanParameters.PlanDays, PlanParameters.ObserverInfo, PlanParameters.TwilightInclude, token);
+            TwilightLevel twilightLevel = TwilightInclude.ToTwilightLevel(PlanParameters.TwilightInclude);
 
             using (MyStopWatch.Measure("planGenerate")) {
-                for (int i = 0; i < nighttimeCircumstancesList.Count - 1; i++) {
+                for (int i = 0; i < PlanParameters.PlanDays - 1; i++) {
 
                     if (token.IsCancellationRequested) {
                         throw new OperationCanceledException();
                     }
 
+                    DateTime date = PlanParameters.StartDate.AddDays(i);
+                    TwilightCircumstances twilightCircumstances = new TwilightCircumstances(location, date);
+
                     // Get the presumptive start and end times for this 'imaging day'
-                    Tuple<DateTime, DateTime> twilightSpan = nighttimeCircumstancesList[i].GetTwilightSpan(PlanParameters.TwilightInclude);
+                    TimeInterval twilightSpan = twilightCircumstances.GetTwilightSpan(twilightLevel);
                     ImagingDayPlan plan;
                     DateTime midPointTime;
                     double moonIllumination;
@@ -43,20 +49,20 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                     // If the desired twilight span doesn't apply on this day (e.g. very high latitudes near summer solstice),
                     // then set time limits to sun set/rise and bail out.
                     if (twilightSpan == null) {
-                        Tuple<DateTime, DateTime> daylightSpan = nighttimeCircumstancesList[i].GetTwilightSpan(NighttimeCircumstances.TWILIGHT_INCLUDE_CIVIL);
-                        midPointTime = Utils.GetMidpointTime(daylightSpan.Item1, daylightSpan.Item2);
+                        TimeInterval daylightSpan = twilightCircumstances.GetTwilightSpan(TwilightLevel.Civil);
+                        midPointTime = Utils.GetMidpointTime(daylightSpan.StartTime, daylightSpan.EndTime);
                         moonIllumination = AstrometryUtils.GetMoonIllumination(midPointTime);
                         moonSeparation = AstrometryUtils.GetMoonSeparationAngle(location, midPointTime, target.Coordinates);
 
-                        plan = new ImagingDayPlan(daylightSpan.Item1, daylightSpan.Item2, DateTime.MinValue, ImagingLimit.NoTwilight, ImagingLimit.NoTwilight,
+                        plan = new ImagingDayPlan(daylightSpan.StartTime, daylightSpan.EndTime, DateTime.MinValue, ImagingLimit.NoTwilight, ImagingLimit.NoTwilight,
                             moonIllumination, moonSeparation, moonAvoidanceSeparation);
-                        imagingDayPlanCache.Put(plan, daylightSpan.Item1, daylightSpan.Item2, PlanParameters);
+                        imagingDayPlanCache.Put(plan, daylightSpan.StartTime, daylightSpan.EndTime, PlanParameters);
                         imagingDayList.Add(plan);
                         continue;
                     }
 
-                    DateTime startTime = twilightSpan.Item1;
-                    DateTime endTime = twilightSpan.Item2;
+                    DateTime startTime = twilightSpan.StartTime;
+                    DateTime endTime = twilightSpan.EndTime;
 
                     // Check the cache
                     plan = imagingDayPlanCache.Get(startTime, endTime, PlanParameters);
@@ -65,15 +71,12 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
                         continue;
                     }
 
-                    TargetImagingCircumstances circumstances = new TargetImagingCircumstances(location,
-                                                                                              target.Coordinates,
-                                                                                              startTime, endTime,
-                                                                                              PlanParameters.HorizonDefinition);
-                    int status = circumstances.Analyze();
+                    VisibilityCircumstances circumstances = AnalyzeVisibility(twilightCircumstances, twilightSpan, location,
+                        target.Coordinates, PlanParameters.HorizonDefinition, date);
                     ImagingCriteriaAnalyzer analyzer;
 
                     // Check if the target is visible at all
-                    if (status != TargetImagingCircumstances.STATUS_POTENTIALLY_VISIBLE) {
+                    if (!circumstances.PotentiallyVisible) {
                         analyzer = new ImagingCriteriaAnalyzer(startTime, endTime);
 
                         midPointTime = Utils.GetMidpointTime(analyzer.StartImagingTime, analyzer.EndImagingTime);
@@ -177,22 +180,53 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
         }
 
-        private List<NighttimeCircumstances> GetNighttimeCircumstances(DateTime startDate, int planDays, ObserverInfo observerInfo, int twilightInclude, CancellationToken token) {
-            List<NighttimeCircumstances> list = new List<NighttimeCircumstances>(planDays);
-            DateTime date = startDate;
+        /// <summary>
+        /// Determine the target's visibility for the night using the Target Scheduler sample-based approach.  The result
+        /// maps onto the conventions previously provided by TargetImagingCircumstances/ImagingDay so the downstream
+        /// ImagingCriteriaAnalyzer logic is unchanged:
+        ///   - RiseAboveMinimumTime is DateTime.MinValue when the target is already above the horizon at twilight start
+        ///     (AdjustForTwilight then attributes the start to twilight); otherwise it is the rise-above-horizon time.
+        ///   - SetBelowMinimumTime is DateTime.MinValue when the target is still above the horizon at twilight end;
+        ///     otherwise it is the set-below-horizon time.
+        /// </summary>
+        private VisibilityCircumstances AnalyzeVisibility(TwilightCircumstances twilightCircumstances, TimeInterval twilightSpan,
+            ObserverInfo location, Coordinates coordinates, HorizonDefinition horizon, DateTime date) {
 
-            using (MyStopWatch.Measure("getNighttimeCircumstances")) {
-                for (int i = 0; i < planDays; i++) {
-                    if (token.IsCancellationRequested) {
-                        throw new OperationCanceledException();
-                    }
-
-                    list.Add(new NighttimeCircumstances(observerInfo, date, twilightInclude));
-                    date = date.AddDays(1);
-                }
+            // If the target never rises at this location, stop
+            if (!AstrometryUtils.RisesAtLocation(location, coordinates)) {
+                return VisibilityCircumstances.NotVisible();
             }
 
-            return list;
+            DateTime? sunset = twilightCircumstances.Sunset;
+            DateTime? sunrise = twilightCircumstances.Sunrise;
+            if (sunset == null || sunrise == null || sunset >= sunrise) {
+                return VisibilityCircumstances.NotVisible();
+            }
+
+            TargetVisibility visibility = new TargetVisibility(GetTargetName(), 0, location, coordinates, date,
+                sunset, sunrise, 0, SAMPLE_INTERVAL);
+
+            if (!visibility.ImagingPossible) {
+                return VisibilityCircumstances.NotVisible();
+            }
+
+            VisibilityDetermination viz = visibility.NextVisibleInterval(twilightSpan.StartTime, twilightSpan, horizon);
+            if (!viz.IsVisible) {
+                return VisibilityCircumstances.NotVisible();
+            }
+
+            // Reconstruct the rise/set 'MinValue means clipped by twilight' convention from the visible interval.
+            DateTime riseAboveMinimum = (viz.StartTime - twilightSpan.StartTime).TotalSeconds <= SAMPLE_INTERVAL
+                ? DateTime.MinValue : viz.StartTime;
+            DateTime setBelowMinimum = (twilightSpan.EndTime - viz.StopTime).TotalSeconds <= SAMPLE_INTERVAL
+                ? DateTime.MinValue : viz.StopTime;
+
+            return new VisibilityCircumstances(true, riseAboveMinimum, setBelowMinimum, visibility.TransitTime);
+        }
+
+        private string GetTargetName() {
+            string name = PlanParameters.Target?.Name;
+            return string.IsNullOrEmpty(name) ? "User coords" : name;
         }
 
         private ImagingDayPlan GetPlan(ImagingCriteriaAnalyzer analyzer, DateTime transitTime, double moonIllumination,
@@ -200,6 +234,25 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             return new ImagingDayPlan(analyzer.StartImagingTime, analyzer.EndImagingTime, transitTime,
                                       analyzer.StartLimitingFactor, analyzer.EndLimitingFactor, moonIllumination,
                                       moonSeparation, moonAvoidanceSeparation);
+        }
+
+        // Adapter result mirroring the fields previously produced by TargetImagingCircumstances.
+        private class VisibilityCircumstances {
+            public bool PotentiallyVisible { get; }
+            public DateTime RiseAboveMinimumTime { get; }
+            public DateTime SetBelowMinimumTime { get; }
+            public DateTime TransitTime { get; }
+
+            public VisibilityCircumstances(bool potentiallyVisible, DateTime riseAboveMinimumTime, DateTime setBelowMinimumTime, DateTime transitTime) {
+                PotentiallyVisible = potentiallyVisible;
+                RiseAboveMinimumTime = riseAboveMinimumTime;
+                SetBelowMinimumTime = setBelowMinimumTime;
+                TransitTime = transitTime;
+            }
+
+            public static VisibilityCircumstances NotVisible() {
+                return new VisibilityCircumstances(false, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue);
+            }
         }
     }
 

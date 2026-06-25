@@ -1,43 +1,52 @@
-﻿using NINA.Core.Model;
+using NINA.Core.Model;
 using System;
+using System.IO;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
+    // Copied from Target Scheduler (NINA.Plugin.TargetScheduler.Astrometry.HorizonDefinition).
     public class HorizonDefinition {
-
+        private bool isBasicMinimumAltitude;
         private readonly double minimumAltitude;
         private readonly CustomHorizon horizon;
         private readonly double offset;
 
         public HorizonDefinition(double minimumAltitude) {
-            Validate.Assert.isTrue(minimumAltitude >= 0 && minimumAltitude < 90, "minimumAltitude must be >= 0 and < 90");
+            Assert.isTrue(minimumAltitude >= 0 && minimumAltitude < 90, "minimumAltitude must be >= 0 and < 90");
             this.minimumAltitude = minimumAltitude;
+            this.isBasicMinimumAltitude = true;
         }
 
-        public HorizonDefinition(CustomHorizon customHorizon, double offset) {
-            Validate.Assert.isTrue(offset >= 0, "offset must be >= 0");
+        public HorizonDefinition(CustomHorizon customHorizon, double offset, double minimumAltitude = 0) {
+            Assert.isTrue(offset >= 0, "offset must be >= 0");
+            Assert.isTrue(minimumAltitude >= 0 && minimumAltitude < 90, "minimumAltitude must be >= 0 and < 90");
 
             if (customHorizon != null) {
-                this.minimumAltitude = TargetPlanningPlugin.HORIZON_VALUE;
+                this.minimumAltitude = minimumAltitude;
+                this.isBasicMinimumAltitude = false;
                 this.horizon = customHorizon;
                 this.offset = offset;
-            }
-            else {
-                // Protection against a weird horizon change in the profile
+            } else {
+                // Protection against a null/weird horizon in the profile: behave as a basic minimum altitude of 0.
+                // Target Planning can pass a null profile horizon (e.g. "Above Horizon" with no custom horizon defined);
+                // the original Target Scheduler code never does, so it left isBasicMinimumAltitude false here, which would
+                // NPE in GetTargetAltitude/GetCacheKey.
                 this.minimumAltitude = 0;
+                this.isBasicMinimumAltitude = true;
             }
         }
 
-        public double GetTargetAltitude(AltitudeAtTime aat) {
-            if (minimumAltitude != TargetPlanningPlugin.HORIZON_VALUE) {
+        public double GetTargetAltitude(double azimuth) {
+            if (isBasicMinimumAltitude) {
                 return minimumAltitude;
             }
 
-            return horizon.GetAltitude(aat.Azimuth) + offset;
+            double raw = Math.Max(horizon.GetAltitude(azimuth) + offset, minimumAltitude);
+            return raw > 90 ? 90 : raw;
         }
 
         public bool IsCustom() {
-            return minimumAltitude == TargetPlanningPlugin.HORIZON_VALUE;
+            return !isBasicMinimumAltitude;
         }
 
         public double GetFixedMinimumAltitude() {
@@ -49,7 +58,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         }
 
         public string GetCacheKey() {
-            if (minimumAltitude != TargetPlanningPlugin.HORIZON_VALUE) {
+            if (isBasicMinimumAltitude) {
                 return minimumAltitude.ToString();
             }
 
@@ -64,8 +73,23 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             sum += horizon.GetAltitude(270);
             sum += horizon.GetAltitude(315);
 
-            return sum.ToString();
+            return $"{minimumAltitude}_{offset}_{sum}";
+        }
+
+        public override string ToString() {
+            return isBasicMinimumAltitude ? $"min alt: {minimumAltitude.ToString()}" : "custom";
+        }
+
+        public static CustomHorizon GetConstantHorizon(double altitude) {
+            string alt = String.Format("{0:F0}", altitude);
+            string horizonDefinition = $"0 {alt}" + Environment.NewLine
+            + $"90 {alt}" + Environment.NewLine
+            + $"180 {alt}" + Environment.NewLine
+            + $"270 {alt}";
+
+            using (var sr = new StringReader(horizonDefinition)) {
+                return CustomHorizon.FromReader_Standard(sr);
+            }
         }
     }
-
 }

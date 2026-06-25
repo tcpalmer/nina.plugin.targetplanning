@@ -1,8 +1,7 @@
-﻿
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
+    // Copied from Target Scheduler (NINA.Plugin.TargetScheduler.Astrometry.HorizontalCoordinate).
     public class HorizontalCoordinate {
-
         public double Altitude { get; private set; }
         public double Azimuth { get; private set; }
 
@@ -11,5 +10,4 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             this.Azimuth = azimuth;
         }
     }
-
 }

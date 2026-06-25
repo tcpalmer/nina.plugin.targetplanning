@@ -1,12 +1,12 @@
-﻿using NINA.Astrometry;
-using NINA.Core.Utility;
+using NINA.Astrometry;
 using System;
 using System.Threading;
 
 namespace TargetPlanning.NINAPlugin.Astrometry {
 
+    // Copied from Target Scheduler (NINA.Plugin.TargetScheduler.Astrometry.AstrometryUtils).  The only addition is
+    // GetMidnightTransitDate (used by the imaging season code), which has no Target Scheduler equivalent.
     public class AstrometryUtils {
-
         private const double DAYS_IN_LUNAR_CYCLE = 29.53059;
 
         /// <summary>
@@ -17,8 +17,8 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         /// <param name="atTime"></param>
         /// <returns>horizontal coordinates</returns>
         public static HorizontalCoordinate GetHorizontalCoordinates(ObserverInfo location, Coordinates coordinates, DateTime atTime) {
-            Validate.Assert.notNull(location, "location cannot be null");
-            Validate.Assert.notNull(coordinates, "coordinates cannot be null");
+            Assert.notNull(location, "location cannot be null");
+            Assert.notNull(coordinates, "coordinates cannot be null");
 
             double siderealTime = AstroUtil.GetLocalSiderealTime(atTime, location.Longitude);
             double hourAngle = AstroUtil.GetHourAngle(siderealTime, coordinates.RA);
@@ -31,13 +31,40 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         }
 
         /// <summary>
+        /// Return the altitude for the coordinates at the specific location and time.
+        /// </summary>
+        /// <param name="location"></param>
+        /// <param name="coordinates"></param>
+        /// <param name="atTime"></param>
+        /// <returns></returns>
+        public static double GetAltitude(ObserverInfo location, Coordinates coordinates, DateTime atTime) {
+            double siderealTime = AstroUtil.GetLocalSiderealTime(atTime, location.Longitude);
+            double hourAngle = AstroUtil.GetHourAngle(siderealTime, coordinates.RA);
+            double degAngle = AstroUtil.HoursToDegrees(hourAngle);
+            return AstroUtil.GetAltitude(degAngle, location.Latitude, coordinates.Dec);
+        }
+
+        /// <summary>
+        /// Return the transit (meridian crossing) time for the coordinates at the specific location and time.
+        /// </summary>
+        /// <param name="location"></param>
+        /// <param name="coordinates"></param>
+        /// <param name="atTime"></param>
+        /// <returns></returns>
+        public static DateTime GetTransitTime(ObserverInfo location, Coordinates coordinates, DateTime atTime) {
+            DateTime forDate = atTime.Date;
+            double siderealTime = AstroUtil.GetLocalSiderealTime(forDate, location.Longitude);
+            double hourAngle = AstroUtil.GetHourAngle(siderealTime, coordinates.RA);
+            return forDate.AddHours(24 - hourAngle);
+        }
+
+        /// <summary>
         /// Get the moon illumination fraction at time.  Code was copied from NINA AstroUtils.CalculateMoonIllumination
         /// which is private.
         /// </summary>
         /// <param name="atTime"></param>
         /// <returns></returns>
         public static double GetMoonIllumination(DateTime atTime) {
-
             var jd = AstroUtil.GetJulianDate(atTime);
             var tuple = AstroUtil.GetMoonAndSunPosition(atTime, jd);
             var moonPosition = tuple.Item1;
@@ -71,7 +98,6 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         /// <param name="target"></param>
         /// <returns></returns>
         public static double GetMoonSeparationAngle(ObserverInfo location, DateTime atTime, Coordinates target) {
-
             NOVAS.SkyPosition pos = AstroUtil.GetMoonPosition(atTime, AstroUtil.GetJulianDate(atTime), location);
             var moonRaRadians = AstroUtil.ToRadians(AstroUtil.HoursToDegrees(pos.RA));
             var moonDecRadians = AstroUtil.ToRadians(pos.Dec);
@@ -86,10 +112,10 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
         /// <summary>
         /// Determine the moon avoidance separation for the moon age and separation angle (distance) to the target.
-        /// 
+        ///
         /// Basically, distance is selected to be the minimum acceptable separation at full moon.  Width is then the
         /// number of days (before or after full) for the acceptable separation to drop to distance/2.
-        /// 
+        ///
         /// The Moon Avoidance Lorentzian concept is from the Berkeley Automated Imaging Telescope (BAIT) team.  See
         /// http://astron.berkeley.edu/~bait/.  This formulation is from ACP, see
         /// http://bobdenny.com/ar/RefDocs/HelpFiles/ACPScheduler81Help/Constraints.htm.
@@ -98,9 +124,9 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         /// <param name="distance"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        public static double GetMoonAvoidanceLorentzianSeparation(double moonAge, double distance, int width) {
+        public static double GetMoonAvoidanceLorentzianSeparation(double moonAge, double distance, double width) {
             if (width == 0) {
-                Logger.Error("moon avoidance width cannot be zero");
+                TSLogger.Error("moon avoidance width cannot be zero");
                 return 0;
             }
 
@@ -131,9 +157,6 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         /// <param name="coordinates"></param>
         /// <returns>true/false</returns>
         public static bool RisesAtLocation(ObserverInfo location, Coordinates coordinates) {
-            Validate.Assert.notNull(location, "location cannot be null");
-            Validate.Assert.notNull(coordinates, "coordinates cannot be null");
-
             double declination = coordinates.Dec;
             double latitude = location.Latitude;
 
@@ -146,16 +169,16 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         /// Return true if the target object can ever rise above the horizon at the location when a minimum viewing altitude
         /// is considered.  Note that this doesn't necessarily mean that the target has a rising event (which a circumpolar
         /// target would not), just that it can be above the horizon at some point.
-        /// 
+        ///
         /// </summary>
         /// <param name="location"></param>
         /// <param name="coordinates"></param>
         /// <param name="minimumAltitude"></param>
         /// <returns>true/false</returns>
         public static bool RisesAtLocationWithMinimumAltitude(ObserverInfo location, Coordinates coordinates, double minimumAltitude) {
-            Validate.Assert.notNull(location, "location cannot be null");
-            Validate.Assert.notNull(coordinates, "coordinates cannot be null");
-            Validate.Assert.isTrue(minimumAltitude > 0, "minimumAltitude must be > 0");
+            Assert.notNull(location, "location cannot be null");
+            Assert.notNull(coordinates, "coordinates cannot be null");
+            Assert.isTrue(minimumAltitude > 0, "minimumAltitude must be > 0");
 
             double declination = coordinates.Dec;
             double latitude = location.Latitude;
@@ -172,9 +195,6 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         /// <param name="coordinates"></param>
         /// <returns>true/false</returns>
         public static bool CircumpolarAtLocation(ObserverInfo location, Coordinates coordinates) {
-            Validate.Assert.notNull(location, "location cannot be null");
-            Validate.Assert.notNull(coordinates, "coordinates cannot be null");
-
             double declination = coordinates.Dec;
             double latitude = location.Latitude;
 
@@ -192,9 +212,9 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         /// <param name="minimumAltitude"></param>
         /// <returns>true/false</returns>
         public static bool CircumpolarAtLocationWithMinimumAltitude(ObserverInfo location, Coordinates coordinates, double minimumAltitude) {
-            Validate.Assert.notNull(location, "location cannot be null");
-            Validate.Assert.notNull(coordinates, "coordinates cannot be null");
-            Validate.Assert.isTrue(minimumAltitude > 0, "minimumAltitude must be > 0");
+            Assert.notNull(location, "location cannot be null");
+            Assert.notNull(coordinates, "coordinates cannot be null");
+            Assert.isTrue(minimumAltitude > 0, "minimumAltitude must be > 0");
 
             double declination = coordinates.Dec;
             double latitude = location.Latitude;
@@ -214,15 +234,29 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
         }
 
         /// <summary>
-        /// Determine the date on which the target transits closest to local midnight
+        /// Convert NINA 2.x rotation to NINA 3.x position angle.  From the NINA 3 release notes:
+        ///
+        /// Rotation values in N.I.N.A. are now displayed in counter clockwise notation to follow the standard of
+        /// "East of North of North Celestial Pole" that is used in most astro applications. Templates, Targets and
+        /// other saved items in previous versions will be auto migrated to this adjusted approach.
+        ///
+        /// </summary>
+        /// <param name="rotation"></param>
+        /// <returns></returns>
+        public static double ConvertRotation(double rotation) {
+            return AstroUtil.EuclidianModulus(360 - rotation, 360);
+        }
+
+        /// <summary>
+        /// Determine the date on which the target transits closest to local midnight.  This has no Target Scheduler
+        /// equivalent; it is retained from the original Target Planning AstrometryUtils for the imaging season code.
         /// </summary>
         /// <param name="location"></param>
         /// <param name="coordinates"></param>
         /// <param name="year"></param>
         /// <param name="token"></param>
-        /// <returns>date </returns>
+        /// <returns>date</returns>
         public static DateTime GetMidnightTransitDate(ObserverInfo location, Coordinates coordinates, int year, CancellationToken token) {
-
             int daysInYear = DateTime.IsLeapYear(year) ? 366 : 365;
             double[] hourAngles = new double[daysInYear];
 
@@ -256,6 +290,8 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
 
             return jan1Local.AddDays(index);
         }
-    }
 
+        private AstrometryUtils() {
+        }
+    }
 }

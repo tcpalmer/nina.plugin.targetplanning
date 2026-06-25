@@ -65,7 +65,7 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
 
             // 'hi' is the first night whose dawn clears the target altitude; the heliacal rising date is that dawn date.
-            return GetTwilightSpan(hi).Item2.Date;
+            return GetTwilightSpan(hi).EndTime.Date;
         }
 
         public DateTime GetHeliacalSettingDate(CancellationToken token) {
@@ -87,25 +87,25 @@ namespace TargetPlanning.NINAPlugin.Astrometry {
             }
 
             // 'lo' is the last night whose dusk clears the target altitude; the heliacal setting date is that dusk date.
-            return GetTwilightSpan(lo).Item1.Date;
+            return GetTwilightSpan(lo).StartTime.Date;
         }
 
         // Target altitude at dawn (twilight end) for the night beginning on the given date, or double.MinValue if the
         // requested twilight does not occur (e.g. high latitude near the summer solstice).
         private double DawnAltitude(DateTime date) {
-            Tuple<DateTime, DateTime> span = GetTwilightSpan(date);
-            return span == null ? double.MinValue : AstrometryUtils.GetHorizontalCoordinates(location, target, span.Item2).Altitude;
+            TimeInterval span = GetTwilightSpan(date);
+            return span == null ? double.MinValue : AstrometryUtils.GetHorizontalCoordinates(location, target, span.EndTime).Altitude;
         }
 
         // Target altitude at dusk (twilight start) for the night beginning on the given date, or double.MinValue if the
         // requested twilight does not occur.
         private double DuskAltitude(DateTime date) {
-            Tuple<DateTime, DateTime> span = GetTwilightSpan(date);
-            return span == null ? double.MinValue : AstrometryUtils.GetHorizontalCoordinates(location, target, span.Item1).Altitude;
+            TimeInterval span = GetTwilightSpan(date);
+            return span == null ? double.MinValue : AstrometryUtils.GetHorizontalCoordinates(location, target, span.StartTime).Altitude;
         }
 
-        private Tuple<DateTime, DateTime> GetTwilightSpan(DateTime date) {
-            return new NighttimeCircumstances(location, date, twilightInclude).GetTwilightSpan(twilightInclude);
+        private TimeInterval GetTwilightSpan(DateTime date) {
+            return new TwilightCircumstances(location, date).GetTwilightSpan(TwilightInclude.ToTwilightLevel(twilightInclude));
         }
     }
 

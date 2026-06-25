@@ -114,10 +114,10 @@ namespace TargetPlanning.NINAPlugin {
             }
 
             TwilightIncludeChoices = new AsyncObservableCollection<KeyValuePair<int, string>>();
-            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(NighttimeCircumstances.TWILIGHT_INCLUDE_NONE, "None"));
-            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO, "Astronomical"));
-            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(NighttimeCircumstances.TWILIGHT_INCLUDE_NAUTICAL, "Nautical"));
-            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(NighttimeCircumstances.TWILIGHT_INCLUDE_CIVIL, "Civil"));
+            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(Astrometry.TwilightInclude.NONE, "None"));
+            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(Astrometry.TwilightInclude.ASTRO, "Astronomical"));
+            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(Astrometry.TwilightInclude.NAUTICAL, "Nautical"));
+            TwilightIncludeChoices.Add(new KeyValuePair<int, string>(Astrometry.TwilightInclude.CIVIL, "Civil"));
         }
 
         public override Task Teardown() {
@@ -279,7 +279,7 @@ namespace TargetPlanning.NINAPlugin {
         }
 
         public int TwilightInclude {
-            get => pluginSettings.GetValueInt32(nameof(TwilightInclude), NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO);
+            get => pluginSettings.GetValueInt32(nameof(TwilightInclude), Astrometry.TwilightInclude.ASTRO);
             set {
                 pluginSettings.SetValueInt32(nameof(TwilightInclude), value);
                 RaisePropertyChanged();

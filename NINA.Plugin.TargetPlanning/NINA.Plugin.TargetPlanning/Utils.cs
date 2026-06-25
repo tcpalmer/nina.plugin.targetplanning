@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NINA.Astrometry;
+using System;
 
 namespace TargetPlanning.NINAPlugin {
 
@@ -12,6 +13,10 @@ namespace TargetPlanning.NINAPlugin {
 
         public static string FormatDateTimeFull(DateTime dateTime) {
             return String.Format("{0:MM/dd/yyyy HH:mm:ss zzzz}", dateTime);
+        }
+
+        public static string FormatDegrees(double degrees) {
+            return AstroUtil.DegreesToDMS(degrees);
         }
 
         public static DateTime GetMidpointTime(DateTime startTime, DateTime endTime) {

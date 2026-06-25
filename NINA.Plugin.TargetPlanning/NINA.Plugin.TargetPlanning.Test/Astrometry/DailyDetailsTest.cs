@@ -94,7 +94,7 @@ namespace NINA.Plugin.TargetPlanning.Test.Astrometry {
                 HorizonDefinition = new HorizonDefinition(0),
                 MinimumImagingTime = 60,
                 MeridianTimeSpan = 0,
-                TwilightInclude = NighttimeCircumstances.TWILIGHT_INCLUDE_ASTRO,
+                TwilightInclude = TwilightInclude.ASTRO,
                 MinimumMoonSeparation = 0,
                 MaximumMoonIllumination = 0,
                 MoonAvoidanceEnabled = false,
